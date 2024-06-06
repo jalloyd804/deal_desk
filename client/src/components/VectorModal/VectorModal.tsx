@@ -222,7 +222,7 @@ export const VectorModal = ({
                 </SansTypography>
                 <SansTypography>
                 <StyledTextField
-                    autoComplete='false'
+                    autoComplete='off'
                     className={classes.root}
                     required
                     id="filled-required"
