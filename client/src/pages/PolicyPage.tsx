@@ -253,14 +253,9 @@ export const PolicyPage = () => {
                 <StyledContainer>
                     <StyledPaper variant={'elevation'} elevation={2} square>
                         <Stack spacing={2}>
-                            <Typography variant="h5">AskMe.AI</Typography>
+                            <Typography variant="h5"><strong>Hello!</strong> Welcome to NIAID’s AI Document Bot</Typography>
                             <Typography variant="body1">
-                                Assists users in answering complex policy,
-                                operational procedure, and system questions.
-                                This engine takes data such as policy manuals,
-                                system documents, process maps, data from case
-                                databases as inputs, and uses LLM models to
-                                provide answers.
+                                The AI Document Bot is a chat interface between users and uploaded documents. Upload policies, proposals, meeting minutes, operational procedures, policy manuals as PDF’s or Word documents and ask questions. To begin, select a document repository on the right or create a new one.
                             </Typography>
                             {error && <Alert color="error">{error}</Alert>}
                             <Controller

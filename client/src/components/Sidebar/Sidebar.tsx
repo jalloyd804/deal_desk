@@ -20,7 +20,7 @@ const StyledSidebar = styled(Paper)(({ theme }) => ({
     flexDirection: 'column',
     width: '280px',
     borderRadius: '0',
-    padding: theme.spacing(2),
+    padding: `5rem ${theme.spacing(2)} ${theme.spacing(2)} ${theme.spacing(2)}`,
     gap: theme.spacing(2),
     [theme.breakpoints.down('md')]: {
         position: 'absolute',
@@ -30,6 +30,7 @@ const StyledSidebar = styled(Paper)(({ theme }) => ({
     },
     position: 'fixed',
     left: '0%',
+    top: '0',
     height: '100%',
     zIndex: 2,
 }));
