@@ -87,8 +87,8 @@ export const PolicyPage = () => {
         },
     });
 
-    const [limit, setLimit] = useState<number>(3);
-    const [temperature, setTemperature] = useState<number>(0);
+    const [limit, setLimit] = useState<number>(5);
+    const [temperature, setTemperature] = useState<number>(0.3);
     /**
      * Allow the user to ask a question
      */
