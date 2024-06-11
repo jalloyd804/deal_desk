@@ -103,7 +103,7 @@ export const PolicyPage = () => {
                 throw new Error('Question is required');
             }
             let pixel = `
-            VectorDatabaseQuery(engine="${selectedVectorDB.database_id}" , command="${data.QUESTION}", limit=${limit})
+            VectorDatabaseQuery(engine="${selectedVectorDB.database_id}" , command="<encode>${data.QUESTION}</encode>", limit=${limit})
             `;
 
             const response = await actions.run<Record<string, any>[]>(pixel);
@@ -119,7 +119,7 @@ export const PolicyPage = () => {
             //Add three most similar policy docs to context to support policy bot.
             for (let i = 0; i <= output.length - 1; i++) {
                 const content = output[i].content || output[i].Content;
-                context_docs += `{'role': 'system', 'content': '${content}'},`;
+                context_docs += `{'role': 'system', 'content': '<encode>${content}</encode>'},`;
                 temp_urls.push(output[i].url);
             }
 
@@ -138,7 +138,7 @@ export const PolicyPage = () => {
 
             pixel =
                 `
-            LLM(engine="${selectedModel.database_id}" , command=["${data.QUESTION}"], paramValues=[{"full_prompt":[{'role':'system', 'content':"You are an intelligent AI designed to answer queries based on provided policy documents. If an answer cannot be determined based on the provided policy documents, inform the user. Answer as truthfully as possible at all times and tell the user if you do not know the answer. Please be concise and get to the point. ${data.QUESTION}"},` +
+            LLM(engine="${selectedModel.database_id}" , command=["<encode>${data.QUESTION}</encode>"], paramValues=[{"full_prompt":[{'role':'system', 'content':"<encode>"You are an advanced AI designed to provide detailed and accurate analyses of various documents. Your goal is to answer questions based on the information contained within these documents, ensuring thoroughness, clarity, and relevance. If the answer cannot be found in the documents, inform the user explicitly. If the information is not present in the provided documents do not answer the question.\n\nGuidelines:\n1. Analyze Thoroughly: Carefully read and analyze the content of the documents provided.\n2. Provide Relevant Information: Ensure all answers are based solely on the information within the documents.\n3. Be Clear and Concise: Offer clear and concise responses, avoiding ambiguity and unnecessary details.\n4. Acknowledge Limitations: If the answer is not present in the documents, state that the information is not available.\n5. Maintain Integrity: Always provide truthful and accurate information.\n6. Answer Structure: Answers should be presented in a logical and organized manner, ensuring readability.\n\nQuestion:\n${data.QUESTION}</encode>"},` +
                 context_docs +
                 `]}, temperature=${temperature}])
             `;
