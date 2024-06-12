@@ -106,6 +106,14 @@ export const PolicyPage = () => {
             VectorDatabaseQuery(engine="${selectedVectorDB.database_id}" , command="<encode>${data.QUESTION}</encode>", limit=${limit})
             `;
 
+            let model = ''
+            if (process.env.ENVIRONMENTFLAG === "Deloitte"){
+                model = "4801422a-5c62-421e-a00c-05c6a9e15de8"
+            }
+            else if (process.env.ENVIRONMENTFLAG === "NIH"){
+                model = "f89f9eec-ba78-4059-9f01-28e52d819171"
+            }
+
             const response = await actions.run<Record<string, any>[]>(pixel);
 
             const { output, operationType } = response.pixelReturn[0];
@@ -119,8 +127,9 @@ export const PolicyPage = () => {
             //Add three most similar policy docs to context to support policy bot.
             for (let i = 0; i <= output.length - 1; i++) {
                 const content = output[i].content || output[i].Content;
+                const source = output[i].source || output[i].Source + ", Page(s): " + output[i].Divider;
                 context_docs += `{'role': 'system', 'content': '<encode>${content}</encode>'},`;
-                temp_urls.push(output[i].url);
+                temp_urls.push(source);
             }
 
             if (context_docs.length > 0)
@@ -137,8 +146,8 @@ export const PolicyPage = () => {
             );
 
             pixel =
-                `
-            LLM(engine="${selectedModel.database_id}" , command=["<encode>${data.QUESTION}</encode>"], paramValues=[{"full_prompt":[{'role':'system', 'content':"<encode>"You are an advanced AI designed to provide detailed and accurate analyses of various documents. Your goal is to answer questions based on the information contained within these documents, ensuring thoroughness, clarity, and relevance. If the answer cannot be found in the documents, inform the user explicitly. If the information is not present in the provided documents do not answer the question.\n\nGuidelines:\n1. Analyze Thoroughly: Carefully read and analyze the content of the documents provided.\n2. Provide Relevant Information: Ensure all answers are based solely on the information within the documents.\n3. Be Clear and Concise: Offer clear and concise responses, avoiding ambiguity and unnecessary details.\n4. Acknowledge Limitations: If the answer is not present in the documents, state that the information is not available.\n5. Maintain Integrity: Always provide truthful and accurate information.\n6. Answer Structure: Answers should be presented in a logical and organized manner, ensuring readability.\n\nQuestion:\n${data.QUESTION}</encode>"},` +
+
+            LLM(engine="` + model + `", command=["<encode>${data.QUESTION}</encode>"], paramValues=[{"full_prompt":[{'role':'system', 'content':"<encode>You are an advanced AI designed to provide detailed and accurate analyses of various documents. Your goal is to answer questions based on the information contained within these documents, ensuring thoroughness, clarity, and relevance. If the answer cannot be found in the documents, inform the user explicitly. If the information is not present in the provided documents do not answer the question.\n\nGuidelines:\n1. Analyze Thoroughly: Carefully read and analyze the content of the documents provided.\n2. Provide Relevant Information: Ensure all answers are based solely on the information within the documents.\n3. Be Clear and Concise: Offer clear and concise responses, avoiding ambiguity and unnecessary details.\n4. Acknowledge Limitations: If the answer is not present in the documents, state that the information is not available.\n5. Maintain Integrity: Always provide truthful and accurate information.\n6. Answer Structure: Answers should be presented in a logical and organized manner, ensuring readability.\n\nQuestion:\n${data.QUESTION}</encode>"},` +
                 context_docs +
                 `]}, temperature=${temperature}])
             `;
@@ -349,7 +358,7 @@ export const PolicyPage = () => {
                                             </Button>
                                             {showContext &&
                                                 urls.map((url) => (
-                                                    <div key={url.ID}>
+                                                    <div key={url.Page}>
                                                         Source:{' '}
                                                         <a href={url.link}>
                                                             {url.link}
