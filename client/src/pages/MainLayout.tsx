@@ -1,69 +1,84 @@
 import { Outlet } from 'react-router-dom';
-import { Alert, Typography, styled } from '@mui/material';
+import { styled } from '@mui/material';
+import NIHLogo from '../assets/img/nihwhitelogo.svg';
 
-import LOGO_POWERED from '@/assets/img/logo.svg';
+const FOOTERLINKS = [ 
+    {
+        href: 'https://www.niaid.nih.gov/', 
+        label: 'NIAID Public Website'
+    },
+    {
+        href: 'https://www.nih.gov/',
+        label: 'NIH Public Website'
+    },
+    {
+        href: 'https://www.hhs.gov/',
+        label: 'HHS Public Website'
+    },
+    {
+        href: 'https://www.usa.gov/',
+        label: 'USA.gov'
+    }
+]
 
 const StyledWrapper = styled('div')(() => ({
     display: 'flex',
-    flexDirection: 'row',
-    height: '100%',
+    flexDirection: 'column',
+    minHeight: '100vh',
     width: '100%',
     overflow: 'auto',
+}));
+
+const StyledHeader = styled('div')(() => ({
+    display: 'flex',
+    background: 'linear-gradient(90deg, rgba(32,85,138,1) 0%, rgba(32,85,138,1) 30%, rgba(101,10,103,1) 100%)',
+    backgroundPosition: 'top left',
+    padding: '0 2rem',
+    position: 'relative',
+    zIndex: '3',
+    '& > img': {
+        width: '4rem',
+        height: 'auto'
+    },
+}));
+
+const StyledH1 = styled('h1')(() => ({
+    marginLeft: '1rem',
+    color: 'white',
+    fontWeight: 'normal',
 }));
 
 const StyledMain = styled('div')(() => ({
     position: 'relative',
-    flex: 1,
+    height: '100%',
     overflow: 'auto',
+    flex: '1'
 }));
 
 const StyledContent = styled('div')(({ theme }) => ({
     position: 'relative',
-    minHeight: `calc(100vh - ${theme.spacing(4)})`,
-    [theme.breakpoints.down('sm')]: {
-        minHeight: `auto`,
-    },
 }));
 
-const StyledDisclaimer = styled('div')(({ theme }) => ({
-    position: 'absolute',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    bottom: 0,
-    width: '100%',
-    textAlign: 'center',
-    padding: theme.spacing(0.5),
-    [theme.breakpoints.down('sm')]: {
-        position: 'relative',
-    },
-}));
-
-const StyledFooter = styled('div')(({ theme }) => ({
+const StyledFooter = styled('footer')(({ theme }) => ({
     position: 'relative',
-    display: 'flex',
-    alignItems: 'center',
+    zIndex: '4',
+    color: '#4f4f4f',
+    backgroundColor: '#FBFBFB',
+    padding: '.5rem 2rem',
+    fontSize: theme.typography.caption.fontSize,
     justifyContent: 'space-between',
-    gap: theme.spacing(1),
-    padding: theme.spacing(1),
-    height: theme.spacing(4),
-    width: '100%',
+    display: 'flex',
+    '& a': {
+        color: 'inherit'
+    }
 }));
 
-const StyledFooterLogo = styled('a')(({ theme }) => ({
-    display: 'inline-flex',
-    textDecoration: 'none',
-    alignItems: 'center',
-    gap: theme.spacing(0.5),
-    color: theme.palette.text.primary,
-    fontSize: theme.typography.caption.fontSize,
-    overflow: 'hidden',
-    '& > img': {
-        height: theme.spacing(3),
-    },
-    ':visited': {
-        color: 'inherit',
-    },
+const StyledFooterLeft = styled('div')(() => ({
+}));
+
+const StyledFooterRight = styled('div')(() => ({
+    display: 'flex',
+    gap: '1rem',
 }));
 
 /**
@@ -72,34 +87,13 @@ const StyledFooterLogo = styled('a')(({ theme }) => ({
 export const MainLayout = () => {
     return (
         <StyledWrapper>
+            <StyledHeader><img src={NIHLogo} /><StyledH1>NIAID | GenAI</StyledH1></StyledHeader>
             <StyledMain id="main">
                 <StyledContent>
                     <Outlet />
                 </StyledContent>
-                <StyledDisclaimer>
-                    <Alert severity={'info'}>
-                        <Typography
-                            variant={'caption'}
-                            sx={{ fontWeight: 600 }}
-                        >
-                            Please note: This is a demo environment to be used
-                            for testing purposes only.
-                        </Typography>
-                    </Alert>
-                </StyledDisclaimer>
-                <StyledFooter>
-                    &nbsp;
-                    <StyledFooterLogo
-                        title="CfG.AI"
-                        href="https://deloitte.com"
-                        target="_blank"
-                        rel="noreferrer"
-                    >
-                        <span>Powered By</span>
-                        <img src={LOGO_POWERED} />
-                    </StyledFooterLogo>
-                </StyledFooter>
             </StyledMain>
+            <StyledFooter><StyledFooterLeft><a href="mailto:NIAIDHelpdeskTeam@mail.nih.gov">Contact Us</a></StyledFooterLeft><StyledFooterRight>{FOOTERLINKS.map((link, index) => <a key={index} href={link.href}>{link.label}</a>)}</StyledFooterRight></StyledFooter>
         </StyledWrapper>
     );
 };

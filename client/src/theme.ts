@@ -124,7 +124,7 @@ export const lightTheme: CustomThemeOptions = {
             dark: '#006500',
         },
         background: {
-            default: '#FAFAFA',
+            default: '#F2F2F2',
             paper: '#FFF',
         },
         modal: {
@@ -425,7 +425,7 @@ export const darkTheme: CustomThemeOptions = {
             dark: '#005A00',
         },
         background: {
-            default: '#FAFAFA',
+            default: '#F2F2F2',
             paper: '#FFF',
         },
         modal: {
