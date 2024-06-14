@@ -66,6 +66,7 @@ export const PolicyPage = () => {
     const [answer, setAnswer] = useState({
         question: '',
         conclusion: '',
+        partial_docs_note: ''
     });
     // Model Catalog and first model in dropdown
     const [modelOptions, setModelOptions] = useState([]);
@@ -124,13 +125,23 @@ export const PolicyPage = () => {
             let context_docs = ``;
             const temp_urls = [];
 
-            //Add three most similar policy docs to context to support policy bot.
+            let docs_used = 0
             for (let i = 0; i <= output.length - 1; i++) {
-                const content = output[i].content || output[i].Content;
-                const source = output[i].source || output[i].Source + ", Page(s): " + output[i].Divider;
-                context_docs += `{'role': 'system', 'content': '<encode>${content}</encode>'},`;
-                temp_urls.push(source);
+                if (output[i].score || output[i].Score < 0.8) {
+                    docs_used += 1
+                    const content = output[i].content || output[i].Content;
+                    const source = output[i].source || output[i].Source + ", Page(s): " + output[i].Divider;
+                    context_docs += `{'role': 'system', 'content': '<encode>${content}</encode>'},`;
+                    temp_urls.push(source);
+                } 
             }
+
+            let partial_docs_note = ''
+            if (docs_used == 1 && docs_used < output.length) {
+                partial_docs_note = `Note: Only ${docs_used} source was used to answer this question.`
+            } else if (docs_used > 1 && docs_used < output.length) {
+                partial_docs_note = `Note: Only ${docs_used} sources were used to answer this question.`
+            };
 
             if (context_docs.length > 0)
                 context_docs = context_docs.substring(
@@ -152,26 +163,32 @@ export const PolicyPage = () => {
                 `]}, temperature=${temperature}])
             `;
 
-            const LLMresponse = await actions.run<[{ response: string }]>(
-                pixel,
-            );
+            // only need to call LLM if documents that meet the threshold were found
+            let conclusion = ''
+            if (docs_used > 0) {
+                const LLMresponse = await actions.run<[{ response: string }]>(
+                    pixel,
+                );
 
-            const { output: LLMOutput, operationType: LLMOperationType } =
-                LLMresponse.pixelReturn[0];
+                const { output: LLMOutput, operationType: LLMOperationType } =
+                    LLMresponse.pixelReturn[0];
 
-            if (LLMOperationType.indexOf('ERROR') > -1) {
-                throw new Error(LLMOutput.response);
-            }
-
-            let conclusion = '';
-            if (LLMOutput.response) {
-                conclusion = LLMOutput.response;
+                if (LLMOperationType.indexOf('ERROR') > -1) {
+                    throw new Error(LLMOutput.response);
+                }
+                        
+                if (LLMOutput.response) {
+                    conclusion = LLMOutput.response
+                }
+            } else {
+                conclusion = 'The required information is not available in the provided documents. Please attempt a different question or upload other documents.'
             }
 
             // set answer based on data
             setAnswer({
                 question: data.QUESTION,
                 conclusion: conclusion,
+                partial_docs_note: partial_docs_note
             });
 
             setIsAnswered(true);
@@ -341,6 +358,11 @@ export const PolicyPage = () => {
                                     </Typography>
                                     <Box sx={{ mb: 2, overflow: 'auto' }}>
                                         <Markdown>{answer.conclusion}</Markdown>
+                                        {answer.partial_docs_note && (
+                                        <Typography component="p" style={{ color: 'blue', fontStyle: 'italic', marginTop: '16px'}}>
+                                            {answer.partial_docs_note}
+                                        </Typography>
+                                        )}
                                     </Box>
                                     {
                                         <>
