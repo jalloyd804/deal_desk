@@ -20,27 +20,45 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { Markdown } from '@/components/common';
 
 const StyledContainer = styled('div')(({ theme }) => ({
-    padding: `${theme.spacing(4)} ${theme.spacing(0)} ${theme.spacing(
-        4,
-    )} 280px`,
-    maxWidth: '1000px',
+    padding: `2rem 10rem 2rem calc(10rem + 280px)`,
     display: 'flex',
 }));
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
     padding: theme.spacing(4),
     width: '100%',
+    borderRadius: '6px',
 }));
 
 const StyledLayout = styled(Stack)(() => ({
     display: 'flex',
-    flexDirection: 'row',
 }));
 
 const StyledButton = styled(IconButton)(() => ({
     position: 'fixed',
     left: '0%',
     marginRight: 'auto',
+}));
+
+const DisplayButton = styled(Button)(() => ({
+    backgroundImage: 'linear-gradient(90deg, #20558A 0%, #650A67 100%)',
+    backgroundColor: '#20558A',
+    fontSize: '16px',
+    color: 'white',
+    flex: '1',
+    '&:hover': {
+        backgroundImage: 'linear-gradient(90deg, #12005A 0%, #12005A 100%)',
+        backgroundColor: '#12005A',
+    },
+    '&[disabled]': {
+        color: 'rgba(255, 255, 255, .8)',
+    },
+}));
+
+const PoweredBy = styled('div')(() => ({
+    color: '#4F4F4F',
+    alignSelf: 'center',
+    padding: '0  0 2rem 280px',
 }));
 
 export interface Model {
@@ -227,6 +245,8 @@ export const PolicyPage = () => {
         });
     }, [refresh]);
 
+    console.log(selectedVectorDB);
+
     return (
         <StyledLayout justifyContent={'center'}>
             <Stack>
@@ -252,8 +272,8 @@ export const PolicyPage = () => {
                 )}
                 <StyledContainer>
                     <StyledPaper variant={'elevation'} elevation={2} square>
-                        <Stack spacing={2}>
-                            <Typography variant="h5"><strong>Hello!</strong> Welcome to NIAID’s AI Document Bot</Typography>
+                        <Stack spacing={2} color='#4F4F4F'>
+                            <Typography variant="h5" color='#40007B'><strong>Hello!</strong> Welcome to NIAID’s AI Document Bot</Typography>
                             <Typography variant="body1">
                                 The AI Document Bot is a chat interface between users and uploaded documents. Upload policies, proposals, meeting minutes, operational procedures, policy manuals as PDF’s or Word documents and ask questions. To begin, select a document repository on the right or create a new one.
                             </Typography>
@@ -287,20 +307,21 @@ export const PolicyPage = () => {
                                 justifyContent={'center'}
                                 gap={1}
                             >
-                                <Button
+                                <DisplayButton
                                     variant="contained"
-                                    disabled={isLoading}
+                                    disabled={isLoading || (Object.keys(selectedVectorDB).length === 0)}
                                     onClick={ask}
                                     sx={{ flex: 1, width: '85%' }}
                                 >
                                     Generate Answer
-                                </Button>
+                                </DisplayButton>
                             </Stack>
                             {isAnswered && (
                                 <Stack>
                                     <Typography
                                         variant={'subtitle2'}
                                         sx={{ fontWeight: '600' }}
+                                        color='#40007B'
                                     >
                                         Question:
                                     </Typography>
@@ -313,13 +334,14 @@ export const PolicyPage = () => {
                                     <Typography
                                         variant={'subtitle1'}
                                         sx={{ fontWeight: '600', mb: 0.5 }}
+                                        color='#40007B'
                                     >
-                                        Policy Extraction Response:
+                                        Document Bot Response:
                                     </Typography>
                                     <Typography
                                         variant={'subtitle2'}
+                                        color='#40007B'
                                         sx={{
-                                            color: '#1260DD',
                                             fontWeight: '600',
                                         }}
                                     >
@@ -330,18 +352,13 @@ export const PolicyPage = () => {
                                     </Box>
                                     {
                                         <>
-                                            <Button
-                                                onClick={() =>
+                                            <Stack flexDirection={'row'} gap={'1rem'}>
+                                                <DisplayButton variant="contained" onClick={() =>
                                                     setShowContext(!showContext)
-                                                }
-                                            >
-                                                {!showContext && (
-                                                    <p>Get Full Context</p>
-                                                )}
-                                                {showContext && (
-                                                    <p>Hide Full Context</p>
-                                                )}
-                                            </Button>
+                                                }>{showContext ? 'Hide Full Context' : 'Get Full Context'}</DisplayButton><DisplayButton variant="contained" onClick={() => {
+                                                    navigator.clipboard.writeText(answer.conclusion);
+                                                }}>Copy Results</DisplayButton>
+                                            </Stack>
                                             {showContext &&
                                                 urls.map((url) => (
                                                     <div key={url.ID}>
@@ -371,6 +388,7 @@ export const PolicyPage = () => {
                     setError={setError}
                 />
             </Modal>
+            <PoweredBy>Responses Generated by OpenAI’s GPT-4 Turbo</PoweredBy>
         </StyledLayout>
     );
 };
