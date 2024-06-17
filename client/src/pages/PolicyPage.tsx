@@ -18,6 +18,7 @@ import { Sidebar } from '../components/Sidebar';
 import { VectorModal } from '../components/VectorModal';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { Markdown } from '@/components/common';
+import { AIBotError } from './Error'
 
 const StyledContainer = styled('div')(({ theme }) => ({
     padding: `2rem 10rem 2rem calc(10rem + 280px)`,
@@ -208,7 +209,10 @@ export const PolicyPage = () => {
             }
             if (Array.isArray(output)) {
                 setModelOptions(output);
-                setSelectedModel(output[0]);
+                const model = output.find(m=>m.app_id === "4acbe913-df40-4ac0-b28a-daa5ad91b172");
+                if(model === undefined) 
+                    setError("You do not have access to the model");
+                setSelectedModel(model);
             }
         });
         //Grabbing all the Vector Databases in CfG
@@ -245,119 +249,109 @@ export const PolicyPage = () => {
         });
     }, [refresh]);
 
-    console.log(selectedVectorDB);
-
     return (
         <StyledLayout justifyContent={'center'}>
-            <Stack>
-                {sideOpen ? (
-                    <Sidebar
-                        modelOptions={modelOptions}
-                        selectedModel={selectedModel}
-                        setSelectedModel={setSelectedModel}
-                        vectorOptions={vectorOptions}
-                        selectedVectorDB={selectedVectorDB}
-                        setSelectedVectorDB={setSelectedVectorDB}
-                        setSideOpen={setSideOpen}
-                        setOpen={setOpen}
-                        limit={limit}
-                        setLimit={setLimit}
-                        temperature={temperature}
-                        setTemperature={setTemperature}
-                    />
-                ) : (
-                    <StyledButton onClick={() => setSideOpen(!sideOpen)}>
-                        <ArrowForwardIosIcon />
-                    </StyledButton>
-                )}
-                <StyledContainer>
-                    <StyledPaper variant={'elevation'} elevation={2} square>
-                        <Stack spacing={2} color='#4F4F4F'>
-                            <Typography variant="h5" color='#40007B'><strong>Hello!</strong> Welcome to NIAID’s AI Document Bot</Typography>
-                            <Typography variant="body1">
-                                The AI Document Bot is a chat interface between users and uploaded documents. Upload policies, proposals, meeting minutes, operational procedures, policy manuals as PDF’s or Word documents and ask questions. To begin, select a document repository on the right or create a new one.
-                            </Typography>
-                            {error && <Alert color="error">{error}</Alert>}
-                            <Controller
-                                name={'QUESTION'}
-                                control={control}
-                                rules={{ required: true }}
-                                render={({ field }) => {
-                                    return (
-                                        <TextField
-                                            label="Enter Question:"
-                                            variant="outlined"
-                                            fullWidth
-                                            value={
-                                                field.value ? field.value : ''
-                                            }
-                                            onChange={(e) =>
-                                                // set the value
-                                                field.onChange(e.target.value)
-                                            }
-                                            multiline
-                                            rows={4}
-                                        />
-                                    );
-                                }}
-                            />
-                            <Stack
-                                flexDirection={'row'}
-                                alignItems={'center'}
-                                justifyContent={'center'}
-                                gap={1}
-                            >
-                                <DisplayButton
-                                    variant="contained"
-                                    disabled={isLoading || (Object.keys(selectedVectorDB).length === 0)}
-                                    onClick={ask}
-                                    sx={{ flex: 1, width: '85%' }}
+            { error == 'You do not have access to the model' ? <AIBotError/> : 
+            <><Stack>
+                    {sideOpen ? (
+                        <Sidebar
+                            modelOptions={modelOptions}
+                            selectedModel={selectedModel}
+                            setSelectedModel={setSelectedModel}
+                            vectorOptions={vectorOptions}
+                            selectedVectorDB={selectedVectorDB}
+                            setSelectedVectorDB={setSelectedVectorDB}
+                            setSideOpen={setSideOpen}
+                            setOpen={setOpen}
+                            limit={limit}
+                            setLimit={setLimit}
+                            temperature={temperature}
+                            setTemperature={setTemperature} />
+                    ) : (
+                        <StyledButton onClick={() => setSideOpen(!sideOpen)}>
+                            <ArrowForwardIosIcon />
+                        </StyledButton>
+                    )}
+                    <StyledContainer>
+                        <StyledPaper variant={'elevation'} elevation={2} square>
+                            <Stack spacing={2} color='#4F4F4F'>
+                                <Typography variant="h5" color='#40007B'><strong>Hello!</strong> Welcome to NIAID’s AI Document Bot</Typography>
+                                <Typography variant="body1">
+                                    The AI Document Bot is a chat interface between users and uploaded documents. Upload policies, proposals, meeting minutes, operational procedures, policy manuals as PDF’s or Word documents and ask questions. To begin, select a document repository on the right or create a new one.
+                                </Typography>
+                                {error && <Alert color="error">{error}</Alert>}
+                                <Controller
+                                    name={'QUESTION'}
+                                    control={control}
+                                    rules={{ required: true }}
+                                    render={({ field }) => {
+                                        return (
+                                            <TextField
+                                                label="Enter Question:"
+                                                variant="outlined"
+                                                fullWidth
+                                                value={field.value ? field.value : ''}
+                                                onChange={(e) =>
+                                                    // set the value
+                                                    field.onChange(e.target.value)}
+                                                multiline
+                                                rows={4} />
+                                        );
+                                    } } />
+                                <Stack
+                                    flexDirection={'row'}
+                                    alignItems={'center'}
+                                    justifyContent={'center'}
+                                    gap={1}
                                 >
-                                    Generate Answer
-                                </DisplayButton>
-                            </Stack>
-                            {isAnswered && (
-                                <Stack>
-                                    <Typography
-                                        variant={'subtitle2'}
-                                        sx={{ fontWeight: '600' }}
-                                        color='#40007B'
+                                    <DisplayButton
+                                        variant="contained"
+                                        disabled={isLoading || (Object.keys(selectedVectorDB).length === 0)}
+                                        onClick={ask}
+                                        sx={{ flex: 1, width: '85%' }}
                                     >
-                                        Question:
-                                    </Typography>
-                                    <Typography
-                                        variant={'body1'}
-                                        sx={{ mb: 2 }}
-                                    >
-                                        {answer.question}
-                                    </Typography>
-                                    <Typography
-                                        variant={'subtitle1'}
-                                        sx={{ fontWeight: '600', mb: 0.5 }}
-                                        color='#40007B'
-                                    >
-                                        Document Bot Response:
-                                    </Typography>
-                                    <Typography
-                                        variant={'subtitle2'}
-                                        color='#40007B'
-                                        sx={{
-                                            fontWeight: '600',
-                                        }}
-                                    >
-                                        Conclusion:
-                                    </Typography>
-                                    <Box sx={{ mb: 2, overflow: 'auto' }}>
-                                        <Markdown>{answer.conclusion}</Markdown>
-                                    </Box>
-                                    {
-                                        <>
+                                        Generate Answer
+                                    </DisplayButton>
+                                </Stack>
+                                {isAnswered && (
+                                    <Stack>
+                                        <Typography
+                                            variant={'subtitle2'}
+                                            sx={{ fontWeight: '600' }}
+                                            color='#40007B'
+                                        >
+                                            Question:
+                                        </Typography>
+                                        <Typography
+                                            variant={'body1'}
+                                            sx={{ mb: 2 }}
+                                        >
+                                            {answer.question}
+                                        </Typography>
+                                        <Typography
+                                            variant={'subtitle1'}
+                                            sx={{ fontWeight: '600', mb: 0.5 }}
+                                            color='#40007B'
+                                        >
+                                            Document Bot Response:
+                                        </Typography>
+                                        <Typography
+                                            variant={'subtitle2'}
+                                            color='#40007B'
+                                            sx={{
+                                                fontWeight: '600',
+                                            }}
+                                        >
+                                            Conclusion:
+                                        </Typography>
+                                        <Box sx={{ mb: 2, overflow: 'auto' }}>
+                                            <Markdown>{answer.conclusion}</Markdown>
+                                        </Box>
+                                        {<>
                                             <Stack flexDirection={'row'} gap={'1rem'}>
-                                                <DisplayButton variant="contained" onClick={() =>
-                                                    setShowContext(!showContext)
-                                                }>{showContext ? 'Hide Full Context' : 'Get Full Context'}</DisplayButton><DisplayButton variant="contained" onClick={() => {
+                                                <DisplayButton variant="contained" onClick={() => setShowContext(!showContext)}>{showContext ? 'Hide Full Context' : 'Get Full Context'}</DisplayButton><DisplayButton variant="contained" onClick={() => {
                                                     navigator.clipboard.writeText(answer.conclusion);
-                                                }}>Copy Results</DisplayButton>
+                                                } }>Copy Results</DisplayButton>
                                             </Stack>
                                             {showContext &&
                                                 urls.map((url) => (
@@ -368,27 +362,24 @@ export const PolicyPage = () => {
                                                         </a>
                                                     </div>
                                                 ))}
-                                        </>
-                                    }
-                                </Stack>
-                            )}
-                        </Stack>
-                    </StyledPaper>
-                    {isLoading && <LinearProgress />}
-                </StyledContainer>
-            </Stack>
-            <Modal open={open} onClose={() => setOpen(false)}>
-                <VectorModal
-                    setOpen={setOpen}
-                    open={open}
-                    vectorOptions={vectorOptions}
-                    setRefresh={setRefresh}
-                    setSelectedVectorDB={setSelectedVectorDB}
-                    selectedVectorDB={selectedVectorDB}
-                    setError={setError}
-                />
-            </Modal>
-            <PoweredBy>Responses Generated by OpenAI’s GPT-4 Turbo</PoweredBy>
+                                        </>}
+                                    </Stack>
+                                )}
+                            </Stack>
+                        </StyledPaper>
+                        {isLoading && <LinearProgress />}
+                    </StyledContainer>
+                </Stack><Modal open={open} onClose={() => setOpen(false)}>
+                        <VectorModal
+                            setOpen={setOpen}
+                            open={open}
+                            vectorOptions={vectorOptions}
+                            setRefresh={setRefresh}
+                            setSelectedVectorDB={setSelectedVectorDB}
+                            selectedVectorDB={selectedVectorDB}
+                            setError={setError} />
+                    </Modal><PoweredBy>Responses Generated by OpenAI’s GPT-4 Turbo</PoweredBy></>
+                        }
         </StyledLayout>
     );
 };
