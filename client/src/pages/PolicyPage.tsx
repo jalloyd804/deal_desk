@@ -279,7 +279,7 @@ export const PolicyPage = () => {
                                 <Typography variant="body1">
                                     The AI Document Bot is a chat interface between users and uploaded documents. Upload policies, proposals, meeting minutes, operational procedures, policy manuals as PDF’s or Word documents and ask questions. To begin, select a document repository on the right or create a new one.
                                 </Typography>
-                                {error && <Alert color="error">{error}</Alert>}
+                                {error && <Alert color="error">{error.toString()}</Alert>}
                                 <Controller
                                     name={'QUESTION'}
                                     control={control}
