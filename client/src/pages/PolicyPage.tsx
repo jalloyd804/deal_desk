@@ -372,6 +372,11 @@ export const PolicyPage = () => {
                                         </Typography>
                                         <Box sx={{ mb: 2, overflow: 'auto' }}>
                                             <Markdown>{answer.conclusion}</Markdown>
+                                            {answer.partial_docs_note && (
+                                            <Typography component="p" style={{ fontStyle: 'italic', marginTop: '16px'}}>
+                                                {answer.partial_docs_note}
+                                            </Typography>
+                                        )}
                                         </Box>
                                         {<>
                                             <Stack flexDirection={'row'} gap={'1rem'}>
