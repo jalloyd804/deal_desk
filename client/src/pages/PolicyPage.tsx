@@ -100,7 +100,7 @@ export const PolicyPage = () => {
 
     //Controlling the Sidebar
     const [sideOpen, setSideOpen] = useState<boolean>(true);
-    const [urls, setUrls] = useState([]);
+    const [documents, setDocuments] = useState([]);
     const { control, handleSubmit } = useForm({
         defaultValues: {
             QUESTION: '',
@@ -142,16 +142,33 @@ export const PolicyPage = () => {
                 throw new Error(output.response);
 
             let context_docs = ``;
-            const temp_urls = [];
+            // Stores the Document Name as the key, and the download key as the value
+            let documents = [];
+            // Storing the insight cache ID
+            let insightID = "";
 
             let docs_used = 0
             for (let i = 0; i <= output.length - 1; i++) {
                 if (output[i].score || output[i].Score < 0.8) {
                     docs_used += 1
                     const content = output[i].content || output[i].Content;
-                    const source = output[i].source || output[i].Source + ", Page(s): " + output[i].Divider;
+                    const document_name = output[i].source || output[i].Source;
+                    const source = document_name + ", Page(s): " + output[i].Divider;
                     context_docs += `{'role': 'system', 'content': '<encode>${content}</encode>'},`;
-                    temp_urls.push(source);
+                    pixel = `DownloadVectorPdf("` + document_name + `", "${selectedVectorDB.database_id}")`;
+                    const absolutePath = await actions.run<[{Download_Key : string; Insight_ID : string; File_Absolute_Path; string}]>(pixel);
+                    if (insightID == ""){
+                        insightID = absolutePath.pixelReturn[0].output.Insight_ID;
+                    }
+                    let downloadKey = absolutePath.pixelReturn[0].output.Download_Key;
+                    documents.push({
+                        downloadKey,
+                        documentName : source,
+                        page : output[i].Divider,
+                        file_location : absolutePath.pixelReturn[0].output.File_Absolute_Path,
+                        // url : new URL(`${process.env.ENDPOINT}${process.env.MODULE}/api/engine/downloadFile`)
+                        url : `${process.env.ENDPOINT}${process.env.MODULE}/api/engine/downloadFile?insightId=${insightID}&fileKey=${encodeURIComponent(downloadKey)}`,
+                    });
                 } 
             }
 
@@ -168,12 +185,7 @@ export const PolicyPage = () => {
                     context_docs.length - 1,
                 );
 
-            setUrls(
-                temp_urls.map((url, i) => ({
-                    ID: i,
-                    link: url,
-                })),
-            );
+            setDocuments(documents);
 
             pixel =
             `
@@ -385,11 +397,11 @@ export const PolicyPage = () => {
                                                 } }>Copy Results</DisplayButton>
                                             </Stack>
                                             {showContext &&
-                                                urls.map((url) => (
-                                                    <div key={url.Page}>
+                                                documents.map((document, index) => (
+                                                    <div key={index}>
                                                         Source:{' '}
-                                                        <a href={url.link}>
-                                                            {url.link}
+                                                        <a href={document.url} target="_blank"> 
+                                                            {document.documentName}
                                                         </a>
                                                     </div>
                                                 ))}
