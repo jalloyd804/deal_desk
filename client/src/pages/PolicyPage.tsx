@@ -235,7 +235,7 @@ export const PolicyPage = () => {
             }
             if (Array.isArray(output)) {
                 setModelOptions(output);
-                const model = output.find(m=>m.app_id === "4acbe913-df40-4ac0-b28a-daa5ad91b172");
+                const model = output.find(m=>m.app_id === model);
                 if(model === undefined) 
                     setError("You do not have access to the model");
                 setSelectedModel(model);
