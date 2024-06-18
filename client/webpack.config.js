@@ -41,8 +41,8 @@ const config = {
     },
     plugins: [
         new HtmlWebpackPlugin({
-            title: 'CfG.AI',
-            favicon: './src/assets/img/logo.svg',
+            title: 'NIAID | GenAI',
+            favicon: './src/assets/img/nihwhitelogo.svg',
             scriptLoading: 'module',
             template: './src/template.html',
         }),
@@ -104,6 +104,7 @@ module.exports = () => {
         config.mode = 'production';
     } else {
         config.mode = 'development';
+        config.devtool = 'inline-source-map';
     }
     return config;
 };

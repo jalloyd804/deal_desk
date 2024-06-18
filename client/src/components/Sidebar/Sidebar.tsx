@@ -1,4 +1,3 @@
-import React from 'react';
 import {
     styled,
     Paper,
@@ -10,17 +9,35 @@ import {
     Typography,
     Tooltip,
 } from '@mui/material';
+import { makeStyles } from "@material-ui/core/styles";
 import { createFilterOptions } from '@mui/material/Autocomplete';
 import CloseIcon from '@mui/icons-material/Close';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
-import { Model } from '@/pages/PolicyPage';
+
+
+const useStyles = makeStyles(theme => ({
+    root: {
+        '& .MuiSlider-thumb': {
+            color: "#40007B"
+        },
+        '& .MuiSlider-track': {
+            color: "#CF9BFF"
+        },
+        '& .MuiSlider-rail': {
+            color: "#CF9BFF"
+        },
+        '& .MuiSlider-mark': {
+            color: '#40007B',
+        },
+    }
+}));
 
 const StyledSidebar = styled(Paper)(({ theme }) => ({
     display: 'flex',
     flexDirection: 'column',
     width: '280px',
     borderRadius: '0',
-    padding: theme.spacing(2),
+    padding: `5rem ${theme.spacing(2)} ${theme.spacing(2)} ${theme.spacing(2)}`,
     gap: theme.spacing(2),
     [theme.breakpoints.down('md')]: {
         position: 'absolute',
@@ -28,18 +45,37 @@ const StyledSidebar = styled(Paper)(({ theme }) => ({
         width: '100%',
         maxWidth: '280px',
     },
+    backgroundImage: 'linear-gradient(to bottom, #e7ecf8, #f9effd)',
     position: 'fixed',
     left: '0%',
+    top: '0',
     height: '100%',
     zIndex: 2,
 }));
 
 const StyledButton = styled(IconButton)(() => ({
     marginLeft: 'auto',
+    maxHeight: '10%'
 }));
 
 const StyledDiv = styled('div')(() => ({
     display: 'flex',
+}));
+
+const DisplayButton = styled(Button)(() => ({
+    backgroundImage: 'linear-gradient(90deg, #20558A 0%, #650A67 100%)',
+    backgroundColor: '#20558A',
+    fontSize: '16px',
+    maxHeight: '60px',
+    color: 'white',
+    flex: '1',
+    '&:hover': {
+        backgroundImage: 'linear-gradient(90deg, #12005A 0%, #12005A 100%)',
+        backgroundColor: '#12005A',
+    },
+    '&[disabled]': {
+        color: 'rgba(255, 255, 255, .8)',
+    },
 }));
 
 const filter = createFilterOptions();
@@ -58,6 +94,10 @@ export const Sidebar = ({
     temperature,
     setTemperature,
 }) => {
+
+
+    const classes = useStyles();
+
     const limitTooltipText = `
     This will change the amount of documents pulled from 
     a vector database. Pulling too many documents can potentially cause your engines
@@ -74,17 +114,6 @@ export const Sidebar = ({
             <StyledButton onClick={() => setSideOpen(false)}>
                 <CloseIcon />
             </StyledButton>
-            <Autocomplete
-                disableClearable
-                options={modelOptions}
-                value={selectedModel}
-                getOptionLabel={(option: Model) => option.database_name}
-                onChange={(event, newModel) => setSelectedModel(newModel)}
-                renderInput={(params) => (
-                    <TextField {...params} label="Model" variant="standard" />
-                )}
-            />
-
             <Autocomplete
                 disableClearable
                 freeSolo
@@ -122,11 +151,20 @@ export const Sidebar = ({
                 renderInput={(params) => (
                     <TextField
                         {...params}
-                        label="Vector Database"
+                        label="Document Repository"
                         variant="standard"
                     />
                 )}
             />
+            <StyledDiv style={{ display: 'flex' }}>
+                <Typography style={{ width: '100%', textAlign: 'center',fontWeight:'700', color:'#40007B' }}>Or</Typography>
+            </StyledDiv>
+            <DisplayButton variant="contained" onClick={() => setOpen(true)}>
+                Create Document Repository
+            </DisplayButton>
+            <StyledDiv style={{ display: 'flex', marginTop: '10%', marginBottom: '1%' }}>
+                <Typography style={{ width: '100%', textAlign: 'center',fontWeight:'700', color:'#40007B'  }}>Advanced Settings</Typography>
+            </StyledDiv>
             <StyledDiv style={{ display: 'flex' }}>
                 <Typography>Number of Results Queried</Typography>
                 <Tooltip title={limitTooltipText}>
@@ -145,6 +183,7 @@ export const Sidebar = ({
                 marks
                 valueLabelDisplay="auto"
                 onChange={(event, newValue) => setLimit(newValue)}
+                className={classes.root}
             />
 
             <StyledDiv>
@@ -177,11 +216,8 @@ export const Sidebar = ({
                 ]}
                 valueLabelDisplay="auto"
                 onChange={(event, newValue) => setTemperature(newValue)}
+                className={classes.root}
             />
-
-            <Button variant="contained" onClick={() => setOpen(true)}>
-                Add a New Knowledge Repository
-            </Button>
         </StyledSidebar>
     );
 };
