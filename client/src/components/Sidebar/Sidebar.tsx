@@ -178,7 +178,7 @@ export const Sidebar = ({
             <Slider
                 value={limit}
                 step={1}
-                min={1}
+                min={3}
                 max={10}
                 marks
                 valueLabelDisplay="auto"
@@ -198,11 +198,22 @@ export const Sidebar = ({
 
             <Slider
                 value={temperature}
-                step={0.1}
-                min={0}
+                step={null}
+                min={0.0001}
                 max={1}
-                marks
-                color='secondary'
+                marks = {[
+                    { value: 0.0001 },
+                    { value: 0.1 },
+                    { value: 0.2 },
+                    { value: 0.3 },
+                    { value: 0.4 },
+                    { value: 0.5 },
+                    { value: 0.6 },
+                    { value: 0.7 },
+                    { value: 0.8 },
+                    { value: 0.9 },
+                    { value: 1 }
+                ]}
                 valueLabelDisplay="auto"
                 onChange={(event, newValue) => setTemperature(newValue)}
                 className={classes.root}

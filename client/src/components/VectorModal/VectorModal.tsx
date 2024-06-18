@@ -152,7 +152,14 @@ export const VectorModal = ({
         let engine;
         if (newVector) {
             try {
-                const pixel = `CreateVectorDatabaseEngine ( database = [ "${newVector}" ] , conDetails = [ { "CONNECTION_URL":"@BaseFolder@/vector/@ENGINE@/", "VECTOR_TYPE" : "FAISS" , "NAME" : "${newVector}" , "EMBEDDER_ENGINE_ID":"e4449559-bcff-4941-ae72-0e3f18e06660","CONTENT_LENGTH":"512","CONTENT_OVERLAP":"0","DISTANCE_METHOD":"Squared Euclidean (L2) distance" } ] ) ;`;
+                let embedder = ''
+                if (process.env.ENVIRONMENTFLAG === "Deloitte"){
+                    embedder = "e4449559-bcff-4941-ae72-0e3f18e06660"
+                }
+                else if (process.env.ENVIRONMENTFLAG === "NIH"){
+                    embedder = "6ce2e1ac-224c-47a3-a0f9-8ba147599b68"
+                }
+                const pixel = `CreateVectorDatabaseEngine ( database = [ "${newVector}" ] , conDetails = [ { "CONNECTION_URL" : "@BaseFolder@/vector/@ENGINE@/", "VECTOR_TYPE" : "FAISS" , "NAME" : "${newVector}" , "EMBEDDER_ENGINE_ID":"` + embedder + `","CONTENT_LENGTH":"512","CONTENT_OVERLAP":"0","DISTANCE_METHOD":"Squared Euclidean (L2) distance" } ] ) ;`;
                 const response = await actions.run(pixel);
                 const { output, operationType } = response.pixelReturn[0];
                 engine = output;

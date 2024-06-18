@@ -85,6 +85,7 @@ export const PolicyPage = () => {
     const [answer, setAnswer] = useState({
         question: '',
         conclusion: '',
+        partial_docs_note: ''
     });
     // Model Catalog and first model in dropdown
     const [modelOptions, setModelOptions] = useState([]);
@@ -106,8 +107,8 @@ export const PolicyPage = () => {
         },
     });
 
-    const [limit, setLimit] = useState<number>(3);
-    const [temperature, setTemperature] = useState<number>(0);
+    const [limit, setLimit] = useState<number>(5);
+    const [temperature, setTemperature] = useState<number>(0.3);
     /**
      * Allow the user to ask a question
      */
@@ -122,8 +123,16 @@ export const PolicyPage = () => {
                 throw new Error('Question is required');
             }
             let pixel = `
-            VectorDatabaseQuery(engine="${selectedVectorDB.database_id}" , command="${data.QUESTION}", limit=${limit})
+            VectorDatabaseQuery(engine="${selectedVectorDB.database_id}" , command="<encode>${data.QUESTION}</encode>", limit=${limit})
             `;
+
+            let model = ''
+            if (process.env.ENVIRONMENTFLAG === "Deloitte"){
+                model = "4801422a-5c62-421e-a00c-05c6a9e15de8"
+            }
+            else if (process.env.ENVIRONMENTFLAG === "NIH"){
+                model = "f89f9eec-ba78-4059-9f01-28e52d819171"
+            }
 
             const response = await actions.run<Record<string, any>[]>(pixel);
 
@@ -135,12 +144,23 @@ export const PolicyPage = () => {
             let context_docs = ``;
             const temp_urls = [];
 
-            //Add three most similar policy docs to context to support policy bot.
+            let docs_used = 0
             for (let i = 0; i <= output.length - 1; i++) {
-                const content = output[i].content || output[i].Content;
-                context_docs += `{'role': 'system', 'content': '${content}'},`;
-                temp_urls.push(output[i].url);
+                if (output[i].score || output[i].Score < 0.8) {
+                    docs_used += 1
+                    const content = output[i].content || output[i].Content;
+                    const source = output[i].source || output[i].Source + ", Page(s): " + output[i].Divider;
+                    context_docs += `{'role': 'system', 'content': '<encode>${content}</encode>'},`;
+                    temp_urls.push(source);
+                } 
             }
+
+            let partial_docs_note = ''
+            if (docs_used == 1 && docs_used < output.length) {
+                partial_docs_note = `Note: Only ${docs_used} source was used to answer this question.`
+            } else if (docs_used > 1 && docs_used < output.length) {
+                partial_docs_note = `Note: Only ${docs_used} sources were used to answer this question.`
+            };
 
             if (context_docs.length > 0)
                 context_docs = context_docs.substring(
@@ -156,32 +176,38 @@ export const PolicyPage = () => {
             );
 
             pixel =
-                `
-            LLM(engine="${selectedModel.database_id}" , command=["${data.QUESTION}"], paramValues=[{"full_prompt":[{'role':'system', 'content':"You are an intelligent AI designed to answer queries based on provided policy documents. If an answer cannot be determined based on the provided policy documents, inform the user. Answer as truthfully as possible at all times and tell the user if you do not know the answer. Please be concise and get to the point. ${data.QUESTION}"},` +
+            `
+            LLM(engine="` + model + `", command=["<encode>${data.QUESTION}</encode>"], paramValues=[{"full_prompt":[{'role':'system', 'content':"<encode>You are an advanced AI designed to provide detailed and accurate analyses of various documents. Your goal is to answer questions based on the information contained within these documents, ensuring thoroughness, clarity, and relevance. If the answer cannot be found in the documents, inform the user explicitly. If the information is not present in the provided documents do not answer the question.\n\nGuidelines:\n1. Analyze Thoroughly: Carefully read and analyze the content of the documents provided.\n2. Provide Relevant Information: Ensure all answers are based solely on the information within the documents.\n3. Be Clear and Concise: Offer clear and concise responses, avoiding ambiguity and unnecessary details.\n4. Acknowledge Limitations: If the answer is not present in the documents, state that the information is not available.\n5. Maintain Integrity: Always provide truthful and accurate information.\n6. Answer Structure: Answers should be presented in a logical and organized manner, ensuring readability.\n\nQuestion:\n${data.QUESTION}</encode>"},` +
                 context_docs +
                 `]}, temperature=${temperature}])
             `;
 
-            const LLMresponse = await actions.run<[{ response: string }]>(
-                pixel,
-            );
+            // only need to call LLM if documents that meet the threshold were found
+            let conclusion = ''
+            if (docs_used > 0) {
+                const LLMresponse = await actions.run<[{ response: string }]>(
+                    pixel,
+                );
 
-            const { output: LLMOutput, operationType: LLMOperationType } =
-                LLMresponse.pixelReturn[0];
+                const { output: LLMOutput, operationType: LLMOperationType } =
+                    LLMresponse.pixelReturn[0];
 
-            if (LLMOperationType.indexOf('ERROR') > -1) {
-                throw new Error(LLMOutput.response);
-            }
-
-            let conclusion = '';
-            if (LLMOutput.response) {
-                conclusion = LLMOutput.response;
+                if (LLMOperationType.indexOf('ERROR') > -1) {
+                    throw new Error(LLMOutput.response);
+                }
+                        
+                if (LLMOutput.response) {
+                    conclusion = LLMOutput.response
+                }
+            } else {
+                conclusion = 'The required information is not available in the provided documents. Please attempt a different question or upload other documents.'
             }
 
             // set answer based on data
             setAnswer({
                 question: data.QUESTION,
                 conclusion: conclusion,
+                partial_docs_note: partial_docs_note
             });
 
             setIsAnswered(true);
@@ -355,7 +381,7 @@ export const PolicyPage = () => {
                                             </Stack>
                                             {showContext &&
                                                 urls.map((url) => (
-                                                    <div key={url.ID}>
+                                                    <div key={url.Page}>
                                                         Source:{' '}
                                                         <a href={url.link}>
                                                             {url.link}
