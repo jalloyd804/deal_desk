@@ -435,7 +435,7 @@ export const PolicyPage = () => {
                                             {showContext &&
                                                 urls.map((url) => (
                                                     <SourceBox key={url.Page}>
-                                                        <Typography color='#40007B'>Source:</Typography>{' '}
+                                                        <Typography color='#40007B' display={'inline'}>Source:</Typography>{' '}
                                                         <a href={url.link}>
                                                             {url.link}
                                                         </a>
