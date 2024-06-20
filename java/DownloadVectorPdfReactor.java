@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.zip.ZipOutputStream;
@@ -11,6 +12,7 @@ import java.util.zip.ZipOutputStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.*;
 
 import prerna.engine.api.IEngine;
 import prerna.engine.api.IVectorDatabaseEngine;
@@ -33,6 +35,7 @@ public class DownloadVectorPdfReactor extends AbstractReactor {
 	
 	public DownloadVectorPdfReactor() {
 		this.keysToGet = new String[] { ReactorKeysEnum.FILE_PATH.getKey(), ReactorKeysEnum.ENGINE.getKey()};
+		this.keyRequired = new int[] { 1, 1 };
 	}
 
 	@Override
@@ -40,42 +43,46 @@ public class DownloadVectorPdfReactor extends AbstractReactor {
 		organizeKeys();
 		// get base asset folder
 		String filePath = this.keyValue.get(this.keysToGet[0]);
+		String engineId = this.keyValue.get(this.keysToGet[1]);
+		
 		if(filePath != null && filePath.startsWith("/")) {
 			filePath = filePath.substring(1);
 		}
-
-	
-		String engineId = this.keyValue.get(this.keysToGet[1]);
-
+		
 		IVectorDatabaseEngine engine = Utility.getVectorDatabase(engineId);
-		// EngineUtility.getSpecificEngineBaseFolder(engine.getCatalogType(), engine.getEngineId());
-
-		String path = EngineUtility.getSpecificEngineBaseFolder(engine.getCatalogType(), engine.getEngineId(), engine.getEngineName());
 		
-		
-		// System.out.println(engine.listDocuments(null));
-
 		if (engine == null) {
 			throw new SemossPixelException("Unable to find engine");
 		}
 		
-		// FixMe plz
+		Map<String, Object> params = new HashMap<String, Object>();
+		
+		List<Map<String, Object>> listOfFiles = engine.listDocuments(params);
+		String finalFilePath = filePath;
+		
+		if (listOfFiles != null) {
+			for (int i = 0; i < listOfFiles.size(); i++) {
+				Map<String, Object> currentFile = listOfFiles.get(i);
+				String fileName = (String) currentFile.getOrDefault("fileName", "");
+				if (fileName != null) {
+					String cleanedFileName = fileName.replaceAll("_", "").replaceAll(" ", "");
+					String cleanedFilePath = filePath.replaceAll("_", "").replaceAll(" ", "");
+					if (cleanedFileName.equals(cleanedFilePath)) {
+						finalFilePath = fileName;
+						break;
+					}
+				}
+			}
+		}
+
+		String path = EngineUtility.getSpecificEngineBaseFolder(engine.getCatalogType(), engine.getEngineId(), engine.getEngineName());
+
 		String relativePath = path + "/schema/default/documents";
 
-		File downloadF =  new File(relativePath + "/" + filePath);
-
-		// String fileContents = "";
-		
-		// try{
-		// 	fileContents = FileUtils.readFileToString(downloadF, Charset.forName("UTF-8"));
-		// } catch (IOException e) {
-		// 	throw new IllegalArgumentException("Unable to read file :" + downloadF);
-		// }
-
-	
+		File downloadF =  new File(relativePath + "/" + finalFilePath);
 		
 		if(!downloadF.exists()) {
-			throw new IllegalArgumentException("Could not find file or directory with name " + downloadF);
+			throw new IllegalArgumentException("Could not find file or directory with name " + filePath);
 		}
 
 		String downloadFileLocation = downloadF.getAbsolutePath();

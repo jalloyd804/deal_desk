@@ -146,26 +146,29 @@ export const PolicyPage = () => {
             let documents = [];
             // Storing the insight cache ID
             let insightID = "";
-
             let docs_used = 0
             for (let i = 0; i <= output.length - 1; i++) {
-                if (output[i].score || output[i].Score < 0.8) {
-                    docs_used += 1
+                if (output[i].score || output[i].Score < 1000.0) {
+                    docs_used += 1;
                     const content = output[i].content || output[i].Content;
                     const document_name = output[i].source || output[i].Source;
                     const source = document_name + ", Page(s): " + output[i].Divider;
                     context_docs += `{'role': 'system', 'content': '<encode>${content}</encode>'},`;
+                    // Getting the download URL setup
                     pixel = `DownloadVectorPdf("` + document_name + `", "${selectedVectorDB.database_id}")`;
-                    const absolutePath = await actions.run<[{Download_Key : string; Insight_ID : string; File_Absolute_Path; string}]>(pixel);
+                    const absolutePathPixel = await actions.run<Record<string, any>[]>(pixel);
+                    const { output:absolutePath, operationType:absolutePathType } = absolutePathPixel.pixelReturn[0];
+                    if (absolutePathType.indexOf('ERROR') > -1)
+                        throw new Error(absolutePath.response);
                     if (insightID == ""){
-                        insightID = absolutePath.pixelReturn[0].output.Insight_ID;
+                        insightID = absolutePath.Insight_ID;
                     }
-                    let downloadKey = absolutePath.pixelReturn[0].output.Download_Key;
+                    let downloadKey = absolutePath.Download_Key;
                     documents.push({
                         downloadKey,
                         documentName : source,
                         page : output[i].Divider,
-                        file_location : absolutePath.pixelReturn[0].output.File_Absolute_Path,
+                        file_location : absolutePath.File_Absolute_Path,
                         // url : new URL(`${process.env.ENDPOINT}${process.env.MODULE}/api/engine/downloadFile`)
                         url : `${process.env.ENDPOINT}${process.env.MODULE}/api/engine/downloadFile?insightId=${insightID}&fileKey=${encodeURIComponent(downloadKey)}`,
                     });
