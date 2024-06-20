@@ -225,7 +225,6 @@ export const VectorModal = ({
                 </StyledTitle>
                 <SansTypography variant="body2">
                     Type the name of the document repository.
-                    Tip: Make sure to select “Add *database name*” before continuing.
                 </SansTypography>
                 <SansTypography>
                 <StyledTextField
@@ -253,7 +252,7 @@ export const VectorModal = ({
                     Step 2: Document(s) to embed
                 </StyledTitle>
                 <SansTypography variant="body2" >
-                    Drag and Drop .pdf, .docx, or .doc files to your document repository.
+                    Drag and Drop .pdf or .docx files to your document repository.
                 </SansTypography>
                 <Dropzone
                     accept={{ 'text/pdf': ['.pdf'], 'application/msword': ['.doc'], 'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'] }}
