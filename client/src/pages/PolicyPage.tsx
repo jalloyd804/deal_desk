@@ -448,11 +448,11 @@ export const PolicyPage = () => {
                                                 }}>Copy Results</DisplayButton>
                                             </Stack>
                                             {showContext &&
-                                                urls.map((url) => (
-                                                    <SourceBox key={url.Page}>
+                                                documents.map((document, index) => (
+                                                    <SourceBox key={index}>
                                                         <Typography color='#40007B' display={'inline'}>Source:</Typography>{' '}
-                                                        <a href={url.link}>
-                                                            {url.link}
+                                                        <a href={document.url} target="_blank"> 
+                                                            {document.documentName}
                                                         </a>
                                                     </SourceBox>
                                                 ))}
