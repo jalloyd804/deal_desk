@@ -255,7 +255,7 @@ export const VectorModal = ({
                     Drag and Drop .pdf or .docx files to your document repository.
                 </SansTypography>
                 <Dropzone
-                    accept={{ 'text/pdf': ['.pdf'], 'application/msword': ['.doc'], 'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'] }}
+                    accept={{ 'text/pdf': ['.pdf'], 'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'] }}
                     onDrop={(acceptedFiles, fileRejections) => {
                         if (fileRejections.length > 0) {
                             setFileError(fileRejections[0].errors[0].message);
@@ -287,7 +287,7 @@ export const VectorModal = ({
                                 {...getRootProps({ className: 'dropzone' })}
                             >
                                 <input
-                                    accept=".pdf, .doc, .docx"
+                                    accept=".pdf, .docx"
                                     {...(getInputProps() as GetInputPropsOptionsRef)}
                                     onClick={(e) => e.stopPropagation()}
                                 />
