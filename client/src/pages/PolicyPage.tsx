@@ -135,6 +135,16 @@ export const PolicyPage = () => {
 
     const [limit, setLimit] = useState<number>(5);
     const [temperature, setTemperature] = useState<number>(0.3);
+
+    
+    let model = ''
+    if (process.env.ENVIRONMENTFLAG === "Deloitte") {
+        model = "4801422a-5c62-421e-a00c-05c6a9e15de8"
+    }
+    else if (process.env.ENVIRONMENTFLAG === "NIH") {
+        model = "f89f9eec-ba78-4059-9f01-28e52d819171"
+    }
+
     /**
      * Allow the user to ask a question
      */
@@ -151,14 +161,6 @@ export const PolicyPage = () => {
             let pixel = `
             VectorDatabaseQuery(engine="${selectedVectorDB.database_id}" , command="<encode>${data.QUESTION}</encode>", limit=${limit})
             `;
-
-            let model = ''
-            if (process.env.ENVIRONMENTFLAG === "Deloitte") {
-                model = "4801422a-5c62-421e-a00c-05c6a9e15de8"
-            }
-            else if (process.env.ENVIRONMENTFLAG === "NIH") {
-                model = "f89f9eec-ba78-4059-9f01-28e52d819171"
-            }
 
             const response = await actions.run<Record<string, any>[]>(pixel);
 
@@ -276,10 +278,10 @@ export const PolicyPage = () => {
             }
             if (Array.isArray(output)) {
                 setModelOptions(output);
-                const model = output.find(m => m.app_id === model);
-                if (model === undefined)
+                const mdl = output.find(m => m.app_id === model);
+                if (mdl === undefined)
                     setError("You do not have access to the model");
-                setSelectedModel(model);
+                setSelectedModel(mdl);
             }
         });
         //Grabbing all the Vector Databases in CfG
