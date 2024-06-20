@@ -427,7 +427,7 @@ export const PolicyPage = () => {
                                             )}
                                         </Box>
                                         {<>
-                                            <Stack flexDirection={'row'} gap={'1rem'} marginBottom={'2rem'}>
+                                            <Stack flexDirection={'row'} gap={'1rem'}>
                                                 <DisplayButton variant="contained" onClick={() => setShowContext(!showContext)}>{showContext ? 'Hide Full Context' : 'Get Full Context'}</DisplayButton><DisplayButton variant="contained" onClick={() => {
                                                     navigator.clipboard.writeText(answer.conclusion);
                                                 }}>Copy Results</DisplayButton>
