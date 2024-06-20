@@ -11,12 +11,15 @@ import {
     Paper,
     Modal,
     IconButton,
+    CircularProgress,
+    Collapse,
 } from '@mui/material';
 import { useForm, Controller } from 'react-hook-form';
 import { useInsight } from '@semoss/sdk-react';
 import { Sidebar } from '../components/Sidebar';
 import { VectorModal } from '../components/VectorModal';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import Close from '@mui/icons-material/Close';
 import { Markdown } from '@/components/common';
 import { AIBotError } from './Error'
 
@@ -27,8 +30,23 @@ const StyledContainer = styled('div')(({ theme }) => ({
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
     padding: theme.spacing(4),
+    position: 'relative',
     width: '100%',
     borderRadius: '6px',
+    overflow: 'hidden',
+}));
+
+const LoadingOverlay = styled('div')(() => ({
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(255, 255, 255, .5)',
+    top: '0',
+    left: '0',
+    zIndex: '2',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
 }));
 
 const StyledLayout = styled(Stack)(() => ({
@@ -62,6 +80,13 @@ const PoweredBy = styled('div')(() => ({
     padding: '0  0 2rem 280px',
 }));
 
+const SourceBox = styled('div')(() => ({
+    marginTop: '1rem',
+    '& > a': {
+        color: '#4f4f4f',
+    }
+}));
+
 export interface Model {
     database_name?: string;
     database_id?: string;
@@ -81,6 +106,7 @@ export const PolicyPage = () => {
     const [error, setError] = useState('');
     const [isAnswered, setIsAnswered] = useState(false);
     const [showContext, setShowContext] = useState(false);
+    const [openBeta, setOpenBeta] = useState(true);
     //From the LLM
     const [answer, setAnswer] = useState({
         question: '',
@@ -127,10 +153,10 @@ export const PolicyPage = () => {
             `;
 
             let model = ''
-            if (process.env.ENVIRONMENTFLAG === "Deloitte"){
+            if (process.env.ENVIRONMENTFLAG === "Deloitte") {
                 model = "4801422a-5c62-421e-a00c-05c6a9e15de8"
             }
-            else if (process.env.ENVIRONMENTFLAG === "NIH"){
+            else if (process.env.ENVIRONMENTFLAG === "NIH") {
                 model = "f89f9eec-ba78-4059-9f01-28e52d819171"
             }
 
@@ -191,7 +217,7 @@ export const PolicyPage = () => {
             setDocuments(documents);
 
             pixel =
-            `
+                `
             LLM(engine="` + model + `", command=["<encode>${data.QUESTION}</encode>"], paramValues=[{"full_prompt":[{'role':'system', 'content':"<encode>You are an advanced AI designed to provide detailed and accurate analyses of various documents. Your goal is to answer questions based on the information contained within these documents, ensuring thoroughness, clarity, and relevance. If the answer cannot be found in the documents, inform the user explicitly. If the information is not present in the provided documents do not answer the question.\n\nGuidelines:\n1. Analyze Thoroughly: Carefully read and analyze the content of the documents provided.\n2. Provide Relevant Information: Ensure all answers are based solely on the information within the documents.\n3. Be Clear and Concise: Offer clear and concise responses, avoiding ambiguity and unnecessary details.\n4. Acknowledge Limitations: If the answer is not present in the documents, state that the information is not available.\n5. Maintain Integrity: Always provide truthful and accurate information.\n6. Answer Structure: Answers should be presented in a logical and organized manner, ensuring readability.\n\nQuestion:\n${data.QUESTION}</encode>"},` +
                 context_docs +
                 `]}, temperature=${temperature}])
@@ -210,7 +236,7 @@ export const PolicyPage = () => {
                 if (LLMOperationType.indexOf('ERROR') > -1) {
                     throw new Error(LLMOutput.response);
                 }
-                        
+
                 if (LLMOutput.response) {
                     conclusion = LLMOutput.response
                 }
@@ -250,8 +276,8 @@ export const PolicyPage = () => {
             }
             if (Array.isArray(output)) {
                 setModelOptions(output);
-                const model = output.find(m=>m.app_id === model);
-                if(model === undefined) 
+                const model = output.find(m => m.app_id === model);
+                if (model === undefined)
                     setError("You do not have access to the model");
                 setSelectedModel(model);
             }
@@ -290,10 +316,16 @@ export const PolicyPage = () => {
         });
     }, [refresh]);
 
+    function genAnswerDisabled() {
+        if (isLoading) return true;
+        if (selectedVectorDB === null) return true;
+        if (Object.keys(selectedVectorDB).length === 0) return true;
+    }
+
     return (
         <StyledLayout justifyContent={'center'}>
-            { error == 'You do not have access to the model' ? <AIBotError/> : 
-            <><Stack>
+            {error == 'You do not have access to the model' ? <AIBotError /> :
+                <><Stack>
                     {sideOpen ? (
                         <Sidebar
                             modelOptions={modelOptions}
@@ -315,12 +347,37 @@ export const PolicyPage = () => {
                     )}
                     <StyledContainer>
                         <StyledPaper variant={'elevation'} elevation={2} square>
+                            {isLoading && <LoadingOverlay><CircularProgress /></LoadingOverlay>}
                             <Stack spacing={2} color='#4F4F4F'>
                                 <Typography variant="h5" color='#40007B'><strong>Hello!</strong> Welcome to NIAID’s AI Document Bot</Typography>
                                 <Typography variant="body1">
                                     The AI Document Bot is a chat interface between users and uploaded documents. Upload policies, proposals, meeting minutes, operational procedures, policy manuals as PDF’s or Word documents and ask questions. To begin, select a document repository on the right or create a new one.
                                 </Typography>
                                 {error && <Alert color="error">{error.toString()}</Alert>}
+                                <Collapse in={openBeta}>
+                                    <Alert severity={'info'}
+                                        action={
+                                            <IconButton
+                                                aria-label="close"
+                                                color="inherit"
+                                                size="small"
+                                                onClick={() => {
+                                                    setOpenBeta(false);
+                                                }}
+                                            >
+                                                <Close fontSize="inherit" />
+                                            </IconButton>
+                                        }
+                                        sx={{ mb: 2 }}
+                                    >
+                                        <Typography
+                                            variant={'caption'}
+                                        >
+                                            You are ultimately responsible for ensuring the accuracy, completeness, and relevance of any output generated by this tool and how the generated output is used. Please note, that responses from this tool may be inaccurate (hallucinations), outdated, incomplete, or not aligned to your specific needs. You should always independently understand and verify that the content generated is accurate in your specific context and suitable for your use. Where possible review other sources of information to verify accuracy of the generated content. Please make any necessary edits before sharing the output from this tool.
+                                        </Typography>
+
+                                    </Alert>
+                                </Collapse>
                                 <Controller
                                     name={'QUESTION'}
                                     control={control}
@@ -338,7 +395,7 @@ export const PolicyPage = () => {
                                                 multiline
                                                 rows={4} />
                                         );
-                                    } } />
+                                    }} />
                                 <Stack
                                     flexDirection={'row'}
                                     alignItems={'center'}
@@ -347,7 +404,7 @@ export const PolicyPage = () => {
                                 >
                                     <DisplayButton
                                         variant="contained"
-                                        disabled={isLoading || (Object.keys(selectedVectorDB).length === 0)}
+                                        disabled={genAnswerDisabled()}
                                         onClick={ask}
                                         sx={{ flex: 1, width: '85%' }}
                                     >
@@ -357,7 +414,7 @@ export const PolicyPage = () => {
                                 {isAnswered && (
                                     <Stack>
                                         <Typography
-                                            variant={'subtitle2'}
+                                            variant={'subtitle1'}
                                             sx={{ fontWeight: '600' }}
                                             color='#40007B'
                                         >
@@ -376,37 +433,28 @@ export const PolicyPage = () => {
                                         >
                                             Document Bot Response:
                                         </Typography>
-                                        <Typography
-                                            variant={'subtitle2'}
-                                            color='#40007B'
-                                            sx={{
-                                                fontWeight: '600',
-                                            }}
-                                        >
-                                            Conclusion:
-                                        </Typography>
                                         <Box sx={{ mb: 2, overflow: 'auto' }}>
                                             <Markdown>{answer.conclusion}</Markdown>
                                             {answer.partial_docs_note && (
-                                            <Typography component="p" style={{ fontStyle: 'italic', marginTop: '16px'}}>
-                                                {answer.partial_docs_note}
-                                            </Typography>
-                                        )}
+                                                <Typography component="p" style={{ fontStyle: 'italic', marginTop: '16px' }}>
+                                                    {answer.partial_docs_note}
+                                                </Typography>
+                                            )}
                                         </Box>
                                         {<>
                                             <Stack flexDirection={'row'} gap={'1rem'}>
                                                 <DisplayButton variant="contained" onClick={() => setShowContext(!showContext)}>{showContext ? 'Hide Full Context' : 'Get Full Context'}</DisplayButton><DisplayButton variant="contained" onClick={() => {
                                                     navigator.clipboard.writeText(answer.conclusion);
-                                                } }>Copy Results</DisplayButton>
+                                                }}>Copy Results</DisplayButton>
                                             </Stack>
                                             {showContext &&
-                                                documents.map((document, index) => (
-                                                    <div key={index}>
-                                                        Source:{' '}
-                                                        <a href={document.url} target="_blank"> 
-                                                            {document.documentName}
+                                                urls.map((url) => (
+                                                    <SourceBox key={url.Page}>
+                                                        <Typography color='#40007B' display={'inline'}>Source:</Typography>{' '}
+                                                        <a href={url.link}>
+                                                            {url.link}
                                                         </a>
-                                                    </div>
+                                                    </SourceBox>
                                                 ))}
                                         </>}
                                     </Stack>
@@ -424,8 +472,8 @@ export const PolicyPage = () => {
                             setSelectedVectorDB={setSelectedVectorDB}
                             selectedVectorDB={selectedVectorDB}
                             setError={setError} />
-                    </Modal><PoweredBy>Responses Generated by OpenAI’s GPT-4 Turbo</PoweredBy></>
-                        }
+                    </Modal><PoweredBy>Responses Generated by OpenAI’s GPT-4o</PoweredBy></>
+            }
         </StyledLayout>
     );
 };
