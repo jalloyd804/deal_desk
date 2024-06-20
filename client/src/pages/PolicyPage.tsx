@@ -80,6 +80,13 @@ const PoweredBy = styled('div')(() => ({
     padding: '0  0 2rem 280px',
 }));
 
+const SourceBox = styled('div')(() => ({
+    marginTop: '1rem',
+    '& > a': {
+        color: '#4f4f4f',
+    }
+}));
+
 export interface Model {
     database_name?: string;
     database_id?: string;
@@ -420,19 +427,19 @@ export const PolicyPage = () => {
                                             )}
                                         </Box>
                                         {<>
-                                            <Stack flexDirection={'row'} gap={'1rem'}>
+                                            <Stack flexDirection={'row'} gap={'1rem'} marginBottom={'2rem'}>
                                                 <DisplayButton variant="contained" onClick={() => setShowContext(!showContext)}>{showContext ? 'Hide Full Context' : 'Get Full Context'}</DisplayButton><DisplayButton variant="contained" onClick={() => {
                                                     navigator.clipboard.writeText(answer.conclusion);
                                                 }}>Copy Results</DisplayButton>
                                             </Stack>
                                             {showContext &&
                                                 urls.map((url) => (
-                                                    <div key={url.Page}>
-                                                        Source:{' '}
+                                                    <SourceBox key={url.Page}>
+                                                        <Typography color='#40007B'>Source:</Typography>{' '}
                                                         <a href={url.link}>
                                                             {url.link}
                                                         </a>
-                                                    </div>
+                                                    </SourceBox>
                                                 ))}
                                         </>}
                                     </Stack>
