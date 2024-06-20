@@ -21,7 +21,7 @@ export const AIBotError = () => {
     return (
         <>
            <StyledError>
-            <span>You do not have access to the NIAID GenAI Tools. Please reach out to <a href="mailto:genai-support@nih.gov">genai-support@nih.gov</a> to requestion access. ​
+            <span>You do not have access to the NIAID GenAI Tools. Please reach out to <a href="mailto:genai-support@mail.nih.gov">genai-support@mail.nih.gov</a> to requestion access. ​
             When requesting access please provide:​</span>
                 <StyledUL>
                     <li>Who at NIAID you support or work with​ </li>
