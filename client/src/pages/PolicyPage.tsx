@@ -427,7 +427,7 @@ export const PolicyPage = () => {
                                             )}
                                         </Box>
                                         {<>
-                                            <Stack flexDirection={'row'} gap={'1rem'} marginBottom={'2rem'}>
+                                            <Stack flexDirection={'row'} gap={'1rem'}>
                                                 <DisplayButton variant="contained" onClick={() => setShowContext(!showContext)}>{showContext ? 'Hide Full Context' : 'Get Full Context'}</DisplayButton><DisplayButton variant="contained" onClick={() => {
                                                     navigator.clipboard.writeText(answer.conclusion);
                                                 }}>Copy Results</DisplayButton>
@@ -435,7 +435,7 @@ export const PolicyPage = () => {
                                             {showContext &&
                                                 urls.map((url) => (
                                                     <SourceBox key={url.Page}>
-                                                        <Typography color='#40007B'>Source:</Typography>{' '}
+                                                        <Typography color='#40007B' display={'inline'}>Source:</Typography>{' '}
                                                         <a href={url.link}>
                                                             {url.link}
                                                         </a>
