@@ -87,6 +87,10 @@ const SourceBox = styled('div')(() => ({
     }
 }));
 
+interface Dictionary{
+    [key:string]:any;
+}
+
 export interface Model {
     database_name?: string;
     database_id?: string;
@@ -171,35 +175,56 @@ export const PolicyPage = () => {
 
             let context_docs = ``;
             // Stores the Document Name as the key, and the download key as the value
+            let documentTracker:Dictionary = {};
             let documents = [];
             // Storing the insight cache ID
+            let storedPath;
             let insightID = "";
             let docs_used = 0
             for (let i = 0; i <= output.length - 1; i++) {
                 if (output[i].score || output[i].Score < 1000.0) {
-                    docs_used += 1;
-                    const content = output[i].content || output[i].Content;
+                    const content = output[i].content || output[i].Content;         
                     const document_name = output[i].source || output[i].Source;
                     const source = document_name + ", Page(s): " + output[i].Divider;
                     context_docs += `{'role': 'system', 'content': '<encode>${content}</encode>'},`;
-                    // Getting the download URL setup
-                    pixel = `DownloadVectorPdf("` + document_name + `", "${selectedVectorDB.database_id}")`;
-                    const absolutePathPixel = await actions.run<Record<string, any>[]>(pixel);
-                    const { output:absolutePath, operationType:absolutePathType } = absolutePathPixel.pixelReturn[0];
-                    if (absolutePathType.indexOf('ERROR') > -1)
-                        throw new Error(absolutePath.response);
-                    if (insightID == ""){
-                        insightID = absolutePath.Insight_ID;
+                    if (!(document_name in documentTracker)){
+                        docs_used += 1;
+                        // Getting the download URL setup
+                        pixel = `DownloadVectorPdf("` + document_name + `", "${selectedVectorDB.database_id}")`;
+                        const absolutePathPixel = await actions.run<Record<string, any>[]>(pixel);
+                        const { output:absolutePath, operationType:absolutePathType } = absolutePathPixel.pixelReturn[0];
+                        if (absolutePathType.indexOf('ERROR') > -1)
+                            throw new Error(absolutePath.response);
+                        if (insightID == ""){
+                            insightID = absolutePath.Insight_ID;
+                        }
+                        storedPath = absolutePath;
+                        // Pushing a new document, with a new download key into documents list
+                        let currDoc = {
+                            downloadKey : storedPath.Download_Key,
+                            documentName : source,
+                            page : output[i].Divider,
+                            fileLocation : storedPath.File_Absolute_Path,
+                            // url : new URL(`${process.env.ENDPOINT}${process.env.MODULE}/api/engine/downloadFile`)
+                            url : `${process.env.ENDPOINT}${process.env.MODULE}/api/engine/downloadFile?insightId=${insightID}&fileKey=${encodeURIComponent(storedPath.Download_Key)}`,
+                        };
+                        documents.push(currDoc);
+
+                        documentTracker[document_name] = currDoc;
                     }
-                    let downloadKey = absolutePath.Download_Key;
-                    documents.push({
-                        downloadKey,
-                        documentName : source,
-                        page : output[i].Divider,
-                        file_location : absolutePath.File_Absolute_Path,
-                        // url : new URL(`${process.env.ENDPOINT}${process.env.MODULE}/api/engine/downloadFile`)
-                        url : `${process.env.ENDPOINT}${process.env.MODULE}/api/engine/downloadFile?insightId=${insightID}&fileKey=${encodeURIComponent(downloadKey)}`,
-                    });
+                    // If the document is already within the list, we want to use the same download key that we already have stored
+                    else{
+                        let matchedDoc =  documentTracker[document_name];
+                        let currDoc = {
+                            downloadKey : matchedDoc.downloadKey,
+                            documentName : source,
+                            page : output[i].Divider,
+                            fileLocation : matchedDoc.fileLocation,
+                            // url : new URL(`${process.env.ENDPOINT}${process.env.MODULE}/api/engine/downloadFile`)
+                            url : `${process.env.ENDPOINT}${process.env.MODULE}/api/engine/downloadFile?insightId=${insightID}&fileKey=${encodeURIComponent(matchedDoc.downloadKey)}`,
+                        }
+                        documents.push(currDoc);
+                    }
                 } 
             }
 
