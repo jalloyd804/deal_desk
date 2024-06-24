@@ -1,15 +1,49 @@
-import { Outlet, Navigate, useLocation } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 
 import { useInsight } from '@semoss/sdk-react';
+import { useLayoutEffect, useState } from 'react';
+import { createHashHistory } from 'history';
+import { styled, CircularProgress } from '@mui/material';
 
 /**
  * Wrap the database routes and add additional funcitonality
  */
-export const AuthenticatedLayout = () => {
-    const { isAuthorized } = useInsight();
+export const history = createHashHistory();
+const StyledContainer = styled('div')(() => ({
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'absolute',
+    inset: '0',
+    height: '100%',
+    width: '100%',
+}));
 
+export const AuthenticatedLayout = () => {
+
+    const { isInitialized, isAuthorized, error } = useInsight();
     // track the location
     const location = useLocation();
+
+    const [state, setState] = useState({
+        action: history.action,
+        location: history.location,
+    });
+
+    useLayoutEffect(() => history.listen(setState), [history]);
+
+    // don't load anything if it is pending
+    if (!isInitialized) {
+        return (
+            <StyledContainer>
+                <CircularProgress />
+            </StyledContainer>
+        );
+    }
+
+    if (error) {
+        return <>Error</>;
+    }
 
     // disabling the login screen
     // if (!isAuthorized) {

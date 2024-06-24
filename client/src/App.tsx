@@ -1,8 +1,9 @@
 import { Env } from '@semoss/sdk';
 import { InsightProvider } from '@semoss/sdk-react';
 
-import { Router } from '@/pages';
+import { router } from '@/pages/Router';
 import { Theme } from '@/components/common';
+import { RouterProvider } from 'react-router-dom';
 
 if (process.env.NODE_ENV !== 'production') {
     Env.update({
@@ -17,7 +18,7 @@ export const App = () => {
     return (
         <InsightProvider>
             <Theme>
-                <Router />
+                <RouterProvider router={router} />
             </Theme>
         </InsightProvider>
     );
