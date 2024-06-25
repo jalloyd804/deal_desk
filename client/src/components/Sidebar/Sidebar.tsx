@@ -8,6 +8,7 @@ import {
     Slider,
     Typography,
     Tooltip,
+    Link,
 } from '@mui/material';
 import { makeStyles } from "@material-ui/core/styles";
 import CloseIcon from '@mui/icons-material/Close';
@@ -92,7 +93,7 @@ export const Sidebar = ({
             <StyledButton onClick={() => setSideOpen(false)}>
                 <CloseIcon />
             </StyledButton>
-            {/* <MainViewSide 
+            <MainViewSide 
                 vectorOptions={vectorOptions} 
                 selectedVectorDB={selectedVectorDB}
                 setSelectedVectorDB = {setSelectedVectorDB}
@@ -101,8 +102,8 @@ export const Sidebar = ({
                 setTemperature = {setTemperature}
                 setLimit = {setLimit}
                 setOpen = {setOpen}
-            /> */}
-            <DocViewSide vectorOptions={vectorOptions} />
+            />
+            {/* <DocViewSide vectorOptions={vectorOptions} /> */}
             
         </StyledSidebar>
     );
