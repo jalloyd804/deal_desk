@@ -22,7 +22,7 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import Close from '@mui/icons-material/Close';
 import { Markdown } from '@/components/common';
 import { AIBotError } from './Error'
-
+import { Model } from '../interfaces/Model'
 const StyledContainer = styled('div')(({ theme }) => ({
     padding: `2rem 10rem 2rem calc(10rem + 280px)`,
     display: 'flex',
@@ -87,10 +87,7 @@ const SourceBox = styled('div')(() => ({
     }
 }));
 
-export interface Model {
-    database_name?: string;
-    database_id?: string;
-}
+
 
 export interface VectorContext {
     score: string;
