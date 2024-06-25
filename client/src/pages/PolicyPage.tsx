@@ -22,6 +22,7 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import Close from '@mui/icons-material/Close';
 import { Markdown } from '@/components/common';
 import { AIBotError } from './Error'
+import { Height } from '@mui/icons-material';
 
 const StyledContainer = styled('div')(({ theme }) => ({
     padding: `2rem 10rem 2rem calc(10rem + 280px)`,
@@ -49,8 +50,9 @@ const LoadingOverlay = styled('div')(() => ({
     alignItems: 'center',
 }));
 
-const StyledLayout = styled(Stack)(() => ({
+const StyledLayout = styled('div')(() => ({
     display: 'flex',
+    flexDirection:'column'
 }));
 
 const StyledButton = styled(IconButton)(() => ({
@@ -325,9 +327,9 @@ export const PolicyPage = () => {
     }
 
     return (
-        <StyledLayout justifyContent={'center'}>
+        <StyledLayout id='styledlayout'>
             {error == 'You do not have access to the model' ? <AIBotError /> :
-                <><Stack>
+                <>
                     {sideOpen ? (
                         <Sidebar
                             modelOptions={modelOptions}
@@ -341,13 +343,13 @@ export const PolicyPage = () => {
                             limit={limit}
                             setLimit={setLimit}
                             temperature={temperature}
-                            setTemperature={setTemperature} />
+                            setTemperature={setTemperature}/>
                     ) : (
                         <StyledButton onClick={() => setSideOpen(!sideOpen)}>
                             <ArrowForwardIosIcon />
                         </StyledButton>
                     )}
-                    <StyledContainer>
+                    <StyledContainer id='styledcontainer'>
                         <StyledPaper variant={'elevation'} elevation={2} square>
                             {isLoading && <LoadingOverlay><CircularProgress /></LoadingOverlay>}
                             <Stack spacing={2} color='#4F4F4F'>
@@ -465,7 +467,7 @@ export const PolicyPage = () => {
                         </StyledPaper>
                         {isLoading && <LinearProgress />}
                     </StyledContainer>
-                </Stack><Modal open={open} onClose={() => setOpen(false)}>
+                <Modal open={open} onClose={() => setOpen(false)}>
                         <VectorModal
                             setOpen={setOpen}
                             open={open}

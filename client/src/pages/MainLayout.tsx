@@ -2,9 +2,9 @@ import { Outlet } from 'react-router-dom';
 import { styled } from '@mui/material';
 import NIHLogo from '../assets/img/nihwhitelogo.svg';
 
-const FOOTERLINKS = [ 
+const FOOTERLINKS = [
     {
-        href: 'https://www.niaid.nih.gov/', 
+        href: 'https://www.niaid.nih.gov/',
         label: 'NIAID Public Website'
     },
     {
@@ -62,6 +62,7 @@ const StyledContent = styled('div')(({ theme }) => ({
 const StyledFooter = styled('footer')(({ theme }) => ({
     position: 'relative',
     zIndex: '4',
+    width: '100%',
     color: '#4f4f4f',
     backgroundColor: '#FBFBFB',
     padding: '.5rem 2rem',
@@ -86,14 +87,20 @@ const StyledFooterRight = styled('div')(() => ({
  */
 export const MainLayout = () => {
     return (
-        <StyledWrapper>
-            <StyledHeader><img src={NIHLogo} /><StyledH1>NIAID | GenAI</StyledH1></StyledHeader>
-            <StyledMain id="main">
-                <StyledContent>
-                    <Outlet />
-                </StyledContent>
-            </StyledMain>
-            <StyledFooter><StyledFooterLeft><a href="mailto:NIAIDHelpdeskTeam@mail.nih.gov">Contact Us</a></StyledFooterLeft><StyledFooterRight>{FOOTERLINKS.map((link, index) => <a key={index} href={link.href}>{link.label}</a>)}</StyledFooterRight></StyledFooter>
-        </StyledWrapper>
+        <>
+            <div id='outer' style={{ display: 'flex', flexDirection: 'column', height: '95vh' }}>
+                {/* <StyledWrapper id='wrapper'> */}
+                <StyledHeader><img src={NIHLogo} /><StyledH1>NIAID | GenAI</StyledH1></StyledHeader>
+                <StyledMain id="main">
+                    <StyledContent>
+                        <Outlet />
+                    </StyledContent>
+                </StyledMain>
+                {/* </StyledWrapper> */}
+            </div>
+            <div style={{display:'flex',lineHeight:'100%', width:'100%', position:'absolute', bottom:'0'}}>
+                <StyledFooter><StyledFooterLeft><a href="mailto:NIAIDHelpdeskTeam@mail.nih.gov">Contact Us</a></StyledFooterLeft><StyledFooterRight>{FOOTERLINKS.map((link, index) => <a key={index} href={link.href}>{link.label}</a>)}</StyledFooterRight></StyledFooter>
+            </div>
+        </>
     );
 };
