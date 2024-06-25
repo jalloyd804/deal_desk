@@ -86,16 +86,10 @@ const StyledTitle = styled(Typography)(({ theme }) => ({
 
 const StyledButtonOpen = styled(Button)(({ theme }) => ({
     marginRight: theme.spacing(0.5),
-    backgroundImage: 'linear-gradient(to right, #20558A, #650A67)',
-    '&:hover': {
-        backgroundImage: 'linear-gradient(to right, #12005A, #12005A)',
-    }
 }));
 
 const StyledButton = styled(Button)(({ theme }) => ({
     marginRight: theme.spacing(0.5),
-    borderColor: '#12005A',
-    color: '#12005A'
 }));
 
 const StyledAutocomplete = styled(Autocomplete)(({ theme }) => ({
@@ -252,7 +246,7 @@ export const VectorModal = ({
                     Step 2: Document(s) to embed
                 </StyledTitle>
                 <SansTypography variant="body2" >
-                    Drag and Drop .pdf or .docx files to your document repository.
+                    Drag and drop .pdf or .docx files to your document repository. Please rename any files containing special characters before uploading.
                 </SansTypography>
                 <Dropzone
                     accept={{ 'text/pdf': ['.pdf'], 'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'] }}
@@ -357,19 +351,20 @@ export const VectorModal = ({
                 <StyledButtonGroup>
                     <StyledButtonOpen
                         variant="contained"
-                        color="primary"
+                        color="error"
                         onClick={() => setOpen(false)}
                     >
                         {' '}
-                        Close{' '}
+                        Cancel{' '}
                     </StyledButtonOpen>
                     <StyledButton
-                        variant="outlined"
+                        variant="contained"
+                        color="success"
                         disabled={!file.length || fileError !== null || vectorNameError !== null}
                         onClick={handleSubmit}
                     >
                         {' '}
-                        Finish{' '}
+                        Upload{' '}
                     </StyledButton>
                 </StyledButtonGroup>
             </>
