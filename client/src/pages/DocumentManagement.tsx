@@ -17,7 +17,6 @@ import {
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useForm, Controller } from 'react-hook-form';
 import { useInsight } from '@semoss/sdk-react';
-import { DocumentSidebar } from '../components/DocumentSidebar';
 import { VectorModal } from '../components/VectorModal';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import Close from '@mui/icons-material/Close';
