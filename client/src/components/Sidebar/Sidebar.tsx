@@ -8,6 +8,7 @@ import {
     Slider,
     Typography,
     Tooltip,
+    Link,
 } from '@mui/material';
 import { makeStyles } from "@material-ui/core/styles";
 import { createFilterOptions } from '@mui/material/Autocomplete';
@@ -76,6 +77,15 @@ const DisplayButton = styled(Button)(() => ({
     '&[disabled]': {
         color: 'rgba(255, 255, 255, .8)',
     },
+}));
+
+const LinkBottom = styled(Link)(() => ({
+    position: 'absolute',
+    bottom: '4rem',
+    width: 'calc(100% - 32px)',
+    textAlign: 'center',
+    left: '50%',
+    transform: 'translatex(-50%)',
 }));
 
 const filter = createFilterOptions();
@@ -160,7 +170,7 @@ export const Sidebar = ({
                 <Typography style={{ width: '100%', textAlign: 'center',fontWeight:'700', color:'#40007B' }}>Or</Typography>
             </StyledDiv>
             <DisplayButton variant="contained" onClick={() => setOpen(true)}>
-                Create Document Repository
+                Upload Document(s)
             </DisplayButton>
             <StyledDiv style={{ display: 'flex', marginTop: '10%', marginBottom: '1%' }}>
                 <Typography style={{ width: '100%', textAlign: 'center',fontWeight:'700', color:'#40007B'  }}>Advanced Settings</Typography>
@@ -218,6 +228,7 @@ export const Sidebar = ({
                 onChange={(event, newValue) => setTemperature(newValue)}
                 className={classes.root}
             />
+            <LinkBottom color="#40007B" href="/documentManagement">Manage Document Repository</LinkBottom>
         </StyledSidebar>
     );
 };
