@@ -15,6 +15,7 @@ import {
     Link,
 } from '@mui/material';
 
+import { LinkBottomBox } from '../Sidebar';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -46,15 +47,6 @@ This changes the randomness of the LLM's output.
 The higher the temperature the more creative and imaginative your
 answer will be.
 `;
-
-const LinkBottom = styled(Link)(() => ({
-    position: 'absolute',
-    bottom: '4rem',
-    width: 'calc(100% - 32px)',
-    textAlign: 'center',
-    left: '50%',
-    transform: 'translatex(-50%)',
-}));
 
 const StyledDiv = styled('div')(() => ({
     display: 'flex',
@@ -186,7 +178,7 @@ export const MainViewSide = ({ vectorOptions,
                 onChange={(event, newValue) => setTemperature(newValue)}
                 className={classes.root}
             />
-            <LinkBottom color="#40007B" href="/documentManagement">Manage Document Repository</LinkBottom>
+            <LinkBottomBox><Link color="#40007B" href="/documentManagement">Manage Document Repository</Link></LinkBottomBox>
         </>
     );
 }
