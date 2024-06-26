@@ -42,7 +42,7 @@ const StyledListText = styled(ListItemText)(() => ({
     }
 }));
 
-export const DocViewSide = ({ vectorOptions }) => {
+export const DocViewSide = ({ vectorOptions, selectedVectorDB, setSelectedVectorDB }) => {
     return (
         <>
             <StyledSectionTitle variant="h5" style={{ color: "#40007B", marginBottom: 0 }}>
@@ -61,7 +61,7 @@ export const DocViewSide = ({ vectorOptions }) => {
                                 <path d="M 295.887 172.527 C 294.787 172.527 293.897 173.427 293.897 174.527 L 293.887 190.527 C 293.887 191.627 294.777 192.527 295.877 192.527 L 307.887 192.527 C 308.987 192.527 309.887 191.627 309.887 190.527 L 309.887 178.527 L 303.887 172.527 L 295.887 172.527 Z M 302.887 179.527 L 302.887 174.027 L 308.387 179.527 L 302.887 179.527 Z" style={{ fill: '#40007B' }} transform="matrix(1, 0, 0, 1, 3.552713678800501e-15, 0)" />
                             </svg>
                         </ListItemIcon>
-                        <StyledListText
+                        <StyledListText onClick={() => setSelectedVectorDB(item)}
                             primary={item.app_name}
                         />
                     </ListItem>)}

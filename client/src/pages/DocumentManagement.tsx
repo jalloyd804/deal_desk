@@ -47,7 +47,7 @@ const StyledContainer = styled('div')(({ theme }) => ({
 const StyledPaper = styled(Paper)(({ theme }) => ({
     padding: theme.spacing(4),
     position: 'relative',
-    width: '100%',
+    width: '1300px',
     borderRadius: '6px',
     overflow: 'hidden',
 }));
