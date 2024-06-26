@@ -259,7 +259,7 @@ export const VectorModal = ({
                             setFile(acceptedFiles);
                             setFileError(null);
                         }
-                    }} multiple={true} maxFiles={0} maxSize={100000000}
+                    }} multiple={true} maxFiles={0} maxSize={10000000}
                 >
                     {({ getRootProps, getInputProps }) => (
                         <Container
@@ -333,7 +333,7 @@ export const VectorModal = ({
                                             }
                                             &nbsp;or drag and drop
                                             <Typography variant="body1">
-                                                Maximum File size 100MB.
+                                                Maximum File size 10MB.
                                             </Typography>
                                         </span>
                                     </Typography>

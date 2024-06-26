@@ -1,14 +1,7 @@
 import {
     styled,
-    Paper,
     IconButton,
-    Autocomplete,
-    TextField,
-    Button,
-    Slider,
-    Typography,
-    Tooltip,
-    Link,
+    Box
 } from '@mui/material';
 import { makeStyles } from "@material-ui/core/styles";
 import CloseIcon from '@mui/icons-material/Close';
@@ -40,23 +33,28 @@ const StyledSidebar = styled('div')(({ theme }) => ({
     borderRadius: '0',
     padding: `5rem ${theme.spacing(2)} ${theme.spacing(2)} ${theme.spacing(2)}`,
     gap: theme.spacing(2),
-    [theme.breakpoints.down('md')]: {
-        position: 'absolute',
-        zIndex: open ? theme.zIndex.drawer + 2 : -1,
-        width: '100%',
-        maxWidth: '280px',
-    },
+    width: '300px',
     backgroundImage: 'linear-gradient(to bottom, #e7ecf8, #f9effd)',
     position: 'fixed',
     left: '0%',
     top: '0',
     height: '98vh',
     zIndex: 2,
+
 }));
 
 const StyledButton = styled(IconButton)(() => ({
     marginLeft: 'auto',
     maxHeight: '10%'
+}));
+
+export const LinkBottomBox = styled(Box)(() => ({
+    position: 'absolute',
+    bottom: '4rem',
+    width: 'calc(100% - 32px)',
+    textAlign: 'center',
+    left: '50%',
+    transform: 'translatex(-50%)',
 }));
 
 export const Sidebar = ({
