@@ -106,7 +106,9 @@ Where possible review other sources of information to verify accuracy of the gen
 Please make any necessary edits before sharing the output from this tool.
 `;
 
-
+interface Dictionary{
+    [key:string]:any;
+}
 
 export interface VectorContext {
     score: string;
