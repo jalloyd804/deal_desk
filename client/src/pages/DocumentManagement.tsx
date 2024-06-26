@@ -25,6 +25,7 @@ import { AIBotError } from './Error'
 import { Model } from '../interfaces/Model'
 import { Document } from '../interfaces/Document'
 import Delete from '@mui/icons-material/Delete';
+import { Sidebar } from '../components/Sidebar';
 
 const StyledTitle = styled(Typography)(({ theme }) => ({
     
@@ -40,7 +41,7 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
 
 const StyledContainer = styled('div')(({ theme }) => ({
     padding: `2rem 10rem 2rem calc(10rem + 280px)`,
-    display: 'block',
+    display: 'flex',
 }));
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
@@ -64,8 +65,16 @@ const LoadingOverlay = styled('div')(() => ({
     alignItems: 'center',
 }));
 
-const StyledLayout = styled(Stack)(() => ({
+const StyledLayout = styled('div')(() => ({
     display: 'flex',
+    flexDirection:'column'
+}));
+
+
+const StyledButton = styled(IconButton)(() => ({
+    position: 'fixed',
+    left: '0%',
+    marginRight: 'auto',
 }));
 
 const onDeleteClick = (e, row) => {
@@ -83,6 +92,9 @@ export const DocumentManagement = () => {
     const [vectorOptions, setVectorOptions] = useState([]);
     const [selectedVectorDB, setSelectedVectorDB] = useState<Model>({});
     const [documents, setDocuments] = useState([]);
+
+    //Controlling the Sidebar
+    const [sideOpen, setSideOpen] = useState<boolean>(true);
 
     useEffect(() => {
         setIsLoading(true);
@@ -150,13 +162,32 @@ export const DocumentManagement = () => {
 
 
     return(
-        <StyledLayout justifyContent={'center'}>
+        <StyledLayout id='styledlayout'>
+                    {sideOpen ? (
+                        <Sidebar
+                            modelOptions={null}
+                            selectedModel={null}
+                            setSelectedModel={null}
+                            vectorOptions={vectorOptions}
+                            selectedVectorDB={selectedVectorDB}
+                            setSelectedVectorDB={setSelectedVectorDB}
+                            setSideOpen={setSideOpen}
+                            setOpen={null}
+                            limit={null}
+                            setLimit={null}
+                            temperature={null}
+                            setTemperature={null}
+                            isDoc={true}/>
+                    ) : (
+                        <StyledButton onClick={() => setSideOpen(!sideOpen)}>
+                            <ArrowForwardIosIcon />
+                        </StyledButton>
+                    )}
             
-            <Stack>
-                    <StyledContainer>
-                    <StyledTitle variant='h5'>{selectedVectorDB.database_name}</StyledTitle>
-                        <StyledPaper variant={'elevation'} elevation={2} square>
+                    <StyledContainer id='styledcontainer'>
+                    <StyledPaper variant={'elevation'} elevation={2} square>
                             {isLoading && <LoadingOverlay><CircularProgress /></LoadingOverlay>}
+                            <Stack spacing={2} color='#4F4F4F'>
                             <StyledDataGrid  
                             rows={documents}
                             columns={columns}
@@ -167,10 +198,11 @@ export const DocumentManagement = () => {
                             }}
                             pageSizeOptions={[5]}
                             checkboxSelection/>
+                            </Stack>
                         </StyledPaper>
                         {isLoading && <LinearProgress />}
                     </StyledContainer>
-                </Stack>
+                
         </StyledLayout>
     )
 };

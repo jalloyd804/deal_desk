@@ -380,7 +380,8 @@ export const PolicyPage = () => {
                             limit={limit}
                             setLimit={setLimit}
                             temperature={temperature}
-                            setTemperature={setTemperature}/>
+                            setTemperature={setTemperature}
+                            isDoc={false}/>
                     ) : (
                         <StyledButton onClick={() => setSideOpen(!sideOpen)}>
                             <ArrowForwardIosIcon />

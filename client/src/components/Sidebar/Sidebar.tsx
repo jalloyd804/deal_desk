@@ -70,6 +70,7 @@ export const Sidebar = ({
     setLimit,
     temperature,
     setTemperature,
+    isDoc
 }) => {
 
 
@@ -91,17 +92,21 @@ export const Sidebar = ({
             <StyledButton onClick={() => setSideOpen(false)}>
                 <CloseIcon />
             </StyledButton>
-            <MainViewSide 
+            
+            { !isDoc && <MainViewSide 
                 vectorOptions={vectorOptions} 
                 selectedVectorDB={selectedVectorDB}
                 setSelectedVectorDB = {setSelectedVectorDB}
                 limit={limit}
-                temperature={temperature}
-                setTemperature={setTemperature}
-                setLimit={setLimit}
-                setOpen={setOpen}
-            />
-            {/* <DocViewSide vectorOptions={vectorOptions} /> */}
+                temperature = {temperature}
+                setTemperature = {setTemperature}
+                setLimit = {setLimit}
+                setOpen = {setOpen}
+            />}
+            {isDoc && <DocViewSide 
+            vectorOptions={vectorOptions}
+            selectedVectorDB={selectedVectorDB}
+            setSelectedVectorDB = {setSelectedVectorDB} /> }
             
         </StyledSidebar>
     );
