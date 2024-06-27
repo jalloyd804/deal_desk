@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState} from 'react';
 import {
     styled,
     Alert,
@@ -13,8 +13,10 @@ import {
     IconButton,
     CircularProgress,
     Collapse,
+    OutlinedInput,
+    InputAdornment
 } from '@mui/material';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, useGridApiRef, GridRowSelectionModel } from '@mui/x-data-grid';
 import { useForm, Controller } from 'react-hook-form';
 import { useInsight } from '@semoss/sdk-react';
 import { VectorModal } from '../components/VectorModal';
@@ -26,7 +28,7 @@ import { Model } from '../interfaces/Model'
 import { Document } from '../interfaces/Document'
 import Delete from '@mui/icons-material/Delete';
 import { Sidebar } from '../components/Sidebar';
-
+import SearchIcon from '@mui/icons-material/Search';
 const StyledTitle = styled(Typography)(({ theme }) => ({
     
     color: theme.palette.modal.main,
@@ -79,26 +81,113 @@ const StyledButton = styled(IconButton)(() => ({
     marginRight: 'auto',
 }));
 
-const onDeleteClick = (e, row) => {
-    console.log('deleting ')
-    console.log(row)
-}
+const EmbedButton = styled(Button)(() => ({
+    backgroundImage: 'linear-gradient(90deg, #20558A 0%, #650A67 100%)',
+    backgroundColor: '#20558A',
+    fontSize: '14px',
+    width: '15%',
+    float: 'right',
+    maxHeight: '40px',
+    color: 'white',
+    flex: '.2',
+    '&:hover': {
+        backgroundImage: 'linear-gradient(90deg, #12005A 0%, #12005A 100%)',
+        backgroundColor: '#12005A',
+    },
+    '&[disabled]': {
+        color: 'rgba(255, 255, 255, .8)',
+    },
+}));
+
+
+const DeleteButton = styled(Button)(({theme}) => ({
+    backgroundColor: theme.palette.background.paper,
+    fontSize: '14px',
+    width: '15%',
+    float: 'right',
+    maxHeight: '40px',
+    borderColor: '#C00000',
+    color: '#C00000',
+    flex: '.2',
+    '&:hover': {
+        backgroundColor: 'rgba(192, 0, 0, .5)',
+    },
+    '&[disabled]': {
+        color: 'rgba(255, 255, 255, .8)',
+    },
+}));
+
+const Search = styled('div')(({ theme }) => ({
+    borderColor: '#4F4F4F',
+
+    color: '#4F4F4F',
+    float: 'right',
+    maxHeight: '40px',
+    width: '20%',
+    borderRadius: theme.shape.borderRadius,
+    '&:hover': {
+    },
+    marginLeft: 0,
+  }));
+
+  const SearchIconWrapper = styled('div')(({ theme }) => ({
+    padding: theme.spacing(0, 2),
+    height: '100%',
+    position: 'absolute',
+    pointerEvents: 'none',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  }));
+
+  const StyledInputBase = styled(OutlinedInput)(({ theme }) => ({
+    color: 'inherit',
+    maxHeight: '40px',
+    '& .MuiInputBase-input': {
+      padding: theme.spacing(1, 1, 1, 0),
+      paddingLeft: '15px'
+    },
+  }));
+
+
+
+
+
 
 export const DocumentManagement = () => {
     const { actions } = useInsight();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
-
+    const [showDelete, setShowDelete] = useState(false);
 
     // Vector DB catalog and first vector DB in dropdown
     const [vectorOptions, setVectorOptions] = useState([]);
     const [selectedVectorDB, setSelectedVectorDB] = useState<Model>({});
     const [documents, setDocuments] = useState([]);
-
+    const [rowSelectionModel, setRowSelectionModel] = useState<GridRowSelectionModel>([]);
     //Controlling the Sidebar
     const [sideOpen, setSideOpen] = useState<boolean>(true);
+    const dataGridApi = useGridApiRef();
 
+    const handleSearch = (event) => {
+        let searchFilter = event.target.value
+        dataGridApi.current.setFilterModel({
+            items: [
+                {
+                    id: 1,           
+                    field: 'fileName',
+                    operator: 'contains',
+                    value: searchFilter
+                }
+            ]
+        })
+        dataGridApi.current.setRowSelectionModel([])
+    
+    }
     useEffect(() => {
+        try {
+
+        setError('');
         setIsLoading(true);
 
         //Grabbing all the Vector Databases in CfG
@@ -113,18 +202,27 @@ export const DocumentManagement = () => {
             if (Array.isArray(output)) {
                 setVectorOptions(output);
                 setSelectedVectorDB(output[0]);
+                setIsLoading(false);
             }
-
+        })}
+            catch (e) {
             setIsLoading(false);
-        });
+            if (e) {
+                setError(e);
+            } else {
+                setError('There is an error, please check pixel calls');
+            }
+        }
     }, []);
 
     useEffect(() => {
-        setIsLoading(true);
+        try {
+
+            setError('');
+            setIsLoading(true);
         let pixel = `ListDocumentsInVectorDatabase(engine="${selectedVectorDB.database_id}")`;
         actions.run(pixel).then((response) => {
             const { output, operationType } = response.pixelReturn[0];
-
             if (operationType.indexOf('ERROR') > -1) {
                 throw new Error(output as string);
             }
@@ -136,12 +234,38 @@ export const DocumentManagement = () => {
                     id++;
                 })
                 setDocuments(output)
+                setIsLoading(false);
                 console.log(documents)
+                
+            }})
             }
-            setIsLoading(false);
-        });
+            catch (e) {
+                setIsLoading(false);
+                if (e) {
+                    setError(e);
+                } else {
+                    setError('There is an error, please check pixel calls');
+                }
+            }
     }, [selectedVectorDB]);
 
+
+    useEffect(() => {
+        if (rowSelectionModel.length > 0){
+            setShowDelete(true)
+        }
+        else{
+            setShowDelete(false)
+        }
+    }, [rowSelectionModel]);
+
+    const onDeleteClick = (e, row) => {
+        console.log(row)
+    }
+    const deleteSelected = () => {
+        let selectedRows = dataGridApi.current.getSelectedRows()
+        console.log(selectedRows)
+    }
 
     const columns: GridColDef[] = [
         { field: 'fileName', headerName: 'Name', minWidth: 100, flex: 1},
@@ -188,19 +312,55 @@ export const DocumentManagement = () => {
                             <ArrowForwardIosIcon />
                         </StyledButton>
                     )}
+                    
                     <StyledPaper variant={'elevation'} elevation={2} square>
+                            <StyledTitle variant="h5">
+                                {selectedVectorDB.database_name}
+                            </StyledTitle>
                             {isLoading && <LoadingOverlay><CircularProgress /></LoadingOverlay>}
                             <Stack spacing={2} color='#4F4F4F'>
+                                <div>
+                                
+                            <EmbedButton variant="contained" onClick={() => {}}>
+                                Embed New Document
+                            </EmbedButton>
+                            {showDelete && (<DeleteButton variant="contained" onClick={() => {deleteSelected()}}>
+                                Delete Selected
+                            </DeleteButton>)}
+                            <Search>
+                                    <StyledInputBase
+                                    onChange ={(event) => handleSearch(event)}
+                                    placeholder="Search files"
+                                    endAdornment={
+                                        <InputAdornment disableTypography  position='end' children={(
+                                            <SearchIcon />
+                                          )}/>}
+                                    inputProps={{ 'aria-label': 'search',
+                                                                            
+                                            
+                                    }
+                                }
+                                    
+                                    />
+                            </Search>
+                            </div>
+                            {error && <Alert color="error">{error.toString()}</Alert>}
                             <StyledDataGrid  
+                            apiRef={dataGridApi}
                             rows={documents}
                             columns={columns}
+                            onRowSelectionModelChange={(newRowSelectionModel) => {
+                                setRowSelectionModel(newRowSelectionModel);
+                              }}
+                              rowSelectionModel={rowSelectionModel}
                             initialState={{
                                 pagination: {
                                     paginationModel: { page: 0, pageSize: 5 },
                                 },
                             }}
-                            pageSizeOptions={[5]}
-                            checkboxSelection/>
+                            pageSizeOptions={[5,10]}
+                            checkboxSelection
+                            disableRowSelectionOnClick />
                             </Stack>
                         </StyledPaper>
                         {isLoading && <LinearProgress />}
