@@ -4,8 +4,6 @@ import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 
 import {
     styled,
-    Paper,
-    IconButton,
     Autocomplete,
     TextField,
     Button,

@@ -46,10 +46,11 @@ const StyledContainer = styled('div')(({ theme }) => ({
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
     padding: theme.spacing(4),
-    position: 'relative',
-    width: '1300px',
+   // position: 'relative',
+    //width: '1300px',
     borderRadius: '6px',
     overflow: 'hidden',
+    flex:1
 }));
 
 const LoadingOverlay = styled('div')(() => ({
@@ -67,7 +68,8 @@ const LoadingOverlay = styled('div')(() => ({
 
 const StyledLayout = styled('div')(() => ({
     display: 'flex',
-    flexDirection:'column'
+    flexDirection:'row',
+    flex: '1'
 }));
 
 
@@ -177,14 +179,15 @@ export const DocumentManagement = () => {
                             setLimit={null}
                             temperature={null}
                             setTemperature={null}
+                            actions={actions}
+                            setError={setError}
+                            setRefresh={null}
                             isDoc={true}/>
                     ) : (
                         <StyledButton onClick={() => setSideOpen(!sideOpen)}>
                             <ArrowForwardIosIcon />
                         </StyledButton>
                     )}
-            
-                    <StyledContainer id='styledcontainer'>
                     <StyledPaper variant={'elevation'} elevation={2} square>
                             {isLoading && <LoadingOverlay><CircularProgress /></LoadingOverlay>}
                             <Stack spacing={2} color='#4F4F4F'>
@@ -201,8 +204,6 @@ export const DocumentManagement = () => {
                             </Stack>
                         </StyledPaper>
                         {isLoading && <LinearProgress />}
-                    </StyledContainer>
-                
         </StyledLayout>
     )
 };

@@ -31,14 +31,16 @@ const StyledSidebar = styled('div')(({ theme }) => ({
     display: 'flex',
     flexDirection: 'column',
     borderRadius: '0',
-    padding: `5rem ${theme.spacing(2)} ${theme.spacing(2)} ${theme.spacing(2)}`,
+    //padding: `5rem ${theme.spacing(2)} ${theme.spacing(2)} ${theme.spacing(2)}`,
     gap: theme.spacing(2),
-    width: '300px',
+    width: '20%',
     backgroundImage: 'linear-gradient(to bottom, #e7ecf8, #f9effd)',
-    position: 'fixed',
+    //position: 'fixed',
+    paddingRight:'1%',
+    paddingLeft: '1%',
     left: '0%',
-    top: '0',
-    height: '98vh',
+    //top: '0',
+    //height: '98vh',
     zIndex: 2,
 
 }));
@@ -49,12 +51,12 @@ const StyledButton = styled(IconButton)(() => ({
 }));
 
 export const LinkBottomBox = styled(Box)(() => ({
-    position: 'absolute',
-    bottom: '4rem',
-    width: 'calc(100% - 32px)',
+    //position: 'absolute',
+    //bottom: '4rem',
+    //width: 'calc(100% - 32px)',
     textAlign: 'center',
-    left: '50%',
-    transform: 'translatex(-50%)',
+    //left: '50%',
+    //transform: 'translatex(-50%)',
 }));
 
 export const Sidebar = ({
@@ -70,6 +72,9 @@ export const Sidebar = ({
     setLimit,
     temperature,
     setTemperature,
+    actions,
+    setError,
+    setRefresh,
     isDoc
 }) => {
 
@@ -106,7 +111,10 @@ export const Sidebar = ({
             {isDoc && <DocViewSide 
             vectorOptions={vectorOptions}
             selectedVectorDB={selectedVectorDB}
-            setSelectedVectorDB = {setSelectedVectorDB} /> }
+            setSelectedVectorDB = {setSelectedVectorDB} 
+            actions={actions}
+            setError={setError}
+            setRefresh={setRefresh}/> }
             
         </StyledSidebar>
     );

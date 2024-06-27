@@ -47,7 +47,7 @@ const LoadingOverlay = styled('div')(() => ({
 
 const StyledLayout = styled('div')(() => ({
     display: 'flex',
-    flexDirection:'column'
+    flexDirection: 'row'
 }));
 
 const StyledButton = styled(IconButton)(() => ({
@@ -74,7 +74,7 @@ const DisplayButton = styled(Button)(() => ({
 const PoweredBy = styled('div')(() => ({
     color: '#4F4F4F',
     alignSelf: 'center',
-    padding: '0  0 2rem 280px',
+    //padding: '0  0 2rem 280px',
 }));
 
 const SourceBox = styled('div')(() => ({
@@ -106,8 +106,8 @@ Where possible review other sources of information to verify accuracy of the gen
 Please make any necessary edits before sharing the output from this tool.
 `;
 
-interface Dictionary{
-    [key:string]:any;
+interface Dictionary {
+    [key: string]: any;
 }
 
 export interface VectorContext {
@@ -154,7 +154,7 @@ export const PolicyPage = () => {
     const [limit, setLimit] = useState<number>(5);
     const [temperature, setTemperature] = useState<number>(0.3);
 
-    
+
     let model = ''
     if (process.env.ENVIRONMENTFLAG === "Deloitte") {
         model = "4801422a-5c62-421e-a00c-05c6a9e15de8"
@@ -189,7 +189,7 @@ export const PolicyPage = () => {
 
             let context_docs = ``;
             // Stores the Document Name as the key, and the download key as the value
-            let documentTracker:Dictionary = {};
+            let documentTracker: Dictionary = {};
             let documents = [];
             // Storing the insight cache ID
             let storedPath;
@@ -197,49 +197,49 @@ export const PolicyPage = () => {
             let docs_used = 0
             for (let i = 0; i <= output.length - 1; i++) {
                 if (output[i].score || output[i].Score <= 1.5) {
-                    const content = output[i].content || output[i].Content;         
+                    const content = output[i].content || output[i].Content;
                     const document_name = output[i].source || output[i].Source;
                     const source = document_name + ", Page(s): " + output[i].Divider;
                     context_docs += `{'role': 'system', 'content': '<encode>${content}</encode>'},`;
-                    if (!(document_name in documentTracker)){
+                    if (!(document_name in documentTracker)) {
                         docs_used += 1;
                         // Getting the download URL setup
                         pixel = `DownloadVectorPdf("` + document_name + `", "${selectedVectorDB.database_id}")`;
                         const absolutePathPixel = await actions.run<Record<string, any>[]>(pixel);
-                        const { output:absolutePath, operationType:absolutePathType } = absolutePathPixel.pixelReturn[0];
+                        const { output: absolutePath, operationType: absolutePathType } = absolutePathPixel.pixelReturn[0];
                         if (absolutePathType.indexOf('ERROR') > -1)
                             throw new Error(absolutePath.response);
-                        if (insightID == ""){
+                        if (insightID == "") {
                             insightID = absolutePath.Insight_ID;
                         }
                         storedPath = absolutePath;
                         // Pushing a new document, with a new download key into documents list
                         let currDoc = {
-                            downloadKey : storedPath.Download_Key,
-                            documentName : source,
-                            page : output[i].Divider,
-                            fileLocation : storedPath.File_Absolute_Path,
+                            downloadKey: storedPath.Download_Key,
+                            documentName: source,
+                            page: output[i].Divider,
+                            fileLocation: storedPath.File_Absolute_Path,
                             // url : new URL(`${process.env.ENDPOINT}${process.env.MODULE}/api/engine/downloadFile`)
-                            url : `${process.env.ENDPOINT}${process.env.MODULE}/api/engine/downloadFile?insightId=${insightID}&fileKey=${encodeURIComponent(storedPath.Download_Key)}`,
+                            url: `${process.env.ENDPOINT}${process.env.MODULE}/api/engine/downloadFile?insightId=${insightID}&fileKey=${encodeURIComponent(storedPath.Download_Key)}`,
                         };
                         documents.push(currDoc);
 
                         documentTracker[document_name] = currDoc;
                     }
                     // If the document is already within the list, we want to use the same download key that we already have stored
-                    else{
-                        let matchedDoc =  documentTracker[document_name];
+                    else {
+                        let matchedDoc = documentTracker[document_name];
                         let currDoc = {
-                            downloadKey : matchedDoc.downloadKey,
-                            documentName : source,
-                            page : output[i].Divider,
-                            fileLocation : matchedDoc.fileLocation,
+                            downloadKey: matchedDoc.downloadKey,
+                            documentName: source,
+                            page: output[i].Divider,
+                            fileLocation: matchedDoc.fileLocation,
                             // url : new URL(`${process.env.ENDPOINT}${process.env.MODULE}/api/engine/downloadFile`)
-                            url : `${process.env.ENDPOINT}${process.env.MODULE}/api/engine/downloadFile?insightId=${insightID}&fileKey=${encodeURIComponent(matchedDoc.downloadKey)}`,
+                            url: `${process.env.ENDPOINT}${process.env.MODULE}/api/engine/downloadFile?insightId=${insightID}&fileKey=${encodeURIComponent(matchedDoc.downloadKey)}`,
                         }
                         documents.push(currDoc);
                     }
-                } 
+                }
             }
 
             let partial_docs_note = ''
@@ -381,122 +381,128 @@ export const PolicyPage = () => {
                             setLimit={setLimit}
                             temperature={temperature}
                             setTemperature={setTemperature}
-                            isDoc={false}/>
+                            actions={actions}
+                            setError={setError}
+                            setRefresh={setRefresh}
+                            isDoc={false} />
                     ) : (
                         <StyledButton onClick={() => setSideOpen(!sideOpen)}>
                             <ArrowForwardIosIcon />
                         </StyledButton>
                     )}
-                    <Box display="flex" padding={sideOpen ? '2rem 10rem 2rem calc(10rem + 300px)' : '2rem 10rem'} id='styledcontainer'>
-                        <StyledPaper variant={'elevation'} elevation={2} square>
-                            {isLoading && <LoadingOverlay><CircularProgress /></LoadingOverlay>}
-                            <Stack spacing={2} color='#4F4F4F'>
-                                <Typography variant="h5" color='#40007B'><strong>Hello!</strong> Welcome to NIAID’s AI Document Bot</Typography>
-                                <Typography variant="body1">{welcomeText}</Typography>
-                                {error && <Alert color="error">{error.toString()}</Alert>}
-                                <Collapse in={openBeta}>
-                                    <Alert severity={'info'}
-                                        action={
-                                            <IconButton
-                                                aria-label="close"
-                                                color="inherit"
-                                                size="small"
-                                                onClick={() => {
-                                                    setOpenBeta(false);
-                                                }}
-                                            >
-                                                <Close fontSize="inherit" />
-                                            </IconButton>
-                                        }
-                                        sx={{ mb: 2 }}
-                                    ><Typography variant={'caption'}>{warningText}</Typography></Alert>
-                                </Collapse>
-                                <Controller
-                                    name={'QUESTION'}
-                                    control={control}
-                                    rules={{ required: true }}
-                                    render={({ field }) => {
-                                        return (
-                                            <TextField
-                                                label="Enter Question:"
-                                                variant="outlined"
-                                                fullWidth
-                                                value={field.value ? field.value : ''}
-                                                onChange={(e) =>
-                                                    // set the value
-                                                    field.onChange(e.target.value)}
-                                                multiline
-                                                rows={4} />
-                                        );
-                                    }} />
-                                <Stack
-                                    flexDirection={'row'}
-                                    alignItems={'center'}
-                                    justifyContent={'center'}
-                                    gap={1}
-                                >
-                                    <DisplayButton
-                                        variant="contained"
-                                        disabled={genAnswerDisabled()}
-                                        onClick={ask}
-                                        sx={{ flex: 1, width: '85%' }}
-                                    >
-                                        Generate Answer
-                                    </DisplayButton>
-                                </Stack>
-                                {isAnswered && (
-                                    <Stack>
-                                        <Typography
-                                            variant={'subtitle1'}
-                                            sx={{ fontWeight: '600' }}
-                                            color='#40007B'
-                                        >
-                                            Question:
-                                        </Typography>
-                                        <Typography
-                                            variant={'body1'}
+                    <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+                        <Box display="flex" padding={sideOpen ? '1% 10% 1% 10%' : '1% 10% 1% 10%'} width={sideOpen ? '100%' : '100%'} id='styledcontainer'>
+                            <StyledPaper variant={'elevation'} elevation={2} square>
+                                {isLoading && <LoadingOverlay><CircularProgress /></LoadingOverlay>}
+                                <Stack spacing={2} color='#4F4F4F'>
+                                    <Typography variant="h5" color='#40007B'><strong>Hello!</strong> Welcome to NIAID’s AI Document Bot</Typography>
+                                    <Typography variant="body1">{welcomeText}</Typography>
+                                    {error && <Alert color="error">{error.toString()}</Alert>}
+                                    <Collapse in={openBeta}>
+                                        <Alert severity={'info'}
+                                            action={
+                                                <IconButton
+                                                    aria-label="close"
+                                                    color="inherit"
+                                                    size="small"
+                                                    onClick={() => {
+                                                        setOpenBeta(false);
+                                                    }}
+                                                >
+                                                    <Close fontSize="inherit" />
+                                                </IconButton>
+                                            }
                                             sx={{ mb: 2 }}
+                                        ><Typography variant={'caption'}>{warningText}</Typography></Alert>
+                                    </Collapse>
+                                    <Controller
+                                        name={'QUESTION'}
+                                        control={control}
+                                        rules={{ required: true }}
+                                        render={({ field }) => {
+                                            return (
+                                                <TextField
+                                                    label="Enter Question:"
+                                                    variant="outlined"
+                                                    fullWidth
+                                                    value={field.value ? field.value : ''}
+                                                    onChange={(e) =>
+                                                        // set the value
+                                                        field.onChange(e.target.value)}
+                                                    multiline
+                                                    rows={4} />
+                                            );
+                                        }} />
+                                    <Stack
+                                        flexDirection={'row'}
+                                        alignItems={'center'}
+                                        justifyContent={'center'}
+                                        gap={1}
+                                    >
+                                        <DisplayButton
+                                            variant="contained"
+                                            disabled={genAnswerDisabled()}
+                                            onClick={ask}
+                                            sx={{ flex: 1, width: '85%' }}
                                         >
-                                            {answer.question}
-                                        </Typography>
-                                        <Typography
-                                            variant={'subtitle1'}
-                                            sx={{ fontWeight: '600', mb: 0.5 }}
-                                            color='#40007B'
-                                        >
-                                            Document Bot Response:
-                                        </Typography>
-                                        <Box sx={{ mb: 2, overflow: 'auto' }}>
-                                            <Markdown>{answer.conclusion}</Markdown>
-                                            {answer.partial_docs_note && (
-                                                <Typography component="p" style={{ fontStyle: 'italic', marginTop: '16px' }}>
-                                                    {answer.partial_docs_note}
-                                                </Typography>
-                                            )}
-                                        </Box>
-                                        {<>
-                                            <Stack flexDirection={'row'} gap={'1rem'}>
-                                                <DisplayButton variant="contained" onClick={() => setShowContext(!showContext)}>{showContext ? 'Hide Full Context' : 'Get Full Context'}</DisplayButton><DisplayButton variant="contained" onClick={() => {
-                                                    navigator.clipboard.writeText(answer.conclusion);
-                                                }}>Copy Results</DisplayButton>
-                                            </Stack>
-                                            {showContext &&
-                                                documents.map((document, index) => (
-                                                    <SourceBox key={index}>
-                                                        <Typography color='#40007B' display={'inline'}>Source:</Typography>{' '}
-                                                        <a href={document.url} target="_blank"> 
-                                                            {document.documentName}
-                                                        </a>
-                                                    </SourceBox>
-                                                ))}
-                                        </>}
+                                            Generate Answer
+                                        </DisplayButton>
                                     </Stack>
-                                )}
-                            </Stack>
-                        </StyledPaper>
-                        {isLoading && <LinearProgress />}
-                    </Box>
-                <Modal open={open} onClose={() => setOpen(false)}>
+                                    {isAnswered && (
+                                        <Stack>
+                                            <Typography
+                                                variant={'subtitle1'}
+                                                sx={{ fontWeight: '600' }}
+                                                color='#40007B'
+                                            >
+                                                Question:
+                                            </Typography>
+                                            <Typography
+                                                variant={'body1'}
+                                                sx={{ mb: 2 }}
+                                            >
+                                                {answer.question}
+                                            </Typography>
+                                            <Typography
+                                                variant={'subtitle1'}
+                                                sx={{ fontWeight: '600', mb: 0.5 }}
+                                                color='#40007B'
+                                            >
+                                                Document Bot Response:
+                                            </Typography>
+                                            <Box sx={{ mb: 2, overflow: 'auto' }}>
+                                                <Markdown>{answer.conclusion}</Markdown>
+                                                {answer.partial_docs_note && (
+                                                    <Typography component="p" style={{ fontStyle: 'italic', marginTop: '16px' }}>
+                                                        {answer.partial_docs_note}
+                                                    </Typography>
+                                                )}
+                                            </Box>
+                                            {<>
+                                                <Stack flexDirection={'row'} gap={'1rem'}>
+                                                    <DisplayButton variant="contained" onClick={() => setShowContext(!showContext)}>{showContext ? 'Hide Full Context' : 'Get Full Context'}</DisplayButton><DisplayButton variant="contained" onClick={() => {
+                                                        navigator.clipboard.writeText(answer.conclusion);
+                                                    }}>Copy Results</DisplayButton>
+                                                </Stack>
+                                                {showContext &&
+                                                    documents.map((document, index) => (
+                                                        <SourceBox key={index}>
+                                                            <Typography color='#40007B' display={'inline'}>Source:</Typography>{' '}
+                                                            <a href={document.url} target="_blank">
+                                                                {document.documentName}
+                                                            </a>
+                                                        </SourceBox>
+                                                    ))}
+                                            </>}
+                                        </Stack>
+                                    )}
+                                </Stack>
+                            </StyledPaper>
+                            {isLoading && <LinearProgress />}
+                        </Box>
+                        <PoweredBy>Responses Generated by OpenAI’s GPT-4o</PoweredBy>
+                    </div>
+                    <Modal open={open} onClose={() => setOpen(false)}>
                         <VectorModal
                             setOpen={setOpen}
                             open={open}
@@ -505,7 +511,7 @@ export const PolicyPage = () => {
                             setSelectedVectorDB={setSelectedVectorDB}
                             selectedVectorDB={selectedVectorDB}
                             setError={setError} />
-                    </Modal><PoweredBy>Responses Generated by OpenAI’s GPT-4o</PoweredBy></>
+                    </Modal></>
             }
         </StyledLayout>
     );

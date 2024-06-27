@@ -5,15 +5,16 @@ import {
     ListItem,
     ListItemText,
     ListItemIcon,
+    Modal,
+    CircularProgress,
     IconButton,
     Tooltip,
     Link,
 } from '@mui/material';
 
+import { DeletionModal } from '@/components/DeletionModal/DeletionModal'
+import { useState } from 'react';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
-
-import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
-
 import { LinkBottomBox } from '../Sidebar';
 
 const tooltipGuidance = `
@@ -27,12 +28,6 @@ const StyledSectionTitle = styled(Typography)(({ theme }) => ({
     textAlign: 'center'
 }));
 
-const StyledList = styled(List)(() => ({
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '1rem',
-}));
-
 const StyledListText = styled(ListItemText)(() => ({
     paddingRight: '6px',
     '& > span': {
@@ -42,7 +37,58 @@ const StyledListText = styled(ListItemText)(() => ({
     }
 }));
 
-export const DocViewSide = ({ vectorOptions, selectedVectorDB, setSelectedVectorDB }) => {
+const StyledList = styled(List)(() => ({
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '1rem',
+    overflow:'auto',
+    maxHeight: '30%'
+}));
+
+export const DocViewSide = ({ vectorOptions, actions, setError, setRefresh, setSelectedVectorDB,selectedVectorDB }) => {
+
+    const [open, setOpen] = useState<boolean>(false);
+    const [text, setText] = useState<string>(null);
+    const [id, setId] = useState<string>(null);
+
+    let engine;
+    const DelectVectorDB = async (id: string) => {
+    
+        try {
+            let embedder = ''
+            if (process.env.ENVIRONMENTFLAG === "Deloitte") {
+                embedder = "e4449559-bcff-4941-ae72-0e3f18e06660"
+            }
+            else if (process.env.ENVIRONMENTFLAG === "NIH") {
+                embedder = "6ce2e1ac-224c-47a3-a0f9-8ba147599b68"
+            }
+            const pixel = `DeleteEngine(engine=["${id}"]);`;
+            const response = await actions.run(pixel);
+            const { output, operationType } = response.pixelReturn[0];
+            engine = output;
+            if (operationType.indexOf('ERROR') > -1) {
+                throw new Error(output as string);
+            }
+        } catch (e) {
+            if (e.message) {
+                setError(e.message);
+            } else {
+                console.log(e);
+                setError(
+                    'There was an error deleting your vector DB, please check pixel calls',
+                );
+            }
+        }
+        finally{
+            setOpen(false);
+        }
+    }
+    const Confirm = (text: string, id: string) => {
+        setOpen(true);
+        setText(text);
+        setId(id);
+    }
+
     return (
         <>
             <StyledSectionTitle variant="h5" style={{ color: "#40007B", marginBottom: 0 }}>
@@ -51,7 +97,7 @@ export const DocViewSide = ({ vectorOptions, selectedVectorDB, setSelectedVector
             <StyledList dense={true}>
                 {vectorOptions.map(item =>
                     <ListItem secondaryAction={
-                        <IconButton>
+                        <IconButton onClick={() => Confirm(`This action will permanently delete ${item.app_name} and all documents contained with this repository.`, item.app_name)}>
                             <svg viewBox="196.856 158.35 14 18" width="14" height="18" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M 197.856 174.35 C 197.856 175.45 198.756 176.35 199.856 176.35 L 207.856 176.35 C 208.956 176.35 209.856 175.45 209.856 174.35 L 209.856 162.35 L 197.856 162.35 L 197.856 174.35 Z M 210.856 159.35 L 207.356 159.35 L 206.356 158.35 L 201.356 158.35 L 200.356 159.35 L 196.856 159.35 L 196.856 161.35 L 210.856 161.35 L 210.856 159.35 Z" style={{ fill: '#40007B' }} transform="matrix(1, 0, 0, 1, 3.552713678800501e-15, 0)" />
                             </svg>
@@ -72,6 +118,15 @@ export const DocViewSide = ({ vectorOptions, selectedVectorDB, setSelectedVector
                     sx={{ fontSize: 15, marginLeft: '5px' }}
                 />
             </Tooltip></LinkBottomBox>
+
+            <Modal open={open} onClose={() => setOpen(false)}>
+                <DeletionModal
+                    setOpen={setOpen}
+                    middleText={text}
+                    id={id}
+                    action={DelectVectorDB}
+                    setRefresh={setRefresh} />
+            </Modal>
         </>
     );
 }

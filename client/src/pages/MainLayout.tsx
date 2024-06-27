@@ -24,7 +24,7 @@ const FOOTERLINKS = [
 const StyledWrapper = styled('div')(() => ({
     display: 'flex',
     flexDirection: 'column',
-    minHeight: '100vh',
+    //minHeight: '100vh',
     width: '100%',
     overflow: 'auto',
 }));
@@ -34,8 +34,8 @@ const StyledHeader = styled('div')(() => ({
     background: 'linear-gradient(90deg, rgba(32,85,138,1) 0%, rgba(32,85,138,1) 30%, rgba(101,10,103,1) 100%)',
     backgroundPosition: 'top left',
     padding: '0 2rem',
-    position: 'relative',
-    zIndex: '3',
+    //position: 'relative',
+    //zIndex: '3',
     '& > img': {
         width: '4rem',
         height: 'auto'
@@ -49,14 +49,14 @@ const StyledH1 = styled('h1')(() => ({
 }));
 
 const StyledMain = styled('div')(() => ({
-    position: 'relative',
-    height: '100%',
-    overflow: 'auto',
+    display: 'flex', 
+    flexDirection: 'column',
     flex: '1'
 }));
 
 const StyledContent = styled('div')(({ theme }) => ({
-    position: 'relative',
+    flex:1,
+    display:'flex'
 }));
 
 const StyledFooter = styled('footer')(({ theme }) => ({
@@ -88,19 +88,19 @@ const StyledFooterRight = styled('div')(() => ({
 export const MainLayout = () => {
     return (
         <>
-            <div id='outer' style={{ display: 'flex', flexDirection: 'column', height: '95vh' }}>
+            <StyledMain id='outer'>
                 {/* <StyledWrapper id='wrapper'> */}
                 <StyledHeader><img src={NIHLogo} /><StyledH1>NIAID | GenAI</StyledH1></StyledHeader>
-                <StyledMain id="main">
+                {/* <StyledMain id="main"> */}
                     <StyledContent>
                         <Outlet />
                     </StyledContent>
-                </StyledMain>
+                {/* </StyledMain> */}
                 {/* </StyledWrapper> */}
-            </div>
-            <div style={{display:'flex',lineHeight:'100%', width:'100%', position:'absolute', bottom:'0'}}>
-                <StyledFooter><StyledFooterLeft><a href="mailto:NIAIDHelpdeskTeam@mail.nih.gov">Contact Us</a></StyledFooterLeft><StyledFooterRight>{FOOTERLINKS.map((link, index) => <a key={index} href={link.href}>{link.label}</a>)}</StyledFooterRight></StyledFooter>
-            </div>
+                <div style={{ display: 'flex', lineHeight: '100%', width: '100%' }}>
+                    <StyledFooter><StyledFooterLeft><a href="mailto:NIAIDHelpdeskTeam@mail.nih.gov">Contact Us</a></StyledFooterLeft><StyledFooterRight>{FOOTERLINKS.map((link, index) => <a key={index} href={link.href}>{link.label}</a>)}</StyledFooterRight></StyledFooter>
+                </div>
+            </StyledMain>
         </>
     );
 };
