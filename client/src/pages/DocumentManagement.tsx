@@ -1,4 +1,4 @@
-import { useEffect, useState} from 'react';
+import { useEffect, useState } from 'react';
 import {
     styled,
     Alert,
@@ -21,24 +21,22 @@ import { useForm, Controller } from 'react-hook-form';
 import { useInsight } from '@semoss/sdk-react';
 import { VectorModal } from '../components/VectorModal';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import Close from '@mui/icons-material/Close';
-import { Markdown } from '@/components/common';
-import { AIBotError } from './Error'
 import { Model } from '../interfaces/Model'
-import { Document } from '../interfaces/Document'
 import Delete from '@mui/icons-material/Delete';
 import { Sidebar } from '../components/Sidebar';
 import SearchIcon from '@mui/icons-material/Search';
+import { DeletionModal } from '@/components/DeletionModal/DeletionModal';
 const StyledTitle = styled(Typography)(({ theme }) => ({
-    
+
     color: theme.palette.modal.main,
 }));
 
 const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
     '& .MuiCheckbox-root.Mui-checked': {
-    color: '#00B050',
-  },
-  }
+        color: '#00B050',
+        display: 'grid'
+    },
+}
 ));
 
 const StyledContainer = styled('div')(({ theme }) => ({
@@ -48,11 +46,11 @@ const StyledContainer = styled('div')(({ theme }) => ({
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
     padding: theme.spacing(4),
-   // position: 'relative',
+    // position: 'relative',
     //width: '1300px',
     borderRadius: '6px',
     overflow: 'hidden',
-    flex:1
+    flex: 1
 }));
 
 const LoadingOverlay = styled('div')(() => ({
@@ -70,7 +68,7 @@ const LoadingOverlay = styled('div')(() => ({
 
 const StyledLayout = styled('div')(() => ({
     display: 'flex',
-    flexDirection:'row',
+    flexDirection: 'row',
     flex: '1'
 }));
 
@@ -100,7 +98,7 @@ const EmbedButton = styled(Button)(() => ({
 }));
 
 
-const DeleteButton = styled(Button)(({theme}) => ({
+const DeleteButton = styled(Button)(({ theme }) => ({
     backgroundColor: theme.palette.background.paper,
     fontSize: '14px',
     width: '15%',
@@ -128,9 +126,9 @@ const Search = styled('div')(({ theme }) => ({
     '&:hover': {
     },
     marginLeft: 0,
-  }));
+}));
 
-  const SearchIconWrapper = styled('div')(({ theme }) => ({
+const SearchIconWrapper = styled('div')(({ theme }) => ({
     padding: theme.spacing(0, 2),
     height: '100%',
     position: 'absolute',
@@ -138,27 +136,28 @@ const Search = styled('div')(({ theme }) => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-  }));
+}));
 
-  const StyledInputBase = styled(OutlinedInput)(({ theme }) => ({
+const StyledInputBase = styled(OutlinedInput)(({ theme }) => ({
     color: 'inherit',
     maxHeight: '40px',
     '& .MuiInputBase-input': {
-      padding: theme.spacing(1, 1, 1, 0),
-      paddingLeft: '15px'
+        padding: theme.spacing(1, 1, 1, 0),
+        paddingLeft: '15px'
     },
-  }));
-
-
-
-
-
+}));
 
 export const DocumentManagement = () => {
     const { actions } = useInsight();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
     const [showDelete, setShowDelete] = useState(false);
+    const [open, setOpen] = useState<boolean>(false);
+    const [openDelete, setOpenDelete] = useState<boolean>(false);
+    const [openEmbed, setOpenEmbed] = useState<boolean>(false);
+    const [text, setText] = useState<string>(null);
+    const [id, setId] = useState<string>(null);
+    const [refresh, setRefresh] = useState<boolean>(false);
 
     // Vector DB catalog and first vector DB in dropdown
     const [vectorOptions, setVectorOptions] = useState([]);
@@ -174,7 +173,7 @@ export const DocumentManagement = () => {
         dataGridApi.current.setFilterModel({
             items: [
                 {
-                    id: 1,           
+                    id: 1,
                     field: 'fileName',
                     operator: 'contains',
                     value: searchFilter
@@ -182,30 +181,70 @@ export const DocumentManagement = () => {
             ]
         })
         dataGridApi.current.setRowSelectionModel([])
-    
+
+    }
+    function escapeAndJoin(arr) {
+        return arr.map(str => JSON.stringify(str)).join(',');
+    }
+    const DeleteDocs = async (fileDelete: string[]) => {
+
+        const fileLocation = escapeAndJoin(fileDelete);
+        try {
+            let embedder = ''
+            if (process.env.ENVIRONMENTFLAG === "Deloitte") {
+                embedder = "e4449559-bcff-4941-ae72-0e3f18e06660"
+            }
+            else if (process.env.ENVIRONMENTFLAG === "NIH") {
+                embedder = "6ce2e1ac-224c-47a3-a0f9-8ba147599b68"
+            }
+
+            const pixel = `RemoveDocumentFromVectorDatabase(engine = "${selectedVectorDB.database_id}", fileNames = [ ${fileLocation} ]);`;
+
+            //const pixel = `DeleteEngine(engine=["${id}"]);`;
+            const response = await actions.run(pixel);
+            const { output, operationType } = response.pixelReturn[0];
+            const engine = output;
+            if (operationType.indexOf('ERROR') > -1) {
+                throw new Error(output as string);
+            }
+        } catch (e) {
+            if (e.message) {
+                setError(e.message);
+            } else {
+                console.log(e);
+                setError(
+                    'There was an error deleting your vector DB, please check pixel calls',
+                );
+            }
+        }
+        finally {
+            setOpen(false);
+            setOpenDelete(false);
+        }
     }
     useEffect(() => {
         try {
 
-        setError('');
-        setIsLoading(true);
+            setError('');
+            setIsLoading(true);
 
-        //Grabbing all the Vector Databases in CfG
-        let pixel = `MyEngines ( engineTypes=["VECTOR"]);`;
+            //Grabbing all the Vector Databases in CfG
+            let pixel = `MyEngines ( engineTypes=["VECTOR"]);`;
 
-        actions.run(pixel).then((response) => {
-            const { output, operationType } = response.pixelReturn[0];
+            actions.run(pixel).then((response) => {
+                const { output, operationType } = response.pixelReturn[0];
 
-            if (operationType.indexOf('ERROR') > -1) {
-                throw new Error(output as string);
-            }
-            if (Array.isArray(output)) {
-                setVectorOptions(output);
-                setSelectedVectorDB(output[0]);
-                setIsLoading(false);
-            }
-        })}
-            catch (e) {
+                if (operationType.indexOf('ERROR') > -1) {
+                    throw new Error(output as string);
+                }
+                if (Array.isArray(output)) {
+                    setVectorOptions(output);
+                    setSelectedVectorDB(output[0]);
+                    setIsLoading(false);
+                }
+            })
+        }
+        catch (e) {
             setIsLoading(false);
             if (e) {
                 setError(e);
@@ -220,150 +259,195 @@ export const DocumentManagement = () => {
 
             setError('');
             setIsLoading(true);
-        let pixel = `ListDocumentsInVectorDatabase(engine="${selectedVectorDB.database_id}")`;
-        actions.run(pixel).then((response) => {
-            const { output, operationType } = response.pixelReturn[0];
-            if (operationType.indexOf('ERROR') > -1) {
-                throw new Error(output as string);
-            }
-            if (Array.isArray(output)) {
-                let id = 1
-                console.log(output)
-                output.forEach(item =>{
-                    item.id = id
-                    id++;
-                })
-                setDocuments(output)
-                setIsLoading(false);
-                console.log(documents)
-                
-            }})
-            }
-            catch (e) {
-                setIsLoading(false);
-                if (e) {
-                    setError(e);
-                } else {
-                    setError('There is an error, please check pixel calls');
+            let pixel = `ListDocumentsInVectorDatabase(engine="${selectedVectorDB.database_id}")`;
+            actions.run(pixel).then((response) => {
+                const { output, operationType } = response.pixelReturn[0];
+                if (operationType.indexOf('ERROR') > -1) {
+                    throw new Error(output as string);
                 }
+                if (Array.isArray(output)) {
+                    let id = 1
+                    console.log(output)
+                    output.forEach(item => {
+                        item.id = id
+                        id++;
+                    })
+                    setDocuments(output)
+                    setIsLoading(false);
+                    console.log(documents);
+                    setRefresh(false);
+
+                }
+            })
+        }
+        catch (e) {
+            setIsLoading(false);
+            if (e) {
+                setError(e);
+            } else {
+                setError('There is an error, please check pixel calls');
             }
-    }, [selectedVectorDB]);
+        }
+    }, [selectedVectorDB,refresh]);
 
 
     useEffect(() => {
-        if (rowSelectionModel.length > 0){
+        if (rowSelectionModel.length > 0) {
             setShowDelete(true)
         }
-        else{
+        else {
             setShowDelete(false)
         }
     }, [rowSelectionModel]);
 
-    const onDeleteClick = (e, row) => {
-        console.log(row)
+    const deleteSingle = (fileName) => {
+        DeleteDocs([fileName]);
     }
     const deleteSelected = () => {
-        let selectedRows = dataGridApi.current.getSelectedRows()
-        console.log(selectedRows)
+        let selectedRows = dataGridApi.current.getSelectedRows();
+        const array: string[] = Array.from(selectedRows, ([fileName, value]) => ({ fileName, value })).map(item => item.value.fileName);
+        DeleteDocs(array);
     }
-
+    const Confirm = (text: string, id: string) => {
+        setOpen(true);
+        setText(text);
+        setId(id);
+    }
+    const ConfirmSingle = (text: string, id: string) => {
+        setOpenDelete(true);
+        setText(text);
+        setId(id);
+    }
     const columns: GridColDef[] = [
-        { field: 'fileName', headerName: 'Name', minWidth: 100, flex: 1},
-        { field: 'lastModified', headerName: 'Date Modified', minWidth: 75, flex: .75},
+        { field: 'fileName', headerName: 'Name', minWidth: 100, flex: 1 },
+        { field: 'lastModified', headerName: 'Date Modified', minWidth: 75, flex: .75 },
         { field: 'fileSize', headerName: 'Size', minWidth: 50, flex: .5 },
-        { field: 'actions', headerName: 'Actions', minWidth: 25, flex: .25, renderCell: (params) => {
-            return (
-              <IconButton
-              aria-label="delete"
-              color="inherit"
-              size="small"
-              onClick={(e) => onDeleteClick(e, params.row)}
-              >
-              <Delete fontSize="inherit" />
-            </IconButton>
-            );
-          } }
-      ];
-      
+        {
+            field: 'actions', headerName: 'Actions', minWidth: 25, flex: .25, renderCell: (params) => {
+                return (
+                    <IconButton
+                        aria-label="delete"
+                        color="inherit"
+                        size="small"
+                        onClick={(e) => ConfirmSingle(`This will remove ${params.row.fileName} from your document repository.` , params.row.fileName)}
+                    >
+                        <Delete fontSize="inherit" />
+                    </IconButton>
+                );
+            }
+        }
+    ];
 
+    return (
+        <>
+            <StyledLayout id='styledlayout'>
+                {sideOpen ? (
+                    <Sidebar
+                        modelOptions={null}
+                        selectedModel={null}
+                        setSelectedModel={null}
+                        vectorOptions={vectorOptions}
+                        selectedVectorDB={selectedVectorDB}
+                        setSelectedVectorDB={setSelectedVectorDB}
+                        setSideOpen={setSideOpen}
+                        setOpen={null}
+                        limit={null}
+                        setLimit={null}
+                        temperature={null}
+                        setTemperature={null}
+                        actions={actions}
+                        setError={setError}
+                        setRefresh={null}
+                        isDoc={true} />
+                ) : (
+                    <StyledButton onClick={() => setSideOpen(!sideOpen)}>
+                        <ArrowForwardIosIcon />
+                    </StyledButton>
+                )}
 
-    return(
-        <StyledLayout id='styledlayout'>
-                    {sideOpen ? (
-                        <Sidebar
-                            modelOptions={null}
-                            selectedModel={null}
-                            setSelectedModel={null}
-                            vectorOptions={vectorOptions}
-                            selectedVectorDB={selectedVectorDB}
-                            setSelectedVectorDB={setSelectedVectorDB}
-                            setSideOpen={setSideOpen}
-                            setOpen={null}
-                            limit={null}
-                            setLimit={null}
-                            temperature={null}
-                            setTemperature={null}
-                            actions={actions}
-                            setError={setError}
-                            setRefresh={null}
-                            isDoc={true}/>
-                    ) : (
-                        <StyledButton onClick={() => setSideOpen(!sideOpen)}>
-                            <ArrowForwardIosIcon />
-                        </StyledButton>
-                    )}
-                    
-                    <StyledPaper variant={'elevation'} elevation={2} square>
-                            <StyledTitle variant="h5">
-                                {selectedVectorDB.database_name}
-                            </StyledTitle>
-                            {isLoading && <LoadingOverlay><CircularProgress /></LoadingOverlay>}
-                            <Stack spacing={2} color='#4F4F4F'>
-                                <div>
-                                
-                            <EmbedButton variant="contained" onClick={() => {}}>
+                <StyledPaper variant={'elevation'} elevation={2} square>
+                    <StyledTitle variant="h5">
+                        {selectedVectorDB.database_name}
+                    </StyledTitle>
+                    {isLoading && <LoadingOverlay><CircularProgress /></LoadingOverlay>}
+                    <Stack spacing={2} color='#4F4F4F'>
+                        <div>
+
+                            <EmbedButton variant="contained" onClick={() => { setOpenEmbed(true)}}>
                                 Embed New Document
                             </EmbedButton>
-                            {showDelete && (<DeleteButton variant="contained" onClick={() => {deleteSelected()}}>
+                            {showDelete && (<DeleteButton variant="contained" onClick={() => { Confirm(`This will remove ALL selected files from the document repository.​`, 'ALL')}}>
                                 Delete Selected
                             </DeleteButton>)}
                             <Search>
-                                    <StyledInputBase
-                                    onChange ={(event) => handleSearch(event)}
+                                <StyledInputBase
+                                    onChange={(event) => handleSearch(event)}
                                     placeholder="Search files"
                                     endAdornment={
-                                        <InputAdornment disableTypography  position='end' children={(
+                                        <InputAdornment disableTypography position='end' children={(
                                             <SearchIcon />
-                                          )}/>}
-                                    inputProps={{ 'aria-label': 'search',
-                                                                            
-                                            
+                                        )} />}
+                                    inputProps={{
+                                        'aria-label': 'search',
+
+
                                     }
-                                }
-                                    
-                                    />
+                                    }
+
+                                />
                             </Search>
-                            </div>
-                            {error && <Alert color="error">{error.toString()}</Alert>}
-                            <StyledDataGrid  
+                        </div>
+                        {error && <Alert color="error">{error.toString()}</Alert>}
+                        <StyledDataGrid
                             apiRef={dataGridApi}
                             rows={documents}
                             columns={columns}
+                            style={{ display: 'grid' }}
                             onRowSelectionModelChange={(newRowSelectionModel) => {
                                 setRowSelectionModel(newRowSelectionModel);
-                              }}
-                              rowSelectionModel={rowSelectionModel}
+                            }}
+                            rowSelectionModel={rowSelectionModel}
                             initialState={{
                                 pagination: {
                                     paginationModel: { page: 0, pageSize: 5 },
                                 },
                             }}
-                            pageSizeOptions={[5,10]}
+                            pageSizeOptions={[5, 10]}
                             checkboxSelection
                             disableRowSelectionOnClick />
-                            </Stack>
-                        </StyledPaper>
-                        {isLoading && <LinearProgress />}
-        </StyledLayout>
+                    </Stack>
+                </StyledPaper>
+                {isLoading && <LinearProgress />}
+            </StyledLayout>
+            <Modal open={open} onClose={() => setOpen(false)}>
+                <DeletionModal
+                    setOpen={setOpen}
+                    middleText={text}
+                    id={id}
+                    action={deleteSelected}
+                    setRefresh={setRefresh}
+                />
+            </Modal>
+            <Modal open={openDelete} onClose={() => setOpenDelete(false)}>
+                <DeletionModal
+                    setOpen={openDelete}
+                    middleText={text}
+                    id={id}
+                    action={deleteSingle}
+                    setRefresh={setRefresh}
+                />
+            </Modal>
+            <Modal open={openEmbed} onClose={() => setOpenEmbed(false)}>
+                <VectorModal
+                    setOpen={setOpenEmbed}
+                    open={openEmbed}
+                    vectorOptions={vectorOptions}
+                    setRefresh={setRefresh}
+                    setSelectedVectorDB={setSelectedVectorDB}
+                    selectedVectorDB={null}
+                    existingVectorDB={selectedVectorDB.database_id}
+                    setError={setError} />
+            </Modal>
+        </>
     )
 };
