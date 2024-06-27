@@ -114,6 +114,7 @@ export const VectorModal = ({
     setSelectedVectorDB,
     selectedVectorDB,
     setError,
+    existingVectorDB
 }) => {
     const [newVector, setNewVectorDB] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
@@ -178,11 +179,9 @@ export const VectorModal = ({
             try {
                 const fileUpload = await actions.upload(file, '');
                 const fileLocation = escapeAndJoin(fileUpload.map(o => o.fileLocation));
-                const embedEngine = engine || selectedVectorDB;
+                const embedEngine = existingVectorDB || engine?.database_id;
                 const pixel = `
-                CreateEmbeddingsFromDocuments ( engine = "${embedEngine.database_id
-                    }" , filePaths = [ ${fileLocation} ] ) ;
-                `;
+                CreateEmbeddingsFromDocuments ( engine = "${embedEngine}" , filePaths = [ ${fileLocation} ] ) ;`;
                 await actions.run(pixel).then((response) => {
                     const { output, operationType } = response.pixelReturn[0];
                     console.log(operationType.indexOf('ERROR'));
@@ -208,6 +207,8 @@ export const VectorModal = ({
     const firstStep = () => {
         return (
             <>
+            { selectedVectorDB && 
+                <>
                 <StyledButtonGroup>
                     <IconButton onClick={() => setOpen(false)}>
                         {' '}
@@ -248,6 +249,11 @@ export const VectorModal = ({
                 <SansTypography variant="body2" >
                     Drag and drop .pdf or .docx files to your document repository. Please rename any files containing special characters before uploading.
                 </SansTypography>
+                </>
+                }
+                {!selectedVectorDB && <StyledTitle variant="h6">
+                    Upload Files
+                </StyledTitle>}
                 <Dropzone
                     accept={{ 'text/pdf': ['.pdf'], 'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'] }}
                     onDrop={(acceptedFiles, fileRejections) => {
@@ -360,7 +366,7 @@ export const VectorModal = ({
                     <StyledButton
                         variant="contained"
                         color="success"
-                        disabled={!file.length || fileError !== null || vectorNameError !== null}
+                        disabled={(!file.length || fileError !== null || vectorNameError !== null) && existingVectorDB === null }
                         onClick={handleSubmit}
                     >
                         {' '}

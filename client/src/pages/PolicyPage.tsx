@@ -510,7 +510,8 @@ export const PolicyPage = () => {
                             setRefresh={setRefresh}
                             setSelectedVectorDB={setSelectedVectorDB}
                             selectedVectorDB={selectedVectorDB}
-                            setError={setError} />
+                            setError={setError} 
+                            existingVectorDB={null}/>
                     </Modal></>
             }
         </StyledLayout>
