@@ -142,6 +142,15 @@ export const VectorModal = ({
     function escapeAndJoin(arr) {
         return arr.map(str => JSON.stringify(str)).join(',');
     }
+    
+    function disabled()
+    {
+        if( existingVectorDB !== null)
+             return file.length === 0;
+        else
+            return (!file.length || fileError !== null || vectorNameError !== null)
+    }
+
     const handleSubmit = async () => {
         setLoading(true);
         let engine;
@@ -366,7 +375,7 @@ export const VectorModal = ({
                     <StyledButton
                         variant="contained"
                         color="success"
-                        disabled={(!file.length || fileError !== null || vectorNameError !== null) && existingVectorDB === null }
+                        disabled={disabled()}
                         onClick={handleSubmit}
                     >
                         {' '}

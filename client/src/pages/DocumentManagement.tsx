@@ -158,6 +158,7 @@ export const DocumentManagement = () => {
     const [text, setText] = useState<string>(null);
     const [id, setId] = useState<string>(null);
     const [refresh, setRefresh] = useState<boolean>(false);
+    const [dbRefresh, setDBRefresh] = useState<boolean>(false);
 
     // Vector DB catalog and first vector DB in dropdown
     const [vectorOptions, setVectorOptions] = useState([]);
@@ -252,7 +253,10 @@ export const DocumentManagement = () => {
                 setError('There is an error, please check pixel calls');
             }
         }
-    }, []);
+        finally{
+            setDBRefresh(false);
+        }
+    }, [dbRefresh]);
 
     useEffect(() => {
         try {
@@ -357,7 +361,7 @@ export const DocumentManagement = () => {
                         setTemperature={null}
                         actions={actions}
                         setError={setError}
-                        setRefresh={null}
+                        setRefresh={setDBRefresh}
                         isDoc={true} />
                 ) : (
                     <StyledButton onClick={() => setSideOpen(!sideOpen)}>
