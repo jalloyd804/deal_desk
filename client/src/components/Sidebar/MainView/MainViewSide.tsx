@@ -54,9 +54,7 @@ const DisplayButton = styled(Button)(() => ({
     backgroundImage: 'linear-gradient(90deg, #20558A 0%, #650A67 100%)',
     backgroundColor: '#20558A',
     fontSize: '16px',
-    maxHeight: '60px',
     color: 'white',
-    flex: '1',
     '&:hover': {
         backgroundImage: 'linear-gradient(90deg, #12005A 0%, #12005A 100%)',
         backgroundColor: '#12005A',
