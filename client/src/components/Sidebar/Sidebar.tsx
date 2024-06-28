@@ -3,46 +3,27 @@ import {
     IconButton,
     Box
 } from '@mui/material';
-import { makeStyles } from "@material-ui/core/styles";
 import CloseIcon from '@mui/icons-material/Close';
 import { MainViewSide } from './MainView/MainViewSide';
 import { DocViewSide } from './DocView/DocViewSide'
-
-
-
-const useStyles = makeStyles(theme => ({
-    root: {
-        '& .MuiSlider-thumb': {
-            color: "#40007B"
-        },
-        '& .MuiSlider-track': {
-            color: "#CF9BFF"
-        },
-        '& .MuiSlider-rail': {
-            color: "#CF9BFF"
-        },
-        '& .MuiSlider-mark': {
-            color: '#40007B',
-        },
-    }
-}));
 
 const StyledSidebar = styled('div')(({ theme }) => ({
     display: 'flex',
     flexDirection: 'column',
     borderRadius: '0',
-    //padding: `5rem ${theme.spacing(2)} ${theme.spacing(2)} ${theme.spacing(2)}`,
     gap: theme.spacing(2),
     width: '20%',
     backgroundImage: 'linear-gradient(to bottom, #e7ecf8, #f9effd)',
-    //position: 'fixed',
-    paddingRight:'1%',
+    paddingRight: '1%',
     paddingLeft: '1%',
     left: '0%',
-    //top: '0',
-    //height: '98vh',
     zIndex: 2,
-
+    [theme.breakpoints.up('md')]: {
+        width: '30%',
+    },
+    [theme.breakpoints.up('xl')]: {
+        width: '20%',
+    },
 }));
 
 const StyledButton = styled(IconButton)(() => ({
@@ -51,12 +32,7 @@ const StyledButton = styled(IconButton)(() => ({
 }));
 
 export const LinkBottomBox = styled(Box)(() => ({
-    //position: 'absolute',
-    //bottom: '4rem',
-    //width: 'calc(100% - 32px)',
-    textAlign: 'center',
-    //left: '50%',
-    //transform: 'translatex(-50%)',
+    paddingTop: '10%'
 }));
 
 export const Sidebar = ({
@@ -75,47 +51,35 @@ export const Sidebar = ({
     actions,
     setError,
     setRefresh,
+    setRefreshDB,
     isDoc
 }) => {
 
-
-    const classes = useStyles();
-
-    const limitTooltipText = `
-    This will change the amount of documents pulled from 
-    a vector database. Pulling too many documents can potentially cause your engines
-    token limit to be exceeded!
-    `;
-
-    const temperatureTooltipText = `
-    This changes the randomness of the LLM's output. 
-    The higher the temperature the more creative and imaginative your
-    answer will be.
-    `;
     return (
         <StyledSidebar>
             <StyledButton onClick={() => setSideOpen(false)}>
                 <CloseIcon />
             </StyledButton>
-            
-            { !isDoc && <MainViewSide 
-                vectorOptions={vectorOptions} 
+
+            {!isDoc && <MainViewSide
+                vectorOptions={vectorOptions}
                 selectedVectorDB={selectedVectorDB}
-                setSelectedVectorDB = {setSelectedVectorDB}
+                setSelectedVectorDB={setSelectedVectorDB}
                 limit={limit}
-                temperature = {temperature}
-                setTemperature = {setTemperature}
-                setLimit = {setLimit}
-                setOpen = {setOpen}
+                temperature={temperature}
+                setTemperature={setTemperature}
+                setLimit={setLimit}
+                setOpen={setOpen}
             />}
-            {isDoc && <DocViewSide 
-            vectorOptions={vectorOptions}
-            selectedVectorDB={selectedVectorDB}
-            setSelectedVectorDB = {setSelectedVectorDB} 
-            actions={actions}
-            setError={setError}
-            setRefresh={setRefresh}/> }
-            
+            {isDoc && <DocViewSide
+                vectorOptions={vectorOptions}
+                selectedVectorDB={selectedVectorDB}
+                setSelectedVectorDB={setSelectedVectorDB}
+                actions={actions}
+                setError={setError}
+                setRefresh={setRefresh}
+                setRefreshDB={setRefreshDB} />}
+
         </StyledSidebar>
     );
 };

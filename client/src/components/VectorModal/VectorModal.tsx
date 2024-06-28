@@ -21,17 +21,17 @@ import CloseIcon from '@mui/icons-material/Close';
 
 const useStyles = makeStyles(theme => ({
     root: {
-      "& .MuiFormLabel-root": {
-        'font-family': "Public Sans"
-      },
-      "& .MuiInputBase-input":{
-        'font-family': "Public Sans"
-      },
-      "& .MuiFilledInput-root":{
-        'background-color': "white"
-      },
+        "& .MuiFormLabel-root": {
+            'font-family': "Public Sans"
+        },
+        "& .MuiInputBase-input": {
+            'font-family': "Public Sans"
+        },
+        "& .MuiFilledInput-root": {
+            'background-color': "white"
+        },
     }
-  }));
+}));
 
 interface GetInputPropsOptionsRef {
     ref?: React.RefObject<HTMLInputElement>;
@@ -68,7 +68,7 @@ const SansTypography = styled(Typography)(({ theme }) => ({
 }));
 const StyledTextField = styled(TextField)(({ theme }) => ({
     fontFamily: theme.typography.modal.fontFamily,
-    backgroundColor:'white'
+    backgroundColor: 'white'
 }));
 
 const StyledButtonGroup = styled('div')(() => ({
@@ -96,14 +96,9 @@ const StyledAutocomplete = styled(Autocomplete)(({ theme }) => ({
     margin: theme.spacing(3),
 }));
 
-const StyledLink = styled('button')(({ theme }) => ({
-    display: 'inline-block',
+const StyledLink = styled('span')(({ theme }) => ({
     color: theme.palette.primary.main,
     cursor: 'pointer',
-    backgroundColor: theme.palette.background.paper,
-    border: '0px',
-    fontFamily: theme.typography.modal.fontFamily,
-    fontSize: '16px'
 }));
 
 export const VectorModal = ({
@@ -123,7 +118,9 @@ export const VectorModal = ({
 
     const [fileError, setFileError] = useState<string | null>(null);
     const [vectorNameError, setVectorNameError] = useState<string | null>("Name not selected");
-    
+
+    const [totalSize, setTotalSize] = useState<number>(0);
+
     const classes = useStyles();
 
     const fileInput = useRef<HTMLInputElement>();
@@ -157,10 +154,10 @@ export const VectorModal = ({
         if (newVector) {
             try {
                 let embedder = ''
-                if (process.env.ENVIRONMENTFLAG === "Deloitte"){
+                if (process.env.ENVIRONMENTFLAG === "Deloitte") {
                     embedder = "e4449559-bcff-4941-ae72-0e3f18e06660"
                 }
-                else if (process.env.ENVIRONMENTFLAG === "NIH"){
+                else if (process.env.ENVIRONMENTFLAG === "NIH") {
                     embedder = "6ce2e1ac-224c-47a3-a0f9-8ba147599b68"
                 }
                 const pixel = `CreateVectorDatabaseEngine ( database = [ "${newVector}" ] , conDetails = [ { "CONNECTION_URL" : "@BaseFolder@/vector/@ENGINE@/", "VECTOR_TYPE" : "FAISS" , "NAME" : "${newVector}" , "EMBEDDER_ENGINE_ID":"` + embedder + `","CONTENT_LENGTH":"512","CONTENT_OVERLAP":"0","DISTANCE_METHOD":"Squared Euclidean (L2) distance" } ] ) ;`;
@@ -181,7 +178,7 @@ export const VectorModal = ({
                 }
                 closingFunctions();
                 return;
-            } 
+            }
         }
 
         if (file.length) {
@@ -193,7 +190,6 @@ export const VectorModal = ({
                 CreateEmbeddingsFromDocuments ( engine = "${embedEngine}" , filePaths = [ ${fileLocation} ] ) ;`;
                 await actions.run(pixel).then((response) => {
                     const { output, operationType } = response.pixelReturn[0];
-                    console.log(operationType.indexOf('ERROR'));
                     if (operationType.indexOf('ERROR') > -1) {
                         throw new Error(output as string);
                     }
@@ -216,49 +212,49 @@ export const VectorModal = ({
     const firstStep = () => {
         return (
             <>
-            { selectedVectorDB && 
-                <>
-                <StyledButtonGroup>
-                    <IconButton onClick={() => setOpen(false)}>
-                        {' '}
-                        <CloseIcon />
-                    </IconButton>
-                </StyledButtonGroup>
-                <StyledTitle variant="h6">
-                    Step 1: Create a Document Repository
-                </StyledTitle>
-                <SansTypography variant="body2">
-                    Type the name of the document repository.
-                </SansTypography>
-                <SansTypography>
-                <StyledTextField
-                    autoComplete='off'
-                    className={classes.root}
-                    required
-                    id="filled-required"
-                    label="Document Repository​"
-                    defaultValue=""
-                    helperText={vectorNameError}
-                    variant="filled"
-                    value={newVector}
-                    style={{minWidth:'100%'}}
-                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => { 
-                        setNewVectorDB(event.target.value);
-                        if(vectorOptions.find(op=>op?.app_name.toUpperCase() === event.target.value?.toUpperCase()))
-                            setVectorNameError("Vector database name is not available")
-                        else
-                            setVectorNameError(null);
-                      }}
-                    error={vectorOptions.find(op=>op?.app_name.toUpperCase() === newVector?.toUpperCase())}
-                />
-                </SansTypography>
-                <StyledTitle variant="h6">
-                    Step 2: Document(s) to embed
-                </StyledTitle>
-                <SansTypography variant="body2" >
-                    Drag and drop .pdf or .docx files to your document repository. Please rename any files containing special characters before uploading.
-                </SansTypography>
-                </>
+                {selectedVectorDB &&
+                    <>
+                        <StyledButtonGroup>
+                            <IconButton onClick={() => setOpen(false)}>
+                                {' '}
+                                <CloseIcon />
+                            </IconButton>
+                        </StyledButtonGroup>
+                        <StyledTitle variant="h6">
+                            Step 1: Create a Document Repository
+                        </StyledTitle>
+                        <SansTypography variant="body2">
+                            Type the name of the document repository.
+                        </SansTypography>
+                        <SansTypography>
+                            <StyledTextField
+                                autoComplete='off'
+                                className={classes.root}
+                                required
+                                id="filled-required"
+                                label="Document Repository​"
+                                defaultValue=""
+                                helperText={vectorNameError}
+                                variant="filled"
+                                value={newVector}
+                                style={{ minWidth: '100%' }}
+                                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                                    setNewVectorDB(event.target.value);
+                                    if (vectorOptions.find(op => op?.app_name.toUpperCase() === event.target.value?.toUpperCase()))
+                                        setVectorNameError("Vector database name is not available")
+                                    else
+                                        setVectorNameError(null);
+                                }}
+                                error={vectorOptions.find(op => op?.app_name.toUpperCase() === newVector?.toUpperCase())}
+                            />
+                        </SansTypography>
+                        <StyledTitle variant="h6">
+                            Step 2: Document(s) to embed
+                        </StyledTitle>
+                        <SansTypography variant="body2" >
+                            Drag and drop .pdf or .docx files to your document repository. Please rename any files containing special characters before uploading.
+                        </SansTypography>
+                    </>
                 }
                 {!selectedVectorDB && <StyledTitle variant="h6">
                     Upload Files
@@ -266,15 +262,17 @@ export const VectorModal = ({
                 <Dropzone
                     accept={{ 'text/pdf': ['.pdf'], 'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'] }}
                     onDrop={(acceptedFiles, fileRejections) => {
+                        let tempMaxTotal = 0;
                         if (fileRejections.length > 0) {
                             setFileError(fileRejections[0].errors[0].message);
                             setFile([]);
                         } else {
-                            acceptedFiles.map(file => console.log(file.name));
+                            acceptedFiles.map(file => tempMaxTotal += file.size);
                             setFile(acceptedFiles);
                             setFileError(null);
                         }
-                    }} multiple={true} maxFiles={0} maxSize={10000000}
+                        setTotalSize(tempMaxTotal);
+                    }} multiple={true} maxFiles={7} maxSize={10000000}
                 >
                     {({ getRootProps, getInputProps }) => (
                         <Container
@@ -328,6 +326,7 @@ export const VectorModal = ({
                                         sx={{
                                             display: 'flex',
                                             justifyContent: 'center',
+                                            alignItems: 'center',
                                         }}
                                     >
                                         <Avatar
@@ -340,17 +339,7 @@ export const VectorModal = ({
                                                 sx={{ color: '#40a0ff' }}
                                             />
                                         </Avatar>
-                                        <span>
-                                            {
-                                                <StyledLink>
-                                                    Click to Upload
-                                                </StyledLink>
-                                            }
-                                            &nbsp;or drag and drop
-                                            <Typography variant="body1">
-                                                Maximum File size 10MB.
-                                            </Typography>
-                                        </span>
+                                        <div><StyledLink>Click to upload</StyledLink> or drag and drop.<br />Maximum individual file size: 10MB.<br />Maximum set of documents size: 40MB.</div>
                                     </Typography>
                                 </label>
                             </div>
@@ -358,10 +347,9 @@ export const VectorModal = ({
                     )}
                 </Dropzone>
                 <SansTypography variant="caption">
-                    <ol>
-                        {file.map(file => <li>{file.name}</li>) ?? ""}
-                        {fileError !== null ? <li>{fileError}</li> : null}
-                    </ol>
+                    {(file.length > 0 && totalSize <= 40000000) && <ul>{file.map((file, index) => <li key={index}>{file.name}</li>)}</ul>}
+                    {fileError !== null && <Typography color="red" fontSize="inherit">Error: {fileError.replace("10000000 bytes", "10MB")}.</Typography>}
+                    {totalSize > 40000000 && <Typography color="red" fontSize="inherit">Error: Maximum set of documents size cannot exceeded 40MB.</Typography>}
                 </SansTypography>
                 <StyledButtonGroup>
                     <StyledButtonOpen

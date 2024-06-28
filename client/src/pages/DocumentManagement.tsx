@@ -83,11 +83,9 @@ const EmbedButton = styled(Button)(() => ({
     backgroundImage: 'linear-gradient(90deg, #20558A 0%, #650A67 100%)',
     backgroundColor: '#20558A',
     fontSize: '14px',
-    width: '15%',
-    float: 'right',
-    maxHeight: '40px',
+    whiteSpace:'nowrap',
+    maxHeight: '30px',
     color: 'white',
-    flex: '.2',
     '&:hover': {
         backgroundImage: 'linear-gradient(90deg, #12005A 0%, #12005A 100%)',
         backgroundColor: '#12005A',
@@ -101,12 +99,12 @@ const EmbedButton = styled(Button)(() => ({
 const DeleteButton = styled(Button)(({ theme }) => ({
     backgroundColor: theme.palette.background.paper,
     fontSize: '14px',
-    width: '15%',
+    marginRight:'2%',
+    whiteSpace:'nowrap',
     float: 'right',
-    maxHeight: '40px',
+    maxHeight: '30px',
     borderColor: '#C00000',
     color: '#C00000',
-    flex: '.2',
     '&:hover': {
         backgroundColor: 'rgba(192, 0, 0, .5)',
     },
@@ -117,11 +115,8 @@ const DeleteButton = styled(Button)(({ theme }) => ({
 
 const Search = styled('div')(({ theme }) => ({
     borderColor: '#4F4F4F',
-
     color: '#4F4F4F',
-    float: 'right',
-    maxHeight: '40px',
-    width: '20%',
+    maxHeight: '30px',
     borderRadius: theme.shape.borderRadius,
     '&:hover': {
     },
@@ -140,7 +135,7 @@ const SearchIconWrapper = styled('div')(({ theme }) => ({
 
 const StyledInputBase = styled(OutlinedInput)(({ theme }) => ({
     color: 'inherit',
-    maxHeight: '40px',
+    maxHeight: '30px',
     '& .MuiInputBase-input': {
         padding: theme.spacing(1, 1, 1, 0),
         paddingLeft: '15px'
@@ -158,7 +153,7 @@ export const DocumentManagement = () => {
     const [text, setText] = useState<string>(null);
     const [id, setId] = useState<string>(null);
     const [refresh, setRefresh] = useState<boolean>(false);
-    const [dbRefresh, setDBRefresh] = useState<boolean>(false);
+    const [refreshDB, setRefreshDB] = useState<boolean>(false);
 
     // Vector DB catalog and first vector DB in dropdown
     const [vectorOptions, setVectorOptions] = useState([]);
@@ -170,6 +165,7 @@ export const DocumentManagement = () => {
     const dataGridApi = useGridApiRef();
 
     const handleSearch = (event) => {
+        setError('');
         let searchFilter = event.target.value
         dataGridApi.current.setFilterModel({
             items: [
@@ -188,7 +184,7 @@ export const DocumentManagement = () => {
         return arr.map(str => JSON.stringify(str)).join(',');
     }
     const DeleteDocs = async (fileDelete: string[]) => {
-
+        setError('');
         const fileLocation = escapeAndJoin(fileDelete);
         try {
             let embedder = ''
@@ -226,7 +222,7 @@ export const DocumentManagement = () => {
     useEffect(() => {
         try {
 
-            setError('');
+            //setError('');
             setIsLoading(true);
 
             //Grabbing all the Vector Databases in CfG
@@ -253,15 +249,15 @@ export const DocumentManagement = () => {
                 setError('There is an error, please check pixel calls');
             }
         }
-        finally{
-            setDBRefresh(false);
+        finally {
+            setRefreshDB(false);
         }
-    }, [dbRefresh]);
+    }, [refreshDB]);
 
     useEffect(() => {
         try {
 
-            setError('');
+            //setError('');
             setIsLoading(true);
             let pixel = `ListDocumentsInVectorDatabase(engine="${selectedVectorDB.database_id}")`;
             actions.run(pixel).then((response) => {
@@ -292,7 +288,7 @@ export const DocumentManagement = () => {
                 setError('There is an error, please check pixel calls');
             }
         }
-    }, [selectedVectorDB,refresh]);
+    }, [selectedVectorDB, refresh]);
 
 
     useEffect(() => {
@@ -333,7 +329,7 @@ export const DocumentManagement = () => {
                         aria-label="delete"
                         color="inherit"
                         size="small"
-                        onClick={(e) => ConfirmSingle(`This will remove ${params.row.fileName} from your document repository.` , params.row.fileName)}
+                        onClick={(e) => ConfirmSingle(`This will remove ${params.row.fileName} from your document repository.`, params.row.fileName)}
                     >
                         <Delete fontSize="inherit" />
                     </IconButton>
@@ -361,7 +357,8 @@ export const DocumentManagement = () => {
                         setTemperature={null}
                         actions={actions}
                         setError={setError}
-                        setRefresh={setDBRefresh}
+                        setRefresh={setRefresh}
+                        setRefreshDB={setRefreshDB}
                         isDoc={true} />
                 ) : (
                     <StyledButton onClick={() => setSideOpen(!sideOpen)}>
@@ -375,15 +372,8 @@ export const DocumentManagement = () => {
                     </StyledTitle>
                     {isLoading && <LoadingOverlay><CircularProgress /></LoadingOverlay>}
                     <Stack spacing={2} color='#4F4F4F'>
-                        <div>
-
-                            <EmbedButton variant="contained" onClick={() => { setOpenEmbed(true)}}>
-                                Embed New Document
-                            </EmbedButton>
-                            {showDelete && (<DeleteButton variant="contained" onClick={() => { Confirm(`This will remove ALL selected files from the document repository.​`, 'ALL')}}>
-                                Delete Selected
-                            </DeleteButton>)}
-                            <Search>
+                        <div style={{ display: 'flex' }}>
+                            <Search style={{marginLeft:'auto',paddingRight:'2%'}}>
                                 <StyledInputBase
                                     onChange={(event) => handleSearch(event)}
                                     placeholder="Search files"
@@ -400,6 +390,12 @@ export const DocumentManagement = () => {
 
                                 />
                             </Search>
+                            {showDelete && (<DeleteButton variant="contained" onClick={() => { Confirm(`This will remove ALL selected files from the document repository.​`, 'ALL') }}>
+                                Delete Selected
+                            </DeleteButton>)}
+                            <EmbedButton variant="contained" onClick={() => { setOpenEmbed(true) }}>
+                                Embed New Document
+                            </EmbedButton>
                         </div>
                         {error && <Alert color="error">{error.toString()}</Alert>}
                         <StyledDataGrid

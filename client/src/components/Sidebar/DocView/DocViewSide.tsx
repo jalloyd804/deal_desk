@@ -24,8 +24,7 @@ Click here when done making changes to your document repositories.
 `;
 
 const StyledSectionTitle = styled(Typography)(({ theme }) => ({
-    marginBottom: theme.spacing(2),
-    textAlign: 'center'
+    marginBottom: theme.spacing(2)
 }));
 
 const StyledListText = styled(ListItemText)(() => ({
@@ -37,15 +36,18 @@ const StyledListText = styled(ListItemText)(() => ({
     }
 }));
 
-const StyledList = styled(List)(() => ({
+const StyledList = styled(List)(({theme}) => ({
     display: 'flex',
     flexDirection: 'column',
     gap: '1rem',
     overflow:'auto',
-    maxHeight: '30%'
+    maxHeight: '30%',
+    [theme.breakpoints.up('xl')]: {
+        maxHeight: '95%',
+    },
 }));
 
-export const DocViewSide = ({ vectorOptions, actions, setError, setRefresh, setSelectedVectorDB,selectedVectorDB }) => {
+export const DocViewSide = ({ vectorOptions, actions, setError, setRefresh, setSelectedVectorDB,selectedVectorDB,setRefreshDB }) => {
 
     const [open, setOpen] = useState<boolean>(false);
     const [text, setText] = useState<string>(null);
@@ -92,7 +94,7 @@ export const DocViewSide = ({ vectorOptions, actions, setError, setRefresh, setS
     return (
         <>
             <StyledSectionTitle variant="h5" style={{ color: "#40007B", marginBottom: 0 }}>
-                GenAI Resources
+                Document Repositories
             </StyledSectionTitle>
             <StyledList dense={true}>
                 {vectorOptions.map(item =>
@@ -125,7 +127,7 @@ export const DocViewSide = ({ vectorOptions, actions, setError, setRefresh, setS
                     middleText={text}
                     id={id}
                     action={DelectVectorDB}
-                    setRefresh={setRefresh} />
+                    setRefresh={setRefreshDB} />
             </Modal>
         </>
     );
