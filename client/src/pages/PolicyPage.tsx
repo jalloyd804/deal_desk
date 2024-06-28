@@ -29,7 +29,7 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
     position: 'relative',
     width: '100%',
     borderRadius: '6px',
-    overflow: 'hidden',
+    overflow: 'hidden'
 }));
 
 const LoadingOverlay = styled('div')(() => ({
@@ -82,6 +82,16 @@ const SourceBox = styled('div')(() => ({
     '& > a': {
         color: '#4f4f4f',
     }
+}));
+
+const StyledPolicy = styled('div')(({theme}) => ({
+    display: 'flex', 
+    flexDirection: 'column', 
+    width: '100%'
+}));
+
+const StyledBox = styled(Box)(({theme}) => ({
+    display: "flex",
 }));
 
 const welcomeText = `
@@ -384,37 +394,40 @@ export const PolicyPage = () => {
                             actions={actions}
                             setError={setError}
                             setRefresh={setRefresh}
+                            setRefreshDB={null}
                             isDoc={false} />
                     ) : (
                         <StyledButton onClick={() => setSideOpen(!sideOpen)}>
                             <ArrowForwardIosIcon />
                         </StyledButton>
                     )}
-                    <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
-                        <Box display="flex" padding={sideOpen ? '1% 10% 1% 10%' : '1% 10% 1% 10%'} width={sideOpen ? '100%' : '100%'} id='styledcontainer'>
+                    <StyledPolicy>
+                        <StyledBox padding={sideOpen ? '1% 10% 1% 10%' : '1% 10% 1% 10%'} width={sideOpen ? '100%' : '100%'} id='styledcontainer'>
                             <StyledPaper variant={'elevation'} elevation={2} square>
                                 {isLoading && <LoadingOverlay><CircularProgress /></LoadingOverlay>}
                                 <Stack spacing={2} color='#4F4F4F'>
-                                    <Typography variant="h5" color='#40007B'><strong>Hello!</strong> Welcome to NIAID’s AI Document Bot</Typography>
-                                    <Typography variant="body1">{welcomeText}</Typography>
-                                    {error && <Alert color="error">{error.toString()}</Alert>}
-                                    <Collapse in={openBeta}>
-                                        <Alert severity={'info'}
-                                            action={
-                                                <IconButton
-                                                    aria-label="close"
-                                                    color="inherit"
-                                                    size="small"
-                                                    onClick={() => {
-                                                        setOpenBeta(false);
-                                                    }}
-                                                >
-                                                    <Close fontSize="inherit" />
-                                                </IconButton>
-                                            }
-                                            sx={{ mb: 2 }}
-                                        ><Typography variant={'caption'}>{warningText}</Typography></Alert>
-                                    </Collapse>
+                                    <Stack spacing={2} style={{fontSize:'12px'}}>
+                                        <Typography variant="h5" color='#40007B'><strong>Hello!</strong> Welcome to NIAID’s AI Document Bot</Typography>
+                                        <Typography variant="body1">{welcomeText}</Typography>
+                                        {error && <Alert color="error">{error.toString()}</Alert>}
+                                        <Collapse in={openBeta}>
+                                            <Alert severity={'info'}
+                                                action={
+                                                    <IconButton
+                                                        aria-label="close"
+                                                        color="inherit"
+                                                        size="small"
+                                                        onClick={() => {
+                                                            setOpenBeta(false);
+                                                        }}
+                                                    >
+                                                        <Close fontSize="inherit" />
+                                                    </IconButton>
+                                                }
+                                                sx={{ mb: 2 }}
+                                            ><Typography variant={'caption'}>{warningText}</Typography></Alert>
+                                        </Collapse>
+                                        </Stack>
                                     <Controller
                                         name={'QUESTION'}
                                         control={control}
@@ -499,9 +512,9 @@ export const PolicyPage = () => {
                                 </Stack>
                             </StyledPaper>
                             {isLoading && <LinearProgress />}
-                        </Box>
+                        </StyledBox>
                         <PoweredBy>Responses Generated by OpenAI’s GPT-4o</PoweredBy>
-                    </div>
+                    </StyledPolicy>
                     <Modal open={open} onClose={() => setOpen(false)}>
                         <VectorModal
                             setOpen={setOpen}

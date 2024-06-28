@@ -158,6 +158,7 @@ export const DocumentManagement = () => {
     const [text, setText] = useState<string>(null);
     const [id, setId] = useState<string>(null);
     const [refresh, setRefresh] = useState<boolean>(false);
+    const [refreshDB, setRefreshDB] = useState<boolean>(false);
 
     // Vector DB catalog and first vector DB in dropdown
     const [vectorOptions, setVectorOptions] = useState([]);
@@ -169,6 +170,7 @@ export const DocumentManagement = () => {
     const dataGridApi = useGridApiRef();
 
     const handleSearch = (event) => {
+        setError('');
         let searchFilter = event.target.value
         dataGridApi.current.setFilterModel({
             items: [
@@ -187,7 +189,7 @@ export const DocumentManagement = () => {
         return arr.map(str => JSON.stringify(str)).join(',');
     }
     const DeleteDocs = async (fileDelete: string[]) => {
-
+        setError('');
         const fileLocation = escapeAndJoin(fileDelete);
         try {
             let embedder = ''
@@ -225,7 +227,7 @@ export const DocumentManagement = () => {
     useEffect(() => {
         try {
 
-            setError('');
+            //setError('');
             setIsLoading(true);
 
             //Grabbing all the Vector Databases in CfG
@@ -252,12 +254,12 @@ export const DocumentManagement = () => {
                 setError('There is an error, please check pixel calls');
             }
         }
-    }, []);
+    }, [refreshDB]);
 
     useEffect(() => {
         try {
 
-            setError('');
+            //setError('');
             setIsLoading(true);
             let pixel = `ListDocumentsInVectorDatabase(engine="${selectedVectorDB.database_id}")`;
             actions.run(pixel).then((response) => {
@@ -357,7 +359,8 @@ export const DocumentManagement = () => {
                         setTemperature={null}
                         actions={actions}
                         setError={setError}
-                        setRefresh={null}
+                        setRefresh={setRefresh}
+                        setRefreshDB={setRefreshDB}
                         isDoc={true} />
                 ) : (
                     <StyledButton onClick={() => setSideOpen(!sideOpen)}>
