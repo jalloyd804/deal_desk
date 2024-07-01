@@ -65,7 +65,7 @@ const DisplayButton = styled(Button)(() => ({
 }));
 
 export const MainViewSide = ({ vectorOptions,
-    selectedVectorDB, setSelectedVectorDB, limit, setLimit, temperature, setTemperature, setError, setOpen
+    selectedVectorDB, setSelectedVectorDB, limit, setLimit, temperature, setTemperature, setError, setOpen, showDocManage
 }) => {
     const classes = useStyles();
     return (
@@ -181,7 +181,7 @@ export const MainViewSide = ({ vectorOptions,
                 onChange={(event, newValue) => setTemperature(newValue)}
                 className={classes.root}
             />
-            <LinkBottomBox><Link color="#40007B" href="/documentManagement">Manage Document Repository</Link></LinkBottomBox>
+            <LinkBottomBox>{showDocManage && <Link color="#40007B" href="/documentManagement">Manage Document Repository</Link>}</LinkBottomBox>
         </>
     );
 }

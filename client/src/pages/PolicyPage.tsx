@@ -134,6 +134,7 @@ export const PolicyPage = () => {
     const [error, setError] = useState('');
     const [isAnswered, setIsAnswered] = useState(false);
     const [showContext, setShowContext] = useState(false);
+    const [showDocManage, setShowDocManage] = useState(false);
     const [openBeta, setOpenBeta] = useState(true);
     //From the LLM
     const [answer, setAnswer] = useState({
@@ -351,7 +352,7 @@ export const PolicyPage = () => {
     }, []);
 
     useEffect(() => {
-        const pixel = `MyEngines ( engineTypes=["VECTOR"]);`;
+        let pixel = `MyEngines ( engineTypes=["VECTOR"]);`;
 
         actions.run(pixel).then((response) => {
             const { output, operationType } = response.pixelReturn[0];
@@ -360,6 +361,19 @@ export const PolicyPage = () => {
             }
             if (Array.isArray(output)) {
                 runOutput(output);
+            }
+        });
+
+        pixel = `MyEngines ( engineTypes=["VECTOR"], permissionFilters=[1]);`;
+        actions.run(pixel).then((response) => {
+            const { output, operationType } = response.pixelReturn[0];
+            if (operationType.indexOf('ERROR') > -1) {
+                throw new Error(output as string);
+            }
+            if (Array.isArray(output)) {
+                if (output.length > 0){
+                    setShowDocManage(true)
+                }
             }
         });
     }, [refresh]);
@@ -404,6 +418,7 @@ export const PolicyPage = () => {
                             setError={setError}
                             setRefresh={setRefresh}
                             setRefreshDB={null}
+                            showDocManage={showDocManage}
                             isDoc={false} />
                     ) : (
                         <StyledButton onClick={() => setSideOpen(!sideOpen)}>
@@ -533,6 +548,7 @@ export const PolicyPage = () => {
                             setSelectedVectorDB={setSelectedVectorDB}
                             selectedVectorDB={selectedVectorDB}
                             setError={setError} 
+                            
                             existingVectorDB={null}/>
                     </Modal></>
             }
