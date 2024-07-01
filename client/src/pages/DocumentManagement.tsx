@@ -20,6 +20,9 @@ import { Model } from '../interfaces/Model'
 import { Sidebar } from '../components/Sidebar';
 import { DeletionModal } from '@/components/DeletionModal/DeletionModal';
 import { useNavigate } from "react-router-dom";
+import SearchIcon from '@mui/icons-material/Search';
+import Delete from '@mui/icons-material/Delete';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
 const StyledTitle = styled(Typography)(({ theme }) => ({
     color: theme.palette.modal.main,
@@ -154,22 +157,7 @@ export const DocumentManagement = () => {
     const [sideOpen, setSideOpen] = useState<boolean>(true);
     const dataGridApi = useGridApiRef();
     const navigate = useNavigate();
-    const handleSearch = (event) => {
-        setError('');
-        let searchFilter = event.target.value
-        dataGridApi.current.setFilterModel({
-            items: [
-                {
-                    id: 1,
-                    field: 'fileName',
-                    operator: 'contains',
-                    value: searchFilter
-                }
-            ]
-        })
-        dataGridApi.current.setRowSelectionModel([])
 
-    }
 
     function escapeAndJoin(arr) {
         return arr.map(str => JSON.stringify(str)).join(',');
