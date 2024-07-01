@@ -52,7 +52,8 @@ export const Sidebar = ({
     setError,
     setRefresh,
     setRefreshDB,
-    isDoc
+    isDoc,
+    showDocManage
 }) => {
 
     return (
@@ -71,6 +72,7 @@ export const Sidebar = ({
                 setLimit={setLimit}
                 setError={setError}
                 setOpen={setOpen}
+                showDocManage={showDocManage}
             />}
             {isDoc && <DocViewSide
                 vectorOptions={vectorOptions}

@@ -26,6 +26,11 @@ import Delete from '@mui/icons-material/Delete';
 import { Sidebar } from '../components/Sidebar';
 import SearchIcon from '@mui/icons-material/Search';
 import { DeletionModal } from '@/components/DeletionModal/DeletionModal';
+import SearchIcon from '@mui/icons-material/Search';
+import Delete from '@mui/icons-material/Delete';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import { useNavigate } from "react-router-dom";
+
 const StyledTitle = styled(Typography)(({ theme }) => ({
 
     color: theme.palette.modal.main,
@@ -163,7 +168,7 @@ export const DocumentManagement = () => {
     //Controlling the Sidebar
     const [sideOpen, setSideOpen] = useState<boolean>(true);
     const dataGridApi = useGridApiRef();
-
+    const navigate = useNavigate();
     const handleSearch = (event) => {
         setError('');
         let searchFilter = event.target.value
@@ -180,6 +185,7 @@ export const DocumentManagement = () => {
         dataGridApi.current.setRowSelectionModel([])
 
     }
+    
     function escapeAndJoin(arr) {
         return arr.map(str => JSON.stringify(str)).join(',');
     }
@@ -235,8 +241,13 @@ export const DocumentManagement = () => {
                     throw new Error(output as string);
                 }
                 if (Array.isArray(output)) {
-                    setVectorOptions(output);
-                    setSelectedVectorDB(output[0]);
+                    if (output.length > 0){
+                        setVectorOptions(output);
+                        setSelectedVectorDB(output[0]);
+                    }
+                    else{
+                        navigate("/");
+                    }
                     setIsLoading(false);
                 }
             })
@@ -359,7 +370,8 @@ export const DocumentManagement = () => {
                         setError={setError}
                         setRefresh={setRefresh}
                         setRefreshDB={setRefreshDB}
-                        isDoc={true} />
+                        isDoc={true}
+                        showDocManage={false} />
                 ) : (
                     <StyledButton onClick={() => setSideOpen(!sideOpen)}>
                         <ArrowForwardIosIcon />
@@ -374,7 +386,7 @@ export const DocumentManagement = () => {
                     <Stack spacing={2} color='#4F4F4F'>
                         <div style={{ display: 'flex' }}>
                             <Search style={{marginLeft:'auto',paddingRight:'2%'}}>
-                                <StyledInputBase
+                            {documents.length > 0 && <StyledInputBase
                                     onChange={(event) => handleSearch(event)}
                                     placeholder="Search files"
                                     endAdornment={
@@ -388,7 +400,7 @@ export const DocumentManagement = () => {
                                     }
                                     }
 
-                                />
+                                />}
                             </Search>
                             {showDelete && (<DeleteButton variant="contained" onClick={() => { Confirm(`This will remove ALL selected files from the document repository.​`, 'ALL') }}>
                                 Delete Selected
@@ -398,7 +410,7 @@ export const DocumentManagement = () => {
                             </EmbedButton>
                         </div>
                         {error && <Alert color="error">{error.toString()}</Alert>}
-                        <StyledDataGrid
+                        {documents.length > 0 && <StyledDataGrid
                             apiRef={dataGridApi}
                             rows={documents}
                             columns={columns}
@@ -414,7 +426,7 @@ export const DocumentManagement = () => {
                             }}
                             pageSizeOptions={[5, 10]}
                             checkboxSelection
-                            disableRowSelectionOnClick />
+                            disableRowSelectionOnClick />}
                     </Stack>
                 </StyledPaper>
                 {isLoading && <LinearProgress />}
