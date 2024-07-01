@@ -26,9 +26,6 @@ import Delete from '@mui/icons-material/Delete';
 import { Sidebar } from '../components/Sidebar';
 import SearchIcon from '@mui/icons-material/Search';
 import { DeletionModal } from '@/components/DeletionModal/DeletionModal';
-import SearchIcon from '@mui/icons-material/Search';
-import Delete from '@mui/icons-material/Delete';
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { useNavigate } from "react-router-dom";
 
 const StyledTitle = styled(Typography)(({ theme }) => ({
@@ -185,7 +182,7 @@ export const DocumentManagement = () => {
         dataGridApi.current.setRowSelectionModel([])
 
     }
-    
+
     function escapeAndJoin(arr) {
         return arr.map(str => JSON.stringify(str)).join(',');
     }
