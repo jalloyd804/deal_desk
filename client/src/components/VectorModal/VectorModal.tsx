@@ -148,6 +148,12 @@ export const VectorModal = ({
             return (!file.length || fileError !== null || vectorNameError !== null)
     }
 
+    function addUrlParam(e) {
+        const currentUrl = new URL(window.location.href);
+        currentUrl.searchParams.set("newDocRepo", e);
+        window.history.pushState({}, '', currentUrl);
+    }
+
     const handleSubmit = async () => {
         setLoading(true);
         let engine;
@@ -167,6 +173,7 @@ export const VectorModal = ({
                 if (operationType.indexOf('ERROR') > -1) {
                     throw new Error(output as string);
                 }
+                addUrlParam(newVector);
             } catch (e) {
                 if (e.message) {
                     setError(e.message);

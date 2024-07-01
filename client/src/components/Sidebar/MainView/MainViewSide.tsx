@@ -65,7 +65,7 @@ const DisplayButton = styled(Button)(() => ({
 }));
 
 export const MainViewSide = ({ vectorOptions,
-    selectedVectorDB, setSelectedVectorDB, limit, setLimit, temperature, setTemperature, setOpen
+    selectedVectorDB, setSelectedVectorDB, limit, setLimit, temperature, setTemperature, setError, setOpen
 }) => {
     const classes = useStyles();
     return (
@@ -101,8 +101,12 @@ export const MainViewSide = ({ vectorOptions,
 
                     return option.database_name;
                 }}
-                onChange={(event, newVectorDB) =>
-                    setSelectedVectorDB(newVectorDB)
+                onChange={(event, newVectorDB) => {
+                    const currentUrl = new URL(window.location.href);
+                    currentUrl.searchParams.set("newDocRepo", newVectorDB["database_name"]);
+                    window.history.pushState({}, '', currentUrl);
+                    setSelectedVectorDB(newVectorDB);
+                }
                 }
                 renderInput={(params) => (
                     <TextField
@@ -115,7 +119,10 @@ export const MainViewSide = ({ vectorOptions,
             <StyledDiv style={{ display: 'flex' }}>
                 <Typography style={{ width: '100%', textAlign: 'center', fontWeight: '700', color: '#40007B' }}>Or</Typography>
             </StyledDiv>
-            <DisplayButton variant="contained" onClick={() => setOpen(true)}>
+            <DisplayButton variant="contained" onClick={() => {
+                setError('');
+                setOpen(true);
+            }}>
                 Upload Document(s)
             </DisplayButton>
             <StyledDiv style={{ display: 'flex', marginTop: '10%', marginBottom: '1%' }}>

@@ -97,8 +97,8 @@ export const DocViewSide = ({ vectorOptions, actions, setError, setRefresh, setS
                 Document Repositories
             </StyledSectionTitle>
             <StyledList dense={true}>
-                {vectorOptions.map(item =>
-                    <ListItem secondaryAction={
+                {vectorOptions.map((item, index) =>
+                    <ListItem key={index} secondaryAction={
                         <IconButton onClick={() => Confirm(`This action will permanently delete ${item.app_name} and all documents contained with this repository.`, item.app_name)}>
                             <svg viewBox="196.856 158.35 14 18" width="14" height="18" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M 197.856 174.35 C 197.856 175.45 198.756 176.35 199.856 176.35 L 207.856 176.35 C 208.956 176.35 209.856 175.45 209.856 174.35 L 209.856 162.35 L 197.856 162.35 L 197.856 174.35 Z M 210.856 159.35 L 207.356 159.35 L 206.356 158.35 L 201.356 158.35 L 200.356 159.35 L 196.856 159.35 L 196.856 161.35 L 210.856 161.35 L 210.856 159.35 Z" style={{ fill: '#40007B' }} transform="matrix(1, 0, 0, 1, 3.552713678800501e-15, 0)" />
