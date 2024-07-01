@@ -343,8 +343,7 @@ export const PolicyPage = () => {
                 throw new Error(output as string);
             }
             if (Array.isArray(output)) {
-                setVectorOptions(output);
-                setSelectedVectorDB(output[0]);
+                runOutput(output);
             }
         });
 
@@ -360,9 +359,7 @@ export const PolicyPage = () => {
                 throw new Error(output as string);
             }
             if (Array.isArray(output)) {
-                setVectorOptions(output);
-                setSelectedVectorDB(output[0]);
-                setRefresh(false);
+                runOutput(output);
             }
         });
     }, [refresh]);
@@ -371,6 +368,18 @@ export const PolicyPage = () => {
         if (isLoading) return true;
         if (selectedVectorDB === null) return true;
         if (Object.keys(selectedVectorDB).length === 0) return true;
+    }
+
+    function runOutput(output) {
+        setVectorOptions(output);
+        const currentUrl = new URL(window.location.href).searchParams;
+        const pathSearch = output.filter(e => e["database_name"] === currentUrl.get("newDocRepo"));
+        if (pathSearch.length !== 0) {
+            setSelectedVectorDB(pathSearch[0]);
+        } else {
+            setSelectedVectorDB(output[0]);
+        }
+        setRefresh(false);
     }
 
     return (

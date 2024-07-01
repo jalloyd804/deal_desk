@@ -69,6 +69,7 @@ export const Sidebar = ({
                 temperature={temperature}
                 setTemperature={setTemperature}
                 setLimit={setLimit}
+                setError={setError}
                 setOpen={setOpen}
             />}
             {isDoc && <DocViewSide
