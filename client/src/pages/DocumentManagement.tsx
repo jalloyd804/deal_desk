@@ -1,34 +1,34 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState} from 'react';
 import {
     styled,
     Alert,
-    Box,
     Button,
     Stack,
     LinearProgress,
-    TextField,
     Typography,
     Paper,
-    Modal,
     IconButton,
     CircularProgress,
-    Collapse,
     OutlinedInput,
-    InputAdornment
+    InputAdornment,
+    Modal
 } from '@mui/material';
 import { DataGrid, GridColDef, useGridApiRef, GridRowSelectionModel } from '@mui/x-data-grid';
-import { useForm, Controller } from 'react-hook-form';
-import { useInsight } from '@semoss/sdk-react';
 import { VectorModal } from '../components/VectorModal';
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import { useInsight } from '@semoss/sdk-react';
 import { Model } from '../interfaces/Model'
-import Delete from '@mui/icons-material/Delete';
 import { Sidebar } from '../components/Sidebar';
-import SearchIcon from '@mui/icons-material/Search';
 import { DeletionModal } from '@/components/DeletionModal/DeletionModal';
-const StyledTitle = styled(Typography)(({ theme }) => ({
+import SearchIcon from '@mui/icons-material/Search';
+import Delete from '@mui/icons-material/Delete';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
+const StyledTitle = styled(Typography)(({ theme }) => ({
     color: theme.palette.modal.main,
+}));
+
+const StyledRedTitle = styled(Typography)(({ theme }) => ({
+    color: '#C00000',
 }));
 
 const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
@@ -39,15 +39,8 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
 }
 ));
 
-const StyledContainer = styled('div')(({ theme }) => ({
-    padding: `2rem 10rem 2rem calc(10rem + 280px)`,
-    display: 'flex',
-}));
-
 const StyledPaper = styled(Paper)(({ theme }) => ({
     padding: theme.spacing(4),
-    // position: 'relative',
-    //width: '1300px',
     borderRadius: '6px',
     overflow: 'hidden',
     flex: 1
@@ -94,7 +87,6 @@ const EmbedButton = styled(Button)(() => ({
         color: 'rgba(255, 255, 255, .8)',
     },
 }));
-
 
 const DeleteButton = styled(Button)(({ theme }) => ({
     backgroundColor: theme.palette.background.paper,
@@ -154,7 +146,7 @@ export const DocumentManagement = () => {
     const [id, setId] = useState<string>(null);
     const [refresh, setRefresh] = useState<boolean>(false);
     const [refreshDB, setRefreshDB] = useState<boolean>(false);
-
+    const [noDoc, setNoDoc] = useState<boolean>(false);
     // Vector DB catalog and first vector DB in dropdown
     const [vectorOptions, setVectorOptions] = useState([]);
     const [selectedVectorDB, setSelectedVectorDB] = useState<Model>({});
@@ -164,22 +156,6 @@ export const DocumentManagement = () => {
     const [sideOpen, setSideOpen] = useState<boolean>(true);
     const dataGridApi = useGridApiRef();
 
-    const handleSearch = (event) => {
-        setError('');
-        let searchFilter = event.target.value
-        dataGridApi.current.setFilterModel({
-            items: [
-                {
-                    id: 1,
-                    field: 'fileName',
-                    operator: 'contains',
-                    value: searchFilter
-                }
-            ]
-        })
-        dataGridApi.current.setRowSelectionModel([])
-
-    }
     function escapeAndJoin(arr) {
         return arr.map(str => JSON.stringify(str)).join(',');
     }
@@ -221,12 +197,11 @@ export const DocumentManagement = () => {
     }
     useEffect(() => {
         try {
-
             //setError('');
             setIsLoading(true);
 
             //Grabbing all the Vector Databases in CfG
-            let pixel = `MyEngines ( engineTypes=["VECTOR"]);`;
+            let pixel = `MyEngines ( engineTypes=["VECTOR"], permissionFilters=[1]);`;
 
             actions.run(pixel).then((response) => {
                 const { output, operationType } = response.pixelReturn[0];
@@ -234,15 +209,20 @@ export const DocumentManagement = () => {
                 if (operationType.indexOf('ERROR') > -1) {
                     throw new Error(output as string);
                 }
+
                 if (Array.isArray(output)) {
-                    setVectorOptions(output);
-                    setSelectedVectorDB(output[0]);
+                    if (output.length > 0){
+                        setVectorOptions(output);
+                        setSelectedVectorDB(output[0]);
+                    }
+                    else{
+                        setNoDoc(true)
+                    }
                     setIsLoading(false);
                 }
-            })
-        }
-        catch (e) {
-            setIsLoading(false);
+            })}
+            catch (e) {
+                setIsLoading(false);
             if (e) {
                 setError(e);
             } else {
@@ -254,9 +234,31 @@ export const DocumentManagement = () => {
         }
     }, [refreshDB]);
 
+    const handleSearch = (event) => {
+        let searchFilter = event.target.value
+        dataGridApi.current.setFilterModel({
+            items: [
+                {
+                    id: 1,           
+                    field: 'fileName',
+                    operator: 'contains',
+                    value: searchFilter
+                }
+            ]
+        })
+        dataGridApi.current.setRowSelectionModel([])
+    }
+
+    const formatFileSize = (fileSize) => {
+        if (fileSize < 1000){
+            return Math.round(fileSize) + 'KB'
+        }
+        else{
+            return Math.round(fileSize / 1000) + "MB"
+        }
+    }
     useEffect(() => {
         try {
-
             //setError('');
             setIsLoading(true);
             let pixel = `ListDocumentsInVectorDatabase(engine="${selectedVectorDB.database_id}")`;
@@ -270,6 +272,7 @@ export const DocumentManagement = () => {
                     console.log(output)
                     output.forEach(item => {
                         item.id = id
+                        item.fileSize = formatFileSize(item.fileSize)
                         id++;
                     })
                     setDocuments(output)
@@ -303,21 +306,25 @@ export const DocumentManagement = () => {
     const deleteSingle = (fileName) => {
         DeleteDocs([fileName]);
     }
+
     const deleteSelected = () => {
         let selectedRows = dataGridApi.current.getSelectedRows();
         const array: string[] = Array.from(selectedRows, ([fileName, value]) => ({ fileName, value })).map(item => item.value.fileName);
         DeleteDocs(array);
     }
+
     const Confirm = (text: string, id: string) => {
         setOpen(true);
         setText(text);
         setId(id);
     }
+
     const ConfirmSingle = (text: string, id: string) => {
         setOpenDelete(true);
         setText(text);
         setId(id);
     }
+    
     const columns: GridColDef[] = [
         { field: 'fileName', headerName: 'Name', minWidth: 100, flex: 1 },
         { field: 'lastModified', headerName: 'Date Modified', minWidth: 75, flex: .75 },
@@ -370,6 +377,9 @@ export const DocumentManagement = () => {
                     <StyledTitle variant="h5">
                         {selectedVectorDB.database_name}
                     </StyledTitle>
+                    {noDoc && <StyledRedTitle variant="h6">
+                        It appears you don't have any Document Repositories to manage. To get started, click "Upload Documents(s)".
+                    </StyledRedTitle>}
                     {isLoading && <LoadingOverlay><CircularProgress /></LoadingOverlay>}
                     <Stack spacing={2} color='#4F4F4F'>
                         <div style={{ display: 'flex' }}>
