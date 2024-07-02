@@ -59,6 +59,11 @@ const StyledLoadingDiv = styled('div')(() => ({
     alignItems: 'center',
 }));
 
+const IndentedListItem = styled('li')(() => ({
+    paddingLeft: '20px',
+}));
+
+
 const StyledTypography = styled(Typography)(({ theme }) => ({
     marginTop: theme.spacing(4),
 }));
@@ -109,7 +114,8 @@ export const VectorModal = ({
     setSelectedVectorDB,
     selectedVectorDB,
     setError,
-    existingVectorDB
+    existingVectorDB,
+    documents
 }) => {
     const [newVector, setNewVectorDB] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
@@ -216,6 +222,22 @@ export const VectorModal = ({
         }
     };
 
+    function FormatError(props) {
+        const textWithBreaks = props.text.split('\n').map((text, index) => {
+          if (index === 0)
+            return <React.Fragment key={index}>
+                {text}
+            </React.Fragment>
+          else
+            return <React.Fragment key={index}>
+            <IndentedListItem>{text}</IndentedListItem>
+            
+        </React.Fragment>
+        });
+      
+        return <Typography color="red" fontSize="inherit">Error: {textWithBreaks}</Typography>;
+      }
+
     const firstStep = () => {
         return (
             <>
@@ -275,8 +297,29 @@ export const VectorModal = ({
                             setFile([]);
                         } else {
                             acceptedFiles.map(file => tempMaxTotal += file.size);
-                            setFile(acceptedFiles);
-                            setFileError(null);
+                            let duplicateFound = false;
+                            let errorMessage = '';
+                            documents.forEach(document => {
+                                acceptedFiles.forEach(acceptedFile => {
+                                    if (acceptedFile.name === document.fileName){
+                                        if (!duplicateFound){
+                                            errorMessage += 'The following document(s) already exist in this repository: '
+                                        }
+                                        errorMessage += '\n' + acceptedFile.name + ''
+                                        duplicateFound = true
+                                    }
+                                })
+                            });
+                            if (!duplicateFound){
+                                setFile(acceptedFiles);
+                                setFileError(null);
+                            }
+                            else{
+                                setFile([]);
+                                setFileError(errorMessage);
+                            }
+                            
+                            
                         }
                         setTotalSize(tempMaxTotal);
                     }} multiple={true} maxFiles={7} maxSize={10000000}
@@ -355,7 +398,7 @@ export const VectorModal = ({
                 </Dropzone>
                 <SansTypography variant="caption">
                     {(file.length > 0 && totalSize <= 40000000) && <ul>{file.map((file, index) => <li key={index}>{file.name}</li>)}</ul>}
-                    {fileError !== null && <Typography color="red" fontSize="inherit">Error: {fileError.replace("10000000 bytes", "10MB")}.</Typography>}
+                    {fileError !== null && <FormatError text = {fileError.replace("10000000 bytes", "10MB")}></FormatError>}
                     {totalSize > 40000000 && <Typography color="red" fontSize="inherit">Error: Maximum set of documents size cannot exceeded 40MB.</Typography>}
                 </SansTypography>
                 <StyledButtonGroup>
