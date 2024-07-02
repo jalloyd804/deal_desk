@@ -444,7 +444,7 @@ export const DocumentManagement = () => {
             </Modal>
             <Modal open={openDelete} onClose={() => setOpenDelete(false)}>
                 <DeletionModal
-                    setOpen={openDelete}
+                    setOpen={setOpenDelete}
                     middleText={text}
                     id={id}
                     action={deleteSingle}
@@ -460,7 +460,8 @@ export const DocumentManagement = () => {
                     setSelectedVectorDB={setSelectedVectorDB}
                     selectedVectorDB={null}
                     existingVectorDB={selectedVectorDB.database_id}
-                    setError={setError} />
+                    setError={setError}
+                    documents={documents} />
             </Modal>
         </>
     )
