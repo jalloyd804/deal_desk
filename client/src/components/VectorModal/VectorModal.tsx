@@ -148,10 +148,8 @@ export const VectorModal = ({
     
     function disabled()
     {
-        if( existingVectorDB !== null)
-             return file.length === 0;
-        else
-            return (!file.length || fileError !== null || vectorNameError !== null)
+        if (existingVectorDB !== null) return file.length === 0;
+        else return (!file.length || fileError !== null || vectorNameError !== null);
     }
 
     function addUrlParam(e) {
@@ -269,10 +267,13 @@ export const VectorModal = ({
                                 style={{ minWidth: '100%' }}
                                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                                     setNewVectorDB(event.target.value);
-                                    if (vectorOptions.find(op => op?.app_name.toUpperCase() === event.target.value?.toUpperCase()))
-                                        setVectorNameError("Vector database name is not available")
-                                    else
+                                    if (vectorOptions.find(op => op?.app_name.toUpperCase() === event.target.value?.toUpperCase())) {
+                                        setVectorNameError("Document repository name is not available");
+                                    } else if (!event.target.value) {
+                                        setVectorNameError("Document repository name cannot be left empty");
+                                    } else {
                                         setVectorNameError(null);
+                                    }
                                 }}
                                 error={vectorOptions.find(op => op?.app_name.toUpperCase() === newVector?.toUpperCase())}
                             />
