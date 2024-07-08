@@ -47,7 +47,9 @@ const LoadingOverlay = styled('div')(() => ({
 
 const StyledLayout = styled('div')(() => ({
     display: 'flex',
-    flexDirection: 'row'
+    flexDirection: 'row',
+    height: '100%',
+    overflow: 'auto',
 }));
 
 const StyledButton = styled(IconButton)(() => ({

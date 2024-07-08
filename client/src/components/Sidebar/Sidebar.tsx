@@ -14,8 +14,7 @@ const StyledSidebar = styled('div')(({ theme }) => ({
     gap: theme.spacing(2),
     width: '20%',
     backgroundImage: 'linear-gradient(to bottom, #e7ecf8, #f9effd)',
-    paddingRight: '1%',
-    paddingLeft: '1%',
+    padding: `${theme.spacing(2)} ${theme.spacing(1)}`,
     left: '0%',
     zIndex: 2,
     [theme.breakpoints.up('md')]: {
@@ -32,7 +31,8 @@ const StyledButton = styled(IconButton)(() => ({
 }));
 
 export const LinkBottomBox = styled(Box)(() => ({
-    paddingTop: '10%'
+    alignSelf: 'center',
+    marginTop: 'auto',
 }));
 
 export const Sidebar = ({

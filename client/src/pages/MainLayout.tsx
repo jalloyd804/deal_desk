@@ -51,12 +51,14 @@ const StyledH1 = styled('h1')(() => ({
 const StyledMain = styled('div')(() => ({
     display: 'flex', 
     flexDirection: 'column',
-    flex: '1'
+    flex: '1',
+    height: '100vh',
 }));
 
 const StyledContent = styled('div')(({ theme }) => ({
-    flex:1,
-    display:'flex'
+    display: 'flex',
+    height: '100%',
+    overflow: 'auto',
 }));
 
 const StyledFooter = styled('footer')(({ theme }) => ({
@@ -92,14 +94,10 @@ export const MainLayout = () => {
                 {/* <StyledWrapper id='wrapper'> */}
                 <StyledHeader><img src={NIHLogo} /><StyledH1>NIAID | GenAI</StyledH1></StyledHeader>
                 {/* <StyledMain id="main"> */}
-                    <StyledContent>
-                        <Outlet />
-                    </StyledContent>
+                <Outlet />
                 {/* </StyledMain> */}
                 {/* </StyledWrapper> */}
-                <div style={{ display: 'flex', lineHeight: '100%', width: '100%' }}>
-                    <StyledFooter><StyledFooterLeft><a href="mailto:NIAIDHelpdeskTeam@mail.nih.gov">Contact Us</a></StyledFooterLeft><StyledFooterRight>{FOOTERLINKS.map((link, index) => <a key={index} href={link.href}>{link.label}</a>)}</StyledFooterRight></StyledFooter>
-                </div>
+                <StyledFooter><StyledFooterLeft><a href="mailto:NIAIDHelpdeskTeam@mail.nih.gov">Contact Us</a></StyledFooterLeft><StyledFooterRight>{FOOTERLINKS.map((link, index) => <a key={index} href={link.href}>{link.label}</a>)}</StyledFooterRight></StyledFooter>
             </StyledMain>
         </>
     );
