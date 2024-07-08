@@ -181,7 +181,7 @@ export const MainViewSide = ({ vectorOptions,
                 onChange={(event, newValue) => setTemperature(newValue)}
                 className={classes.root}
             />
-            <LinkBottomBox>{showDocManage && <Link color="#40007B" href="https://genai.niaid.nih.gov/documentManagement/">Manage Document Repository</Link>}</LinkBottomBox>
+            <LinkBottomBox>{showDocManage && <Link color="#40007B" href="/documentManagement">Manage Document Repository</Link>}</LinkBottomBox>
         </>
     );
 }

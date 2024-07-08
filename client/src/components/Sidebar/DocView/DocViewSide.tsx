@@ -36,18 +36,28 @@ const StyledListText = styled(ListItemText)(() => ({
     }
 }));
 
-const StyledList = styled(List)(({theme}) => ({
+const StyledList = styled(List)(({ theme }) => ({
     display: 'flex',
     flexDirection: 'column',
     gap: '1rem',
-    overflow:'auto',
-    maxHeight: '30%',
-    [theme.breakpoints.up('xl')]: {
-        maxHeight: '95%',
+    overflow: 'auto',
+    height: '100%',
+    scrollbarWidth: 'auto',
+    scrollbarColor: '#40007B transparent',
+    scrollBehavior: 'smooth',
+    '::-webkit-scrollbar': {
+        width: '8px',
     },
+    '&::-webkit-scrollbar-thumb': {
+        background: '#40007B',
+        borderRadius: '8px',
+    },
+    '&::-webkit-scrollbar-track': {
+        background: 'none',
+    }
 }));
 
-export const DocViewSide = ({ vectorOptions, actions, setError, setRefresh, setSelectedVectorDB,selectedVectorDB,setRefreshDB }) => {
+export const DocViewSide = ({ vectorOptions, actions, setError, setRefresh, setSelectedVectorDB, selectedVectorDB, setRefreshDB }) => {
 
     const [open, setOpen] = useState<boolean>(false);
     const [text, setText] = useState<string>(null);
@@ -55,7 +65,7 @@ export const DocViewSide = ({ vectorOptions, actions, setError, setRefresh, setS
 
     let engine;
     const DelectVectorDB = async (id: string) => {
-    
+
         try {
             let embedder = ''
             if (process.env.ENVIRONMENTFLAG === "Deloitte") {
@@ -81,7 +91,7 @@ export const DocViewSide = ({ vectorOptions, actions, setError, setRefresh, setS
                 );
             }
         }
-        finally{
+        finally {
             setOpen(false);
         }
     }
@@ -93,7 +103,7 @@ export const DocViewSide = ({ vectorOptions, actions, setError, setRefresh, setS
 
     return (
         <>
-            <StyledSectionTitle variant="h5" style={{ color: "#40007B", marginBottom: 0 }}>
+            <StyledSectionTitle variant="h5" style={{ color: "#40007B", marginBottom: 0, alignSelf: 'center', textAlign: 'center', }}>
                 Document Repositories
             </StyledSectionTitle>
             <StyledList dense={true}>

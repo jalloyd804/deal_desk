@@ -42,7 +42,6 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
     padding: theme.spacing(4),
-    borderRadius: '6px',
     overflow: 'hidden',
     flex: 1
 }));
@@ -63,7 +62,8 @@ const LoadingOverlay = styled('div')(() => ({
 const StyledLayout = styled('div')(() => ({
     display: 'flex',
     flexDirection: 'row',
-    flex: '1'
+    height: '100%',
+    overflow: 'auto',
 }));
 
 
