@@ -312,7 +312,7 @@ export const VectorModal = ({
                                 })
                             });
                             if (!duplicateFound){
-                                setFile(acceptedFiles);
+                                setFile([...file, ...acceptedFiles]);
                                 setFileError(null);
                             }
                             else{

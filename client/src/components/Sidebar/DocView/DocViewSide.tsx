@@ -124,7 +124,7 @@ export const DocViewSide = ({ vectorOptions, actions, setError, setRefresh, setS
                         />
                     </ListItem>)}
             </StyledList>
-            <LinkBottomBox><Link color="#40007B" href="/">GenAI Document Bot</Link> <Tooltip title={tooltipGuidance}>
+            <LinkBottomBox><Link color="#40007B" href="/docbot">GenAI Document Bot</Link> <Tooltip title={tooltipGuidance}>
                 <HelpOutlineIcon
                     color="primary"
                     sx={{ fontSize: 15, marginLeft: '5px' }}
