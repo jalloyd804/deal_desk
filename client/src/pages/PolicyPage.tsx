@@ -1,48 +1,42 @@
 import { useEffect, useState } from 'react';
 import {
     styled,
-    Alert,
     Box,
-    Button,
-    Stack,
-    LinearProgress,
-    TextField,
-    Typography,
-    Paper,
     Modal,
     IconButton,
-    CircularProgress,
-    Collapse,
+    Tabs,
+    Tab
 } from '@mui/material';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { useInsight } from '@semoss/sdk-react';
 import { Sidebar } from '../components/Sidebar';
 import { VectorModal } from '../components/VectorModal';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import Close from '@mui/icons-material/Close';
-import { Markdown } from '@/components/common';
+import { DocBotPanel } from './DocBotPanel'
+import { SummaryPanel } from './SummaryPanel'
 import { AIBotError } from './Error'
 import { Model } from '../interfaces/Model'
+import { makeStyles } from '@material-ui/core/styles';
 
-const StyledPaper = styled(Paper)(({ theme }) => ({
-    padding: theme.spacing(4),
-    position: 'relative',
-    width: '100%',
-    borderRadius: '6px',
-    overflow: 'hidden'
-}));
-
-const LoadingOverlay = styled('div')(() => ({
-    position: 'absolute',
-    width: '100%',
-    height: '100%',
-    backgroundColor: 'rgba(255, 255, 255, .5)',
-    top: '0',
-    left: '0',
-    zIndex: '2',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
+const useStyles = makeStyles(theme => ({
+    root: {
+        '& [class*="MuiButtonBase-root-MuiTab-root"]': {
+            'max-width': "100%",
+            'width': '50%',
+            'border': 'solid',
+            'border-color': 'lightgray',
+            'border-radius': '5px 5px 0 0'
+        },
+        '& .MuiTabs-indicator': {
+            'background-color': 'unset'
+        },
+        '& .Mui-selected ': {
+            'border-color': '#40007B',
+            'border-width': '2px',
+            'color': '#40007B',
+            'background-color' : 'white'
+        }
+    }
 }));
 
 const StyledLayout = styled('div')(() => ({
@@ -56,42 +50,16 @@ const StyledButton = styled(IconButton)(() => ({
     marginRight: 'auto',
 }));
 
-const DisplayButton = styled(Button)(() => ({
-    backgroundImage: 'linear-gradient(90deg, #20558A 0%, #650A67 100%)',
-    backgroundColor: '#20558A',
-    fontSize: '16px',
-    color: 'white',
-    flex: '1',
-    '&:hover': {
-        backgroundImage: 'linear-gradient(90deg, #12005A 0%, #12005A 100%)',
-        backgroundColor: '#12005A',
-    },
-    '&[disabled]': {
-        color: 'rgba(255, 255, 255, .8)',
-    },
-}));
-
 const PoweredBy = styled('div')(() => ({
     color: '#4F4F4F',
     alignSelf: 'center',
     //padding: '0  0 2rem 280px',
 }));
 
-const SourceBox = styled('div')(() => ({
-    marginTop: '1rem',
-    '& > a': {
-        color: '#4f4f4f',
-    }
-}));
-
-const StyledPolicy = styled('div')(({theme}) => ({
-    display: 'flex', 
-    flexDirection: 'column', 
+const StyledPolicy = styled('div')(({ theme }) => ({
+    display: 'flex',
+    flexDirection: 'column',
     width: '100%'
-}));
-
-const StyledBox = styled(Box)(({theme}) => ({
-    display: "flex",
 }));
 
 const welcomeText = `
@@ -127,7 +95,87 @@ export interface VectorContext {
     content: string;
     url: string;
 }
+interface TabPanelProps {
+    children?: React.ReactNode;
+    index: number;
+    value: number;
+}
 
+function CustomTabPanel(props: TabPanelProps) {
+    const { children, value, index, ...other } = props;
+
+    return (
+        <div
+            role="tabpanel"
+            hidden={value !== index}
+            id={`simple-tabpanel-${index}`}
+            aria-labelledby={`simple-tab-${index}`}
+            {...other}
+        >
+            {value === index && <Box sx={{ p: 0 }}>{children}</Box>}
+        </div>
+    );
+}
+
+function a11yProps(index: number) {
+    return {
+        id: `simple-tab-${index}`,
+        'aria-controls': `simple-tabpanel-${index}`,
+    };
+}
+
+function BasicTabs({
+    showContext,
+    sideOpen,
+    isLoading,
+    error,
+    openBeta,
+    setOpenBeta,
+    control,
+    genAnswerDisabled,
+    ask,
+    isAnswered,
+    answer,
+    documents,
+    setShowContext
+}) {
+    const [value, setValue] = useState(0);
+    const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+        setValue(newValue);
+    };
+    const classes = useStyles();
+    return (
+        <Box sx={{ width: '100%', padding: '2%' }}>
+            <Box sx={{ borderBottom: 1, borderColor: 'divider', padding: 0 }}>
+                <Tabs className={classes.root} value={value} onChange={handleChange} aria-label="basic tabs example">
+                    <Tab label="Document Bot Chat" {...a11yProps(0)} />
+                    <Tab label="Document Summarization" {...a11yProps(1)} />
+                </Tabs>
+            </Box>
+            <CustomTabPanel value={value} index={0}>
+            <DocBotPanel    isLoading={isLoading}
+                            sideOpen={sideOpen}
+                            welcomeText={welcomeText}
+                            warningText={warningText}
+                            error={error}
+                            openBeta={openBeta}
+                            setOpenBeta={setOpenBeta}
+                            control={control}
+                            genAnswerDisabled={genAnswerDisabled}
+                            ask={ask}
+                            isAnswered={isAnswered}
+                            answer={answer}
+                            showContext={showContext}
+                            setShowContext={setShowContext}
+                            documents={documents}/>
+            </CustomTabPanel>
+            <CustomTabPanel value={value} index={1}>
+                <SummaryPanel 
+                sideOpen = {sideOpen}/>
+            </CustomTabPanel>
+        </Box>
+    );
+}
 export const PolicyPage = () => {
     const { actions } = useInsight();
     const [isLoading, setIsLoading] = useState(false);
@@ -165,6 +213,7 @@ export const PolicyPage = () => {
     const [limit, setLimit] = useState<number>(5);
     const [temperature, setTemperature] = useState<number>(0.3);
 
+    const classes = useStyles();
 
     let model = ''
     if (process.env.ENVIRONMENTFLAG === "Deloitte") {
@@ -371,7 +420,7 @@ export const PolicyPage = () => {
                 throw new Error(output as string);
             }
             if (Array.isArray(output)) {
-                if (output.length > 0){
+                if (output.length > 0) {
                     setShowDocManage(true)
                 }
             }
@@ -426,117 +475,21 @@ export const PolicyPage = () => {
                         </StyledButton>
                     )}
                     <StyledPolicy>
-                        <StyledBox padding={sideOpen ? '1% 10% 1% 10%' : '1% 10% 1% 10%'} width={sideOpen ? '100%' : '100%'} id='styledcontainer'>
-                            <StyledPaper variant={'elevation'} elevation={2} square>
-                                {isLoading && <LoadingOverlay><CircularProgress /></LoadingOverlay>}
-                                <Stack spacing={2} color='#4F4F4F'>
-                                    <Stack spacing={2} style={{fontSize:'12px'}}>
-                                        <Typography variant="h5" color='#40007B'><strong>Hello!</strong> Welcome to NIAID’s AI Document Bot</Typography>
-                                        <Typography variant="body1">{welcomeText}</Typography>
-                                        {error && <Alert color="error">{error.toString()}</Alert>}
-                                        <Collapse in={openBeta}>
-                                            <Alert severity={'info'}
-                                                action={
-                                                    <IconButton
-                                                        aria-label="close"
-                                                        color="inherit"
-                                                        size="small"
-                                                        onClick={() => {
-                                                            setOpenBeta(false);
-                                                        }}
-                                                    >
-                                                        <Close fontSize="inherit" />
-                                                    </IconButton>
-                                                }
-                                                sx={{ mb: 2 }}
-                                            ><Typography variant={'caption'}>{warningText}</Typography></Alert>
-                                        </Collapse>
-                                        </Stack>
-                                    <Controller
-                                        name={'QUESTION'}
-                                        control={control}
-                                        rules={{ required: true }}
-                                        render={({ field }) => {
-                                            return (
-                                                <TextField
-                                                    label="Enter Question:"
-                                                    variant="outlined"
-                                                    fullWidth
-                                                    value={field.value ? field.value : ''}
-                                                    onChange={(e) =>
-                                                        // set the value
-                                                        field.onChange(e.target.value)}
-                                                    multiline
-                                                    rows={4} />
-                                            );
-                                        }} />
-                                    <Stack
-                                        flexDirection={'row'}
-                                        alignItems={'center'}
-                                        justifyContent={'center'}
-                                        gap={1}
-                                    >
-                                        <DisplayButton
-                                            variant="contained"
-                                            disabled={genAnswerDisabled()}
-                                            onClick={ask}
-                                            sx={{ flex: 1, width: '85%' }}
-                                        >
-                                            Generate Answer
-                                        </DisplayButton>
-                                    </Stack>
-                                    {isAnswered && (
-                                        <Stack>
-                                            <Typography
-                                                variant={'subtitle1'}
-                                                sx={{ fontWeight: '600' }}
-                                                color='#40007B'
-                                            >
-                                                Question:
-                                            </Typography>
-                                            <Typography
-                                                variant={'body1'}
-                                                sx={{ mb: 2 }}
-                                            >
-                                                {answer.question}
-                                            </Typography>
-                                            <Typography
-                                                variant={'subtitle1'}
-                                                sx={{ fontWeight: '600', mb: 0.5 }}
-                                                color='#40007B'
-                                            >
-                                                Document Bot Response:
-                                            </Typography>
-                                            <Box sx={{ mb: 2, overflow: 'auto' }}>
-                                                <Markdown>{answer.conclusion}</Markdown>
-                                                {answer.partial_docs_note && (
-                                                    <Typography component="p" style={{ fontStyle: 'italic', marginTop: '16px' }}>
-                                                        {answer.partial_docs_note}
-                                                    </Typography>
-                                                )}
-                                            </Box>
-                                            {<>
-                                                <Stack flexDirection={'row'} gap={'1rem'}>
-                                                    <DisplayButton variant="contained" onClick={() => setShowContext(!showContext)}>{showContext ? 'Hide Full Context' : 'Get Full Context'}</DisplayButton><DisplayButton variant="contained" onClick={() => {
-                                                        navigator.clipboard.writeText(answer.conclusion);
-                                                    }}>Copy Results</DisplayButton>
-                                                </Stack>
-                                                {showContext &&
-                                                    documents.map((document, index) => (
-                                                        <SourceBox key={index}>
-                                                            <Typography color='#40007B' display={'inline'}>Source:</Typography>{' '}
-                                                            <a href={document.url} target="_blank">
-                                                                {document.documentName}
-                                                            </a>
-                                                        </SourceBox>
-                                                    ))}
-                                            </>}
-                                        </Stack>
-                                    )}
-                                </Stack>
-                            </StyledPaper>
-                            {isLoading && <LinearProgress />}
-                        </StyledBox>
+                        <BasicTabs
+                            showContext={showContext}
+                            sideOpen={sideOpen}
+                            isLoading={isLoading}
+                            error={error}
+                            openBeta={openBeta}
+                            setOpenBeta={setOpenBeta}
+                            control={control}
+                            genAnswerDisabled={genAnswerDisabled}
+                            ask={ask}
+                            isAnswered={isAnswered}
+                            answer={answer}
+                            documents={documents}
+                            setShowContext={setShowContext} />
+
                         <PoweredBy>Responses Generated by OpenAI’s GPT-4o</PoweredBy>
                     </StyledPolicy>
                     <Modal open={open} onClose={() => setOpen(false)}>
@@ -547,9 +500,9 @@ export const PolicyPage = () => {
                             setRefresh={setRefresh}
                             setSelectedVectorDB={setSelectedVectorDB}
                             selectedVectorDB={selectedVectorDB}
-                            setError={setError}    
+                            setError={setError}
                             existingVectorDB={null}
-                            documents={documents}/>
+                            documents={documents} />
                     </Modal></>
             }
         </StyledLayout>
