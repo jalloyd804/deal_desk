@@ -15,7 +15,7 @@ export const router = createBrowserRouter([
             element: <AuthenticatedLayout />,
             children: [
                 {
-                    path: '/',
+                    path: '/docbot',
                     element: <PolicyPage/>
                 },
                 {
