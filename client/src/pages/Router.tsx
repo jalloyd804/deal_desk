@@ -19,14 +19,17 @@ export const router = createBrowserRouter([
                     element: <PolicyPage/>
                 },
                 {
+                    path: '/',
+                    element: <PolicyPage/>
+                },
+                {
                     path: '/documentManagement',
                     element: <DocumentManagement/>
                 },
                 {
                     path:'*',
-                    element: <Navigate to="/" replace />
+                    element: <PolicyPage/>
                 }
-
             ]
         },
         {

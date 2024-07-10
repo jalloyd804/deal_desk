@@ -89,7 +89,8 @@ function FormatError(props) {
 const welcomeTextSum = `The AI Document Summarization is a tool the generates summaries of documents uploaded by users. Upload policies, proposals, meeting minutes, operational procedures, policy manuals as PDF’s or Word documents to summarize. To begin, upload a document and click Generate Summary.​`
 
 export const SummaryPanel = ({
-    sideOpen
+    sideOpen, 
+    temperature
 }) => {
 
     const [file, setFile] = useState<File[] | null>([]);
@@ -111,37 +112,58 @@ export const SummaryPanel = ({
         summary: ''
     });
 
+    let model = ''
+    if (process.env.ENVIRONMENTFLAG === "Deloitte") {
+        model = "4801422a-5c62-421e-a00c-05c6a9e15de8"
+    }
+    else if (process.env.ENVIRONMENTFLAG === "NIH") {
+        model = "f89f9eec-ba78-4059-9f01-28e52d819171"
+    }
+
+    function escapeAndJoin(arr) {
+        return arr.map(str => JSON.stringify(str)).join(',');
+    }
+
     /**
     * Allow the user to ask a question
     */
     const generateSummary = async () => {
         try {
-
             // turn on loading
             setError('');
             setIsLoading(true);
-            setTimeout(() => {
-                setIsGenerated(true);
-                setSummary({
-                    summary: `Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been 
-the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of 
-type and scrambled it to make a type specimen book. It has survived not only five centuries, but also 
-the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 
-1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with 
-desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`});
-setIsLoading(false);
-            }, 5000);
-            return;
-            let pixel = `
-            VectorDatabaseQuery(engine="$" , command="<encode>$</encode>", limit=$)
+
+            const fileUpload = await actions.upload(file, '');
+            const fileLocation = escapeAndJoin(fileUpload.map(o => o.fileLocation));
+            // Pixel call to generate a map from the .pdf file
+            let pixel = `DocumentSummarization(filePath = [ ${fileLocation} ] )`;
+            const documentmapReturn = await actions.run<Record<string, any>[]>(pixel);
+            const {  output:documentMap, operationType:documentMapType } = documentmapReturn.pixelReturn[0];
+            if (documentMapType.indexOf('ERROR') > -1)
+                throw new Error(documentMap.response);
+            // Use map as additional context to give to the model
+            pixel =
+                `
+            LLM(engine="` + model + `", command=["<encode>Document Summarization</encode>"], paramValues=[{"full_prompt":[{'role':'system', 'content':"<encode>Please read the following text, formatted as a map with page numbers followed by the corresponding text from each page, and provide a comprehensive summary. Your summary should:\n\n1. Capture Main Points and Key Arguments: Identify and summarize the central themes and key arguments presented in the text. In addition, cite the page number(s) to reference specific points or arguments.\n2. Highlight Important Details, Findings, and Conclusions: Summarize critical data, findings, and conclusions drawn in the text, citing the relevant page numbers to enhance traceability and verification.\n3. Preserve Original Tone, Context, and Intent: Maintain the original tone and context of the text, ensuring that the summary reflects the intended message without distortion.\n4. Clarity and Coherence: Ensure that the summary is clear, coherent, and easily understood, even by individuals who may not have access to the full original text.\n5. Exclude Extraneous Information: Focus strictly on the content provided, avoiding personal opinions, interpretations, or information not directly drawn from the text.\n6. Logical and Cohesive Organization: Organize the summary in a logical and cohesive manner, grouping related points and findings together, and using page citations to guide the reader through the text’s structure.\n\nHere is the text (in map format):</encode>"}, {'role': 'system', 'content': '<encode>${JSON.stringify(documentMap)}</encode>'}` +
+                `]}, temperature=${temperature}])
             `;
 
             const response = await actions.run<Record<string, any>[]>(pixel);
-
             const { output, operationType } = response.pixelReturn[0];
-
             if (operationType.indexOf('ERROR') > -1)
                 throw new Error(output.response);
+            let conclusion 
+            if (output.response) {
+                conclusion = output.response
+            }
+
+            setTimeout(() => {
+                setIsGenerated(true);
+                setSummary({
+                    summary: conclusion});
+            setIsLoading(false);
+            });
+            return;
 
         } catch (e) {
             if (e) {
