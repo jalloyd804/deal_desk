@@ -34,9 +34,8 @@ const StyledHeader = styled('div')(() => ({
     background: 'linear-gradient(90deg, rgba(32,85,138,1) 0%, rgba(32,85,138,1) 30%, rgba(101,10,103,1) 100%)',
     backgroundPosition: 'top left',
     padding: '0 2rem',
-    //position: 'relative',
-    //zIndex: '3',
-    '& > img': {
+    alignItems: 'center',
+    '& img': {
         width: '4rem',
         height: 'auto'
     },
@@ -92,7 +91,7 @@ export const MainLayout = () => {
         <>
             <StyledMain id='outer'>
                 {/* <StyledWrapper id='wrapper'> */}
-                <StyledHeader><img src={NIHLogo} /><StyledH1>NIAID | GenAI</StyledH1></StyledHeader>
+                <StyledHeader><a href="https://genai.niaid.nih.gov/"><img src={NIHLogo} /></a><StyledH1>NIAID | GenAI</StyledH1></StyledHeader>
                 {/* <StyledMain id="main"> */}
                 <Outlet />
                 {/* </StyledMain> */}
