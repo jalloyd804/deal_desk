@@ -141,10 +141,26 @@ export const SummaryPanel = ({
             const {  output:documentMap, operationType:documentMapType } = documentmapReturn.pixelReturn[0];
             if (documentMapType.indexOf('ERROR') > -1)
                 throw new Error(documentMap.response);
+
+            // update keys to be Page 1, Page 2, etc.
+            let adjDocumentMap = {}
+            Object.keys(documentMap).forEach(key => {
+                adjDocumentMap[`---------- Page ${key} ----------`] = documentMap[key];
+              });
+
+            // format new lines to be cleaner
+            let documentMapCleaned = JSON.stringify(adjDocumentMap, null, 2);
+            let newDocumentMapCleaned = documentMapCleaned.replace(/\\n/g, '\n');
+            let formattedMap = Object.keys(adjDocumentMap).map(key => `
+                ${key}
+                ${adjDocumentMap[key].split('\n').join(' ')}
+                `).join('\n');
+          
+
             // Use map as additional context to give to the model
             pixel =
                 `
-            LLM(engine="` + model + `", command=["<encode>Document Summarization</encode>"], paramValues=[{"full_prompt":[{'role':'system', 'content':"<encode>Please read the following text, formatted as a map with page numbers followed by the corresponding text from each page, and provide a comprehensive summary. Your summary should:\n\n1. Capture Main Points and Key Arguments: Identify and summarize the central themes and key arguments presented in the text. In addition, cite the page number(s) to reference specific points or arguments.\n2. Highlight Important Details, Findings, and Conclusions: Summarize critical data, findings, and conclusions drawn in the text, citing the relevant page numbers to enhance traceability and verification.\n3. Preserve Original Tone, Context, and Intent: Maintain the original tone and context of the text, ensuring that the summary reflects the intended message without distortion.\n4. Clarity and Coherence: Ensure that the summary is clear, coherent, and easily understood, even by individuals who may not have access to the full original text.\n5. Exclude Extraneous Information: Focus strictly on the content provided, avoiding personal opinions, interpretations, or information not directly drawn from the text.\n6. Logical and Cohesive Organization: Organize the summary in a logical and cohesive manner, grouping related points and findings together, and using page citations to guide the reader through the text’s structure.\n\nHere is the text (in map format):</encode>"}, {'role': 'system', 'content': '<encode>${JSON.stringify(documentMap)}</encode>'}` +
+            LLM(engine="` + model + `", command=["<encode>Document Summarization</encode>"], paramValues=[{"full_prompt":[{'role':'system', 'content':"<encode>Please read the following text, formatted as a map with page numbers followed by the corresponding text from each page, and provide a comprehensive summary. Your summary should:\n\n1. Capture Main Points and Key Arguments: Identify and summarize the central themes and key arguments presented in the text. In addition, cite the page number(s) to reference specific points or arguments.\n2. Highlight Important Details, Findings, and Conclusions: Summarize critical data, findings, and conclusions drawn in the text, citing the relevant page numbers to enhance traceability and verification.\n3. Preserve Original Tone, Context, and Intent: Maintain the original tone and context of the text, ensuring that the summary reflects the intended message without distortion.\n4. Clarity and Coherence: Ensure that the summary is clear, coherent, and easily understood, even by individuals who may not have access to the full original text.\n5. Exclude Extraneous Information: Focus strictly on the content provided, avoiding personal opinions, interpretations, or information not directly drawn from the text.\n6. Logical and Cohesive Organization: Organize the summary in a logical and cohesive manner, grouping related points and findings together, and using page citations to guide the reader through the text’s structure.\n\nHere is the text:</encode>"}, {'role': 'system', 'content': '<encode>${formattedMap}</encode>'}` +
                 `]}, temperature=${temperature}])
             `;
 
