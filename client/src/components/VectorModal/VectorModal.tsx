@@ -177,6 +177,13 @@ export const VectorModal = ({
                 if (operationType.indexOf('ERROR') > -1) {
                     throw new Error(output as string);
                 }
+                const embedEngineTag = existingVectorDB || engine?.database_id;
+                const pixelTag = `SetEngineMetadata ( engine = [ "${embedEngineTag}" ], meta=[{"tag":["Docbot_Repo"]}], jsonCleanup=[true]) ;`;
+                const responseTag = await actions.run(pixelTag);
+                const { output:outputTag, operationType:operationTypeTag } = responseTag.pixelReturn[0];
+                if (operationTypeTag.indexOf('ERROR') > -1) {
+                    throw new Error(outputTag as string);
+                }
                 addUrlParam(newVector);
             } catch (e) {
                 if (e.message) {
