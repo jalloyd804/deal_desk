@@ -353,9 +353,6 @@ export const DocumentManagement = () => {
             <StyledLayout id='styledlayout'>
                 {sideOpen ? (
                     <Sidebar
-                        modelOptions={null}
-                        selectedModel={null}
-                        setSelectedModel={null}
                         vectorOptions={vectorOptions}
                         selectedVectorDB={selectedVectorDB}
                         setSelectedVectorDB={setSelectedVectorDB}
@@ -370,7 +367,8 @@ export const DocumentManagement = () => {
                         setRefresh={setRefresh}
                         setRefreshDB={setRefreshDB}
                         isDoc={true}
-                        showDocManage={false} />
+                        showDocManage={false}
+                        summarySelected={false} />
                 ) : (
                     <StyledButton onClick={() => setSideOpen(!sideOpen)}>
                         <ArrowForwardIosIcon />

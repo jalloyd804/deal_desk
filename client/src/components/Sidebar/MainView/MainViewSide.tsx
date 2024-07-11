@@ -65,7 +65,7 @@ const DisplayButton = styled(Button)(() => ({
 }));
 
 export const MainViewSide = ({ vectorOptions,
-    selectedVectorDB, setSelectedVectorDB, limit, setLimit, temperature, setTemperature, setError, setOpen, showDocManage
+    selectedVectorDB, setSelectedVectorDB, limit, setLimit, temperature, setTemperature, setError, setOpen, showDocManage, summarySelected
 }) => {
     const classes = useStyles();
     return (
@@ -73,6 +73,7 @@ export const MainViewSide = ({ vectorOptions,
             <Autocomplete
                 disableClearable
                 freeSolo
+                disabled={summarySelected}
                 options={vectorOptions}
                 value={selectedVectorDB}
                 filterOptions={(options, params) => {
@@ -119,7 +120,7 @@ export const MainViewSide = ({ vectorOptions,
             <StyledDiv style={{ display: 'flex' }}>
                 <Typography style={{ width: '100%', textAlign: 'center', fontWeight: '700', color: '#40007B' }}>Or</Typography>
             </StyledDiv>
-            <DisplayButton variant="contained" onClick={() => {
+            <DisplayButton disabled={summarySelected} variant="contained" onClick={() => {
                 setError('');
                 setOpen(true);
             }}>
@@ -147,6 +148,7 @@ export const MainViewSide = ({ vectorOptions,
                 valueLabelDisplay="auto"
                 onChange={(event, newValue) => setLimit(newValue)}
                 className={classes.root}
+                disabled={summarySelected}
             />
 
             <StyledDiv>
@@ -180,6 +182,7 @@ export const MainViewSide = ({ vectorOptions,
                 valueLabelDisplay="auto"
                 onChange={(event, newValue) => setTemperature(newValue)}
                 className={classes.root}
+                disabled={summarySelected}
             />
             <LinkBottomBox>{showDocManage && <Link color="#40007B" href="/documentManagement">Manage Document Repository</Link>}</LinkBottomBox>
         </>

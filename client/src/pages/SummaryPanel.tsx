@@ -100,6 +100,7 @@ export const SummaryPanel = ({
     const { actions } = useInsight();
     const [isGenerated, setIsGenerated] = useState(false);
     const [documents, setDocuments] = useState([]);
+    const [instructions, setInstructions] = useState('');
 
     const fileInput = useRef<HTMLInputElement>();
     interface GetInputPropsOptionsRef {
@@ -129,6 +130,7 @@ export const SummaryPanel = ({
     */
     const generateSummary = async () => {
         try {
+            console.log(instructions);
             // turn on loading
             setError('');
             setIsLoading(true);
@@ -310,6 +312,7 @@ export const SummaryPanel = ({
                             </div>
                         )}
                     </Dropzone>
+                    <TextField onChange={(e)=>setInstructions(e.target.value)} minRows={5}/>
                     <Stack
                         flexDirection={'row'}
                         alignItems={'center'}
