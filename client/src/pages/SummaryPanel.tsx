@@ -86,10 +86,10 @@ function FormatError(props) {
     return <Typography color="red" fontSize="inherit">Error: {textWithBreaks}</Typography>;
 }
 
-const welcomeTextSum = `The AI Document Summarization is a tool the generates summaries of documents uploaded by users. Upload policies, proposals, meeting minutes, operational procedures, policy manuals as PDF’s or Word documents to summarize. To begin, upload a document and click Generate Summary.​`
+const welcomeTextSum = `The AI Document Summarization is a tool the generates summaries of documents uploaded by users. Upload policies, proposals, meeting minutes, operational procedures, policy manuals as PDF’s to summarize. To begin, upload a document and click Generate Summary.​`
 
 export const SummaryPanel = ({
-    sideOpen, 
+    sideOpen,
     temperature
 }) => {
 
@@ -140,7 +140,7 @@ export const SummaryPanel = ({
             // Pixel call to generate a map from the .pdf file
             let pixel = `DocumentSummarization(filePath = [ ${fileLocation} ] )`;
             const documentmapReturn = await actions.run<Record<string, any>[]>(pixel);
-            const {  output:documentMap, operationType:documentMapType } = documentmapReturn.pixelReturn[0];
+            const { output: documentMap, operationType: documentMapType } = documentmapReturn.pixelReturn[0];
             if (documentMapType.indexOf('ERROR') > -1)
                 throw new Error(documentMap.response);
 
@@ -148,7 +148,7 @@ export const SummaryPanel = ({
             let adjDocumentMap = {}
             Object.keys(documentMap).forEach(key => {
                 adjDocumentMap[`---------- Page ${key} ----------`] = documentMap[key];
-              });
+            });
 
             // format new lines to be cleaner
             let documentMapCleaned = JSON.stringify(adjDocumentMap, null, 2);
@@ -157,7 +157,7 @@ export const SummaryPanel = ({
                 ${key}
                 ${adjDocumentMap[key].split('\n').join(' ')}
                 `).join('\n');
-          
+
 
             // Use map as additional context to give to the model
             pixel =
@@ -170,7 +170,7 @@ export const SummaryPanel = ({
             const { output, operationType } = response.pixelReturn[0];
             if (operationType.indexOf('ERROR') > -1)
                 throw new Error(output.response);
-            let conclusion 
+            let conclusion
             if (output.response) {
                 conclusion = output.response
             }
@@ -178,8 +178,9 @@ export const SummaryPanel = ({
             setTimeout(() => {
                 setIsGenerated(true);
                 setSummary({
-                    summary: conclusion});
-            setIsLoading(false);
+                    summary: conclusion
+                });
+                setIsLoading(false);
             });
             return;
 
@@ -190,7 +191,7 @@ export const SummaryPanel = ({
                 setError('There is an error, please check pixel calls');
             }
         } finally {
-            //setIsLoading(false);
+            setIsLoading(false);
         }
     };
 
@@ -205,7 +206,7 @@ export const SummaryPanel = ({
                         {error && <Alert color="error">{error.toString()}</Alert>}
                     </Stack>
                     <Dropzone
-                        accept={{ 'text/pdf': ['.pdf'], 'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'] }}
+                        accept={{ 'text/pdf': ['.pdf'] }}
                         onDrop={(acceptedFiles, fileRejections) => {
                             let tempMaxTotal = 0;
                             if (fileRejections.length > 0) {
@@ -312,7 +313,7 @@ export const SummaryPanel = ({
                             </div>
                         )}
                     </Dropzone>
-                    <TextField onChange={(e)=>setInstructions(e.target.value)} minRows={5}/>
+                    <TextField onChange={(e) => setInstructions(e.target.value)} minRows={5} />
                     <Stack
                         flexDirection={'row'}
                         alignItems={'center'}
@@ -349,11 +350,12 @@ export const SummaryPanel = ({
                                 >
                                     Summary:
                                 </Typography>
+
                                 <Typography
                                     variant={'body1'}
                                     sx={{ mb: 2 }}
                                 >
-                                    {summary.summary}
+                                    <Markdown>{summary.summary}</Markdown>
                                 </Typography>
                             </>}
                     </Stack>
