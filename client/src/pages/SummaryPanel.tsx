@@ -375,7 +375,7 @@ export const SummaryPanel = ({
                                 variant={'body1'}
                             sx={{ fontStyle: 'italic' }}
                         >
-                            Note: Truncation occurred on {truncationKey} because the input document was too large.
+                            Note: The document text exceeded the model's maximum allowed size and was cut off at {truncationKey}.
                             </Typography>}
                             </>}
                     </Stack>
