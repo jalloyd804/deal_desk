@@ -205,6 +205,7 @@ export const SummaryPanel = ({
                         <Typography variant="body1">{welcomeTextSum}</Typography>
                         {error && <Alert color="error">{error.toString()}</Alert>}
                     </Stack>
+                    <Typography color='#40007B'>Step 1. Upload a .pdf document for summarization</Typography>
                     <Dropzone
                         accept={{ 'text/pdf': ['.pdf'] }}
                         onDrop={(acceptedFiles, fileRejections) => {
@@ -313,7 +314,8 @@ export const SummaryPanel = ({
                             </div>
                         )}
                     </Dropzone>
-                    <TextField onChange={(e) => setInstructions(e.target.value)} minRows={5} />
+                    <Typography color='#40007B'>Step 2 (Optional). Provide additional context on specific subjects from the document you wish the summary to highlight</Typography>
+                    <TextField onChange={(e) => setInstructions(e.target.value)} minRows={5} multiline placeholder='Enter additional context'/>
                     <Stack
                         flexDirection={'row'}
                         alignItems={'center'}

@@ -7,7 +7,6 @@ import {
     Tabs,
     Tab
 } from '@mui/material';
-import { useForm } from 'react-hook-form';
 import { useInsight } from '@semoss/sdk-react';
 import { Sidebar } from '../components/Sidebar';
 import { VectorModal } from '../components/VectorModal';
@@ -68,7 +67,7 @@ const welcomeText = `
 The AI Document Bot is a chat interface between users and uploaded documents.
 Upload policies, proposals, meeting minutes, operational procedures,
 policy manuals as PDF’s or Word documents and ask questions.
-To begin, select a document repository on the right or create a new one.
+To begin, select a document repository on the left or create a new one.
 The Document Bot searches through the selected documents for content to answer questions.
 It is best to spell out acronyms to improve the results.
 If the user was to ask about large language models, it is recommended to format the
@@ -129,19 +128,17 @@ function a11yProps(index: number) {
 function BasicTabs({
     showContext,
     sideOpen,
-    isLoading,
-    error,
     openBeta,
     setOpenBeta,
-    control,
     genAnswerDisabled,
-    ask,
-    isAnswered,
-    answer,
-    documents,
     setShowContext,
     temperature,
-    setSummarySelected
+    setSummarySelected,
+    selectedVectorDB,
+    setSelectedVectorDB,
+    vectorOptions,
+    setRefresh,
+    limit
 }) {
     const [value, setValue] = useState(0);
 
@@ -160,21 +157,20 @@ function BasicTabs({
                 </Tabs>
             </Box>
             <CustomTabPanel value={value} index={0}>
-            <DocBotPanel    isLoading={isLoading}
-                            sideOpen={sideOpen}
+            <DocBotPanel    sideOpen={sideOpen}
                             welcomeText={welcomeText}
                             warningText={warningText}
-                            error={error}
                             openBeta={openBeta}
                             setOpenBeta={setOpenBeta}
-                            control={control}
                             genAnswerDisabled={genAnswerDisabled}
-                            ask={ask}
-                            isAnswered={isAnswered}
-                            answer={answer}
                             showContext={showContext}
                             setShowContext={setShowContext}
-                            documents={documents}/>
+                            selectedVectorDB={selectedVectorDB}
+                            temperature = {temperature}
+                            setSelectedVectorDB = {setSelectedVectorDB}
+                            vectorOptions={vectorOptions}
+                            setRefresh = {setRefresh}
+                            limit = {limit}/>
             </CustomTabPanel>
             <CustomTabPanel value={value} index={1}>
                 <SummaryPanel 
@@ -188,17 +184,11 @@ export const PolicyPage = () => {
     const { actions } = useInsight();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
-    const [isAnswered, setIsAnswered] = useState(false);
     const [showContext, setShowContext] = useState(false);
     const [showDocManage, setShowDocManage] = useState(false);
     const [openBeta, setOpenBeta] = useState(true);
     const [summarySelected, setSummarySelected] = useState(false);
-    //From the LLM
-    const [answer, setAnswer] = useState({
-        question: '',
-        conclusion: '',
-        partial_docs_note: ''
-    });
+    
     // Model Catalog and first model in dropdown
     const [modelOptions, setModelOptions] = useState([]);
     const [selectedModel, setSelectedModel] = useState<Model>({});
@@ -207,22 +197,16 @@ export const PolicyPage = () => {
     const [vectorOptions, setVectorOptions] = useState([]);
     const [selectedVectorDB, setSelectedVectorDB] = useState<Model>({});
     //Controlling the modal
-    const [open, setOpen] = useState<boolean>(false);
     const [refresh, setRefresh] = useState<boolean>(false);
 
     //Controlling the Sidebar
     const [sideOpen, setSideOpen] = useState<boolean>(true);
-    const [documents, setDocuments] = useState([]);
-    const { control, handleSubmit } = useForm({
-        defaultValues: {
-            QUESTION: '',
-        },
-    });
-
+    
     const [limit, setLimit] = useState<number>(5);
     const [temperature, setTemperature] = useState<number>(0.3);
 
-    const classes = useStyles();
+    const [open, setOpen] = useState<boolean>(false);
+
 
     let model = ''
     if (process.env.ENVIRONMENTFLAG === "Deloitte") {
@@ -231,147 +215,6 @@ export const PolicyPage = () => {
     else if (process.env.ENVIRONMENTFLAG === "NIH") {
         model = "f89f9eec-ba78-4059-9f01-28e52d819171"
     }
-
-    /**
-     * Allow the user to ask a question
-     */
-    const ask = handleSubmit(async (data: { QUESTION: string }) => {
-        try {
-            // turn on loading
-            setError('');
-            setIsLoading(true);
-            setIsAnswered(false);
-
-            if (!data.QUESTION) {
-                throw new Error('Question is required');
-            }
-            let pixel = `
-            VectorDatabaseQuery(engine="${selectedVectorDB.database_id}" , command="<encode>${data.QUESTION}</encode>", limit=${limit})
-            `;
-
-            const response = await actions.run<Record<string, any>[]>(pixel);
-
-            const { output, operationType } = response.pixelReturn[0];
-
-            if (operationType.indexOf('ERROR') > -1)
-                throw new Error(output.response);
-
-            let context_docs = ``;
-            // Stores the Document Name as the key, and the download key as the value
-            let documentTracker: Dictionary = {};
-            let documents = [];
-            // Storing the insight cache ID
-            let storedPath;
-            let insightID = "";
-            let docs_used = 0
-            for (let i = 0; i <= output.length - 1; i++) {
-                if (output[i].score || output[i].Score <= 1.5) {
-                    const content = output[i].content || output[i].Content;
-                    const document_name = output[i].source || output[i].Source;
-                    const source = document_name + ", Page(s): " + output[i].Divider;
-                    context_docs += `{'role': 'system', 'content': '<encode>${content}</encode>'},`;
-                    if (!(document_name in documentTracker)) {
-                        docs_used += 1;
-                        // Getting the download URL setup
-                        pixel = `DownloadVectorPdf("` + document_name + `", "${selectedVectorDB.database_id}")`;
-                        const absolutePathPixel = await actions.run<Record<string, any>[]>(pixel);
-                        const { output: absolutePath, operationType: absolutePathType } = absolutePathPixel.pixelReturn[0];
-                        if (absolutePathType.indexOf('ERROR') > -1)
-                            throw new Error(absolutePath.response);
-                        if (insightID == "") {
-                            insightID = absolutePath.Insight_ID;
-                        }
-                        storedPath = absolutePath;
-                        // Pushing a new document, with a new download key into documents list
-                        let currDoc = {
-                            downloadKey: storedPath.Download_Key,
-                            documentName: source,
-                            page: output[i].Divider,
-                            fileLocation: storedPath.File_Absolute_Path,
-                            // url : new URL(`${process.env.ENDPOINT}${process.env.MODULE}/api/engine/downloadFile`)
-                            url: `${process.env.ENDPOINT}${process.env.MODULE}/api/engine/downloadFile?insightId=${insightID}&fileKey=${encodeURIComponent(storedPath.Download_Key)}`,
-                        };
-                        documents.push(currDoc);
-
-                        documentTracker[document_name] = currDoc;
-                    }
-                    // If the document is already within the list, we want to use the same download key that we already have stored
-                    else {
-                        let matchedDoc = documentTracker[document_name];
-                        let currDoc = {
-                            downloadKey: matchedDoc.downloadKey,
-                            documentName: source,
-                            page: output[i].Divider,
-                            fileLocation: matchedDoc.fileLocation,
-                            // url : new URL(`${process.env.ENDPOINT}${process.env.MODULE}/api/engine/downloadFile`)
-                            url: `${process.env.ENDPOINT}${process.env.MODULE}/api/engine/downloadFile?insightId=${insightID}&fileKey=${encodeURIComponent(matchedDoc.downloadKey)}`,
-                        }
-                        documents.push(currDoc);
-                    }
-                }
-            }
-
-            let partial_docs_note = ''
-            if (docs_used == 1 && docs_used < output.length) {
-                partial_docs_note = `Note: Only ${docs_used} source was used to answer this question.`
-            } else if (docs_used > 1 && docs_used < output.length) {
-                partial_docs_note = `Note: Only ${docs_used} sources were used to answer this question.`
-            };
-
-            if (context_docs.length > 0)
-                context_docs = context_docs.substring(
-                    0,
-                    context_docs.length - 1,
-                );
-
-            setDocuments(documents);
-
-            pixel =
-                `
-            LLM(engine="` + model + `", command=["<encode>${data.QUESTION}</encode>"], paramValues=[{"full_prompt":[{'role':'system', 'content':"<encode>You are an advanced AI designed to provide detailed and accurate analyses of various documents. Your goal is to answer questions based on the information contained within these documents, ensuring thoroughness, clarity, and relevance. If the answer cannot be found in the documents, inform the user explicitly. Under no circumstances should you create information not explicitly stated in the documents. Limit inferences to those supported by and related to the provided data.\n\nGuidelines:\n1. Analyze Thoroughly: Carefully read and analyze the content of the documents provided.\n2. Provide Relevant Information: Ensure all answers are based solely on the information within the documents.\n3. Be Clear and Concise: Offer clear and concise responses, avoiding ambiguity and unnecessary details.\n4. Acknowledge Limitations: If the answer is not present in the documents, state that the information is not available.\n5. Maintain Integrity: Always provide truthful and accurate information.\n6. Structured Response: Answers should be presented in a logical and organized manner, ensuring readability.\n\nAdditional Protocol for Scope and Information Integrity:\n- Strict Adherence to Scope: You must not extrapolate or infer information beyond what is explicitly stated in the documents. Avoid making up information or hypothesizing when the text  is not sufficient to address the query.\n- Explicit Disclosure: If the information needed to answer a query is not contained within the documents, clearly state that the answer is beyond the scope of the provided materials and cannot be addressed.\n\nQuestion:\n${data.QUESTION}</encode>"},` +
-                context_docs +
-                `]}, temperature=${temperature}])
-            `;
-
-            // only need to call LLM if documents that meet the threshold were found
-            let conclusion = ''
-            if (docs_used > 0) {
-                const LLMresponse = await actions.run<[{ response: string }]>(
-                    pixel,
-                );
-
-                const { output: LLMOutput, operationType: LLMOperationType } =
-                    LLMresponse.pixelReturn[0];
-
-                if (LLMOperationType.indexOf('ERROR') > -1) {
-                    throw new Error(LLMOutput.response);
-                }
-
-                if (LLMOutput.response) {
-                    conclusion = LLMOutput.response
-                }
-            } else {
-                conclusion = 'The required information is not available in the provided documents. Please attempt a different question or upload other documents.'
-            }
-
-            // set answer based on data
-            setAnswer({
-                question: data.QUESTION,
-                conclusion: conclusion,
-                partial_docs_note: partial_docs_note
-            });
-
-            setIsAnswered(true);
-        } catch (e) {
-            if (e) {
-                setError(e);
-            } else {
-                setError('There is an error, please check pixel calls');
-            }
-        } finally {
-            setIsLoading(false);
-        }
-    });
 
     useEffect(() => {
         setIsLoading(true);
@@ -485,34 +328,21 @@ export const PolicyPage = () => {
                         <BasicTabs
                             showContext={showContext}
                             sideOpen={sideOpen}
-                            isLoading={isLoading}
-                            error={error}
                             openBeta={openBeta}
                             setOpenBeta={setOpenBeta}
-                            control={control}
                             genAnswerDisabled={genAnswerDisabled}
-                            ask={ask}
-                            isAnswered={isAnswered}
-                            answer={answer}
-                            documents={documents}
                             setShowContext={setShowContext}
                             temperature={temperature}
-                            setSummarySelected={setSummarySelected} />
-
+                            setSummarySelected={setSummarySelected}
+                            selectedVectorDB = {selectedVectorDB}
+                            setSelectedVectorDB = {setSelectedVectorDB}
+                            vectorOptions={vectorOptions}
+                            setRefresh = {setRefresh}
+                            limit = {limit}
+                        />
                         <PoweredBy>Responses Generated by OpenAI’s GPT-4o</PoweredBy>
                     </StyledPolicy>
-                    <Modal open={open} onClose={() => setOpen(false)}>
-                        <VectorModal
-                            setOpen={setOpen}
-                            open={open}
-                            vectorOptions={vectorOptions}
-                            setRefresh={setRefresh}
-                            setSelectedVectorDB={setSelectedVectorDB}
-                            selectedVectorDB={selectedVectorDB}
-                            setError={setError}
-                            existingVectorDB={null}
-                            documents={documents} />
-                    </Modal></>
+                  </>
             }
         </StyledLayout>
     );
