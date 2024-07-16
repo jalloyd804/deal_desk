@@ -100,7 +100,7 @@ const welcomeText = `
 The AI Document Bot is a chat interface between users and uploaded documents.
 Upload policies, proposals, meeting minutes, operational procedures,
 policy manuals as PDF’s or Word documents and ask questions.
-To begin, select a document repository on the right or create a new one.
+To begin, select a document repository on the left or create a new one.
 The Document Bot searches through the selected documents for content to answer questions.
 It is best to spell out acronyms to improve the results.
 If the user was to ask about large language models, it is recommended to format the
