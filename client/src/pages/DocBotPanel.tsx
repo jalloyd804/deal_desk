@@ -67,6 +67,10 @@ const SourceBox = styled('div')(() => ({
     }
 }));
 
+interface Dictionary {
+    [key: string]: any;
+}
+
 export const DocBotPanel = ({
     sideOpen,
     welcomeText,
