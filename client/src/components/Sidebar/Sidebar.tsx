@@ -36,9 +36,6 @@ export const LinkBottomBox = styled(Box)(() => ({
 }));
 
 export const Sidebar = ({
-    modelOptions,
-    selectedModel,
-    setSelectedModel,
     vectorOptions,
     selectedVectorDB,
     setSelectedVectorDB,
@@ -53,7 +50,8 @@ export const Sidebar = ({
     setRefresh,
     setRefreshDB,
     isDoc,
-    showDocManage
+    showDocManage,
+    summarySelected
 }) => {
 
     return (
@@ -73,6 +71,7 @@ export const Sidebar = ({
                 setError={setError}
                 setOpen={setOpen}
                 showDocManage={showDocManage}
+                summarySelected={summarySelected}
             />}
             {isDoc && <DocViewSide
                 vectorOptions={vectorOptions}
