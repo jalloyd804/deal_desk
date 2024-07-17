@@ -254,7 +254,7 @@ export const SummaryPanel = ({
 
                             }
                             setTotalSize(tempMaxTotal);
-                        }} multiple={true} maxFiles={1} maxSize={10000000}
+                        }} multiple={true} maxFiles={1} maxSize={15000000}
                     >
                         {({ getRootProps, getInputProps }) => (
                             <div
@@ -321,7 +321,7 @@ export const SummaryPanel = ({
                                                     sx={{ color: '#40a0ff' }}
                                                 />
                                             </Avatar>
-                                            <div><StyledLink>Click to upload</StyledLink> or drag and drop.<br />Maximum individual file size: 10MB.<br />Maximum set of documents size: 40MB.</div>
+                                            <div><StyledLink>Click to upload</StyledLink> or drag and drop.<br />Maximum file size: 15MB.</div>
                                         </Typography>
                                     </label>
                                 </div>
