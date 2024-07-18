@@ -85,16 +85,15 @@ export const DocBotPanel = ({
     setSelectedVectorDB,
     vectorOptions,
     setRefresh,
-    limit
+    limit,
+    open,
+    setOpen
 }) => {
 
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
     const [isAnswered, setIsAnswered] = useState(false);
     const [documents, setDocuments] = useState([]);
-    //Controlling the modal
-    const [open, setOpen] = useState<boolean>(false);
-
     //From the LLM
     const [answer, setAnswer] = useState({
         question: '',
