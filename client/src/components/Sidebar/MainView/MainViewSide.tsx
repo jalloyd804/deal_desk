@@ -61,6 +61,8 @@ const DisplayButton = styled(Button)(() => ({
     },
     '&[disabled]': {
         color: 'rgba(255, 255, 255, .8)',
+        backgroundImage: 'none',
+
     },
 }));
 
