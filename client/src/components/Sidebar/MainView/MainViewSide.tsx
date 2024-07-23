@@ -61,6 +61,8 @@ const DisplayButton = styled(Button)(() => ({
     },
     '&[disabled]': {
         color: 'rgba(255, 255, 255, .8)',
+        backgroundImage: 'none',
+
     },
 }));
 
@@ -184,7 +186,7 @@ export const MainViewSide = ({ vectorOptions,
                 className={classes.root}
                 disabled={summarySelected}
             />
-            <LinkBottomBox>{showDocManage && <Link color="#40007B" href="/documentManagement">Manage Document Repository</Link>}</LinkBottomBox>
+            <LinkBottomBox>{showDocManage && <Link color="#40007B" href="https://genai.niaid.nih.gov/documentManagement/">Manage Document Repository</Link>}</LinkBottomBox>
         </>
     );
 }
