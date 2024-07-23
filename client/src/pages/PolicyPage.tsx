@@ -17,6 +17,7 @@ import { AIBotError } from './Error'
 import { Model } from '../interfaces/Model'
 import { makeStyles } from '@material-ui/core/styles';
 
+
 const useStyles = makeStyles(theme => ({
     root: {
         '& [class*="MuiButtonBase-root-MuiTab-root"]': {
@@ -208,9 +209,9 @@ export const PolicyPage = () => {
     
     const [limit, setLimit] = useState<number>(5);
     const [temperature, setTemperature] = useState<number>(0.3);
+    
 
     const [open, setOpen] = useState<boolean>(false);
-
 
     let model = ''
     if (process.env.ENVIRONMENTFLAG === "Deloitte") {
@@ -219,6 +220,8 @@ export const PolicyPage = () => {
     else if (process.env.ENVIRONMENTFLAG === "NIH") {
         model = "f89f9eec-ba78-4059-9f01-28e52d819171"
     }
+
+
 
     useEffect(() => {
         setIsLoading(true);
@@ -254,6 +257,8 @@ export const PolicyPage = () => {
         });
 
         setIsLoading(false);
+        
+
     }, []);
 
     useEffect(() => {
@@ -288,7 +293,6 @@ export const PolicyPage = () => {
         if (selectedVectorDB === null) return true;
         if (Object.keys(selectedVectorDB).length === 0) return true;
     }
-
     function runOutput(output) {
         setVectorOptions(output);
         const currentUrl = new URL(window.location.href).searchParams;
@@ -300,7 +304,6 @@ export const PolicyPage = () => {
         }
         setRefresh(false);
     }
-
     return (
         <StyledLayout id='styledlayout'>
             {error == 'You do not have access to the model' ? <AIBotError /> :
@@ -351,5 +354,6 @@ export const PolicyPage = () => {
                   </>
             }
         </StyledLayout>
+        
     );
 };
