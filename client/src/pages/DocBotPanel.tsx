@@ -18,7 +18,14 @@ import Close from '@mui/icons-material/Close';
 import { useState } from 'react';
 import { useInsight } from '@semoss/sdk-react';
 import { VectorModal } from '@/components/VectorModal';
-
+import { useSearchParams } from 'react-router-dom'
+import NewWindow from 'react-new-window'
+import { Document, Page } from 'react-pdf';
+import { pdfjs } from 'react-pdf';
+import 'pdfjs-dist/build/pdf.worker.min.mjs';
+import 'react-pdf/dist/Page/AnnotationLayer.css';
+import 'react-pdf/dist/Page/TextLayer.css';
+import { PDFViewer } from './PDFViewer';
 
 const DisplayButton = styled(Button)(() => ({
     backgroundImage: 'linear-gradient(90deg, #20558A 0%, #650A67 100%)',
@@ -67,6 +74,16 @@ const SourceBox = styled('div')(() => ({
     }
 }));
 
+const StyledPdfViewer = styled('div')(() => ({
+    paddingRight: '50px',
+    paddingTop: '10px'
+
+}));
+const StyledPage = styled(Page)(() => ({
+    display: 'content'
+
+}));
+
 interface Dictionary {
     [key: string]: any;
 }
@@ -94,6 +111,7 @@ export const DocBotPanel = ({
     const [error, setError] = useState('');
     const [isAnswered, setIsAnswered] = useState(false);
     const [documents, setDocuments] = useState([]);
+    const [PDFS, setPDFS] = useState([]);
     //From the LLM
     const [answer, setAnswer] = useState({
         question: '',
@@ -107,13 +125,24 @@ export const DocBotPanel = ({
     });
 
     const { actions } = useInsight();
-
     let model = ''
     if (process.env.ENVIRONMENTFLAG === "Deloitte") {
         model = "4801422a-5c62-421e-a00c-05c6a9e15de8"
     }
     else if (process.env.ENVIRONMENTFLAG === "NIH") {
         model = "f89f9eec-ba78-4059-9f01-28e52d819171"
+    }
+
+    const openPDF = (document) => {
+        let currentPDFS = [];
+        PDFS.forEach(pdf =>{
+            currentPDFS.push(pdf)
+        })
+         currentPDFS.push(<NewWindow features={{ width: 673, height: 950, scrollbars: false }}>
+             <PDFViewer insight={document.insight} downloadkey={document.downloadKey}></PDFViewer>
+             </NewWindow>)
+        setPDFS(currentPDFS)
+    // `)
     }
 
     /**
@@ -169,6 +198,7 @@ export const DocBotPanel = ({
                         // Pushing a new document, with a new download key into documents list
                         let currDoc = {
                             downloadKey: storedPath.Download_Key,
+                            insight: insightID,
                             documentName: source,
                             page: output[i].Divider,
                             fileLocation: storedPath.File_Absolute_Path,
@@ -184,6 +214,7 @@ export const DocBotPanel = ({
                         let matchedDoc = documentTracker[document_name];
                         let currDoc = {
                             downloadKey: matchedDoc.downloadKey,
+                            insight: insightID,
                             documentName: source,
                             page: output[i].Divider,
                             fileLocation: matchedDoc.fileLocation,
@@ -358,7 +389,7 @@ export const DocBotPanel = ({
                                         documents.map((document, index) => (
                                             <SourceBox key={index}>
                                                 <Typography color='#40007B' display={'inline'}>Source:</Typography>{' '}
-                                                <a href={document.url} target="_blank">
+                                                <a onClick={() => openPDF(document)} target="_blank">
                                                     {document.documentName}
                                                 </a>
                                             </SourceBox>
@@ -381,6 +412,7 @@ export const DocBotPanel = ({
                     existingVectorDB={null}
                     documents={documents} />
             </Modal>
+            <div>{PDFS}</div>
         </>
     )
 }
