@@ -83,6 +83,14 @@ const StyledFooterRight = styled('div')(() => ({
     gap: '1rem',
 }));
 
+let url = ''
+if (process.env.DEVELOPMENTFLAG === "prod") {
+    url = "https://genai.niaid.nih.gov/"
+}
+else if (process.env.DEVELOPMENTFLAG === "dev") {
+    url = "https://genaidev.niaid.nih.gov/"
+}
+
 /**
  * Wrap the routes
  */
@@ -91,7 +99,7 @@ export const MainLayout = () => {
         <>
             <StyledMain id='outer'>
                 {/* <StyledWrapper id='wrapper'> */}
-                <StyledHeader><a href="https://genai.niaid.nih.gov/"><img src={NIHLogo} /></a><StyledH1>NIAID | GenAI</StyledH1></StyledHeader>
+                <StyledHeader><a href=url><img src={NIHLogo} /></a><StyledH1>NIAID | GenAI</StyledH1></StyledHeader>
                 {/* <StyledMain id="main"> */}
                 <Outlet />
                 {/* </StyledMain> */}
