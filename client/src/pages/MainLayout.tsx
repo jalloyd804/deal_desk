@@ -104,7 +104,7 @@ export const MainLayout = () => {
                 <Outlet />
                 {/* </StyledMain> */}
                 {/* </StyledWrapper> */}
-                <StyledFooter><StyledFooterLeft><a href="mailto:NIAIDHelpdeskTeam@mail.nih.gov">Contact Us</a></StyledFooterLeft><StyledFooterRight>{FOOTERLINKS.map((link, index) => <a key={index} href={link.href}>{link.label}</a>)}</StyledFooterRight></StyledFooter>
+                <StyledFooter><StyledFooterLeft><a href="mailto:niaidithelp@niaid.nih.gov">Contact Us</a></StyledFooterLeft><StyledFooterRight>{FOOTERLINKS.map((link, index) => <a key={index} href={link.href}>{link.label}</a>)}</StyledFooterRight></StyledFooter>
             </StyledMain>
         </>
     );
