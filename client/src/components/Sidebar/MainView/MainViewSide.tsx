@@ -234,7 +234,7 @@ export const MainViewSide = ({ vectorOptions,
             <StyledList dense={true}>
                 {conversations && Array.from(conversations.keys()).map((c:string)=>{
                     return(
-                <ListItem key={1} >
+                <ListItem key={c} >
                     <StyledListItemButton>
                         <StyledListItemIcon>
                             <ChatBubbleOutlineOutlined fontSize="inherit" />
