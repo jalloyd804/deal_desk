@@ -15,9 +15,12 @@ import {
 import { Controller, useForm } from 'react-hook-form';
 import { Markdown } from '@/components/common';
 import Close from '@mui/icons-material/Close';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useInsight } from '@semoss/sdk-react';
 import { VectorModal } from '@/components/VectorModal';
+import { Room } from '../interfaces/Room'
+import { RoomDetail } from '../interfaces/RoomDetail'
+
 import { useSearchParams } from 'react-router-dom'
 import NewWindow from 'react-new-window'
 import { Document, Page } from 'react-pdf';
@@ -87,7 +90,6 @@ const StyledPage = styled(Page)(() => ({
 interface Dictionary {
     [key: string]: any;
 }
-
 export const DocBotPanel = ({
     sideOpen,
     welcomeText,
@@ -104,13 +106,15 @@ export const DocBotPanel = ({
     setRefresh,
     limit,
     open,
-    setOpen
+    setOpen,
+    setConversations
 }) => {
 
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
     const [isAnswered, setIsAnswered] = useState(false);
     const [documents, setDocuments] = useState([]);
+    
     const [PDFS, setPDFS] = useState([]);
     //From the LLM
     const [answer, setAnswer] = useState({
@@ -132,20 +136,77 @@ export const DocBotPanel = ({
     else if (process.env.ENVIRONMENTFLAG === "NIH") {
         model = "f89f9eec-ba78-4059-9f01-28e52d819171"
     }
+    useEffect(() => {
+        setIsLoading(true);
+        let rooms = [];
+        // wait for the pixel to run
+        actions.run<
+            [
+                Room[],
+            ]
+        >(`GetUserConversationRooms();`).then((response) => {
+            const { output, operationType } = response.pixelReturn[0];
 
-    const openPDF = (document) => {
-        let currentPDFS = [];
-        PDFS.forEach(pdf =>{
-            currentPDFS.push(pdf)
-        })
-         currentPDFS.push(<NewWindow features={{ width: 673, height: 950, scrollbars: false }}>
-             <PDFViewer insight={document.insight} downloadkey={document.downloadKey}></PDFViewer>
-             </NewWindow>)
-        setPDFS(currentPDFS)
-    // `)
-    }
+            if (operationType.indexOf('ERROR') > -1) {
+                setIsLoading(false);
+                throw new Error('error loading rooms');
+            }
+            if (Array.isArray(output)) {
+                rooms = output;
+                let roomPromises:Promise<{
+                    pixelReturn: {
+                        isMeta: boolean;
+                        operationType: string[];
+                        output: RoomDetail[];
+                        pixelExpression: string;
+                        pixelId: string;
+                        additionalOutput?: unknown;
+                    }[];
+                }>[] = [];
+                let roomDetailsDictionary:Map<string,RoomDetail[]> = new Map<string,RoomDetail[]>();
+                output.forEach((item) => {
+                    roomPromises = roomPromises.concat(actions.run<
+                        [
+                            RoomDetail[]
+                        ]
+                    >(`GetRoomMessages(roomId=["${item.ROOM_ID}"])`));
+                });
+                Promise.all(roomPromises).then((response) => {
+                    response.forEach( pr =>
+                    {
+                        if (pr.pixelReturn.find( i => i.operationType.indexOf('ERROR') > -1)) {
+                            setIsLoading(false);
+                            throw new Error('error loading conversations');
+                        }
+                        let key = "";
+                        rooms.forEach( r => {
+                            if(pr.pixelReturn[0].pixelExpression.indexOf(r.ROOM_ID) !== -1)
+                                key = r.ROOM_ID;
+                        });
+                        roomDetailsDictionary.set(key,pr.pixelReturn[0].output);
+                    })
+                }).finally(()=>
+                setConversations(roomDetailsDictionary));
+                setIsLoading(false);
 
-    /**
+            }})}, []);
+        /**
+        * Allow the user to ask a question
+        */
+
+        const openPDF = (document) => {
+            let currentPDFS = [];
+            PDFS.forEach(pdf =>{
+                currentPDFS.push(pdf)
+            })
+             currentPDFS.push(<NewWindow features={{ width: 673, height: 950, scrollbars: false }}>
+                 <PDFViewer insight={document.insight} downloadkey={document.downloadKey}></PDFViewer>
+                 </NewWindow>)
+            setPDFS(currentPDFS)
+        // `)
+        }
+    
+         /**
     * Allow the user to ask a question
     */
     const ask = handleSubmit(async (data: { QUESTION: string }) => {
@@ -287,6 +348,7 @@ export const DocBotPanel = ({
             setIsLoading(false);
         }
     });
+
 
     return (
         <>
