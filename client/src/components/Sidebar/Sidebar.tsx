@@ -51,7 +51,8 @@ export const Sidebar = ({
     setRefreshDB,
     isDoc,
     showDocManage,
-    summarySelected
+    summarySelected,
+    conversations
 }) => {
 
     return (
@@ -72,6 +73,7 @@ export const Sidebar = ({
                 setOpen={setOpen}
                 showDocManage={showDocManage}
                 summarySelected={summarySelected}
+                conversations={conversations}
             />}
             {isDoc && <DocViewSide
                 vectorOptions={vectorOptions}
