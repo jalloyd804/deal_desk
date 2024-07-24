@@ -1,7 +1,7 @@
 import { createFilterOptions } from '@mui/material/Autocomplete';
 import { makeStyles } from "@material-ui/core/styles";
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
-
+import { ChatBubbleOutlineOutlined } from '@mui/icons-material';
 import {
     styled,
     Autocomplete,
@@ -11,6 +11,10 @@ import {
     Typography,
     Tooltip,
     Link,
+    ListItem,
+    List,
+    ListItemButton,
+    ListItemIcon,
 } from '@mui/material';
 
 import { LinkBottomBox } from '../Sidebar';
@@ -45,11 +49,17 @@ This changes the randomness of the LLM's output.
 The higher the temperature the more creative and imaginative your
 answer will be.
 `;
-
+const StyledSectionTitle = styled(Typography)(({ theme }) => ({
+    //marginBottom: theme.spacing(2)
+}));
 const StyledDiv = styled('div')(() => ({
     display: 'flex',
 }));
-
+const StyledListItemIcon = styled(ListItemIcon)(() => ({
+    //color: 'inherit',
+    minWidth: 'auto',
+    color: '#40007B'
+}));
 const DisplayButton = styled(Button)(() => ({
     backgroundImage: 'linear-gradient(90deg, #20558A 0%, #650A67 100%)',
     backgroundColor: '#20558A',
@@ -65,9 +75,34 @@ const DisplayButton = styled(Button)(() => ({
 
     },
 }));
-
+const StyledListItemButton = styled(ListItemButton)(({ theme, selected }) => ({
+    gap: theme.spacing(1.5),
+    padding: theme.spacing(1),
+    borderRadius: theme.shape.borderRadius,
+    backgroundColor: 'transparent',
+}));
+const StyledList = styled(List)(({ theme }) => ({
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '1rem',
+    overflow: 'auto',
+    minHeight: '40%',
+    scrollbarWidth: 'auto',
+    scrollbarColor: '#40007B transparent',
+    scrollBehavior: 'smooth',
+    '::-webkit-scrollbar': {
+        width: '8px',
+    },
+    '&::-webkit-scrollbar-thumb': {
+        background: '#40007B',
+        borderRadius: '8px',
+    },
+    '&::-webkit-scrollbar-track': {
+        background: 'none',
+    }
+}));
 export const MainViewSide = ({ vectorOptions,
-    selectedVectorDB, setSelectedVectorDB, limit, setLimit, temperature, setTemperature, setError, setOpen, showDocManage, summarySelected
+    selectedVectorDB, setSelectedVectorDB, limit, setLimit, temperature, setTemperature, setError, setOpen, showDocManage, summarySelected, conversations
 }) => {
     const classes = useStyles();
     return (
@@ -186,6 +221,32 @@ export const MainViewSide = ({ vectorOptions,
                 className={classes.root}
                 disabled={summarySelected}
             />
+            <>
+            <DisplayButton variant="contained" onClick={() => {
+                setError('');
+                setOpen(true);
+            }}>
+                New Chat
+            </DisplayButton>
+            <StyledSectionTitle variant="h5" style={{ color: "#40007B", marginTop: '5%'}}>
+                Chat History
+            </StyledSectionTitle>
+            <StyledList dense={true}>
+                {conversations && Array.from(conversations.keys()).map((c:string)=>{
+                    return(
+                <ListItem key={1} >
+                    <StyledListItemButton>
+                        <StyledListItemIcon>
+                            <ChatBubbleOutlineOutlined fontSize="inherit" />
+                        </StyledListItemIcon>
+                        <span style={{fontSize:'16px'}}>{conversations.get(c)[0].MESSAGE_DATA}</span>
+                    </StyledListItemButton>                       
+                </ListItem>
+                    )
+                })
+            }
+            </StyledList>
+        </>
             <LinkBottomBox>{showDocManage && <Link color="#40007B" href="https://genai.niaid.nih.gov/documentManagement/">Manage Document Repository</Link>}</LinkBottomBox>
         </>
     );
