@@ -12,17 +12,12 @@ const StyledSidebar = styled('div')(({ theme }) => ({
     flexDirection: 'column',
     borderRadius: '0',
     gap: theme.spacing(2),
-    width: '20%',
+    width: '26rem',
+    minWidth: '26rem',
     backgroundImage: 'linear-gradient(to bottom, #e7ecf8, #f9effd)',
     padding: `${theme.spacing(2)} ${theme.spacing(1)}`,
     left: '0%',
     zIndex: 2,
-    [theme.breakpoints.up('md')]: {
-        width: '30%',
-    },
-    [theme.breakpoints.up('xl')]: {
-        width: '20%',
-    },
 }));
 
 const StyledButton = styled(IconButton)(() => ({
