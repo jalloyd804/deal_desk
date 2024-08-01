@@ -1,4 +1,4 @@
-import { useEffect, useState} from 'react';
+import { useEffect, useState } from 'react';
 import {
     styled,
     Alert,
@@ -11,6 +11,7 @@ import {
     CircularProgress,
     OutlinedInput,
     InputAdornment,
+    Collapse,
     Modal
 } from '@mui/material';
 import { DataGrid, GridColDef, useGridApiRef, GridRowSelectionModel } from '@mui/x-data-grid';
@@ -23,6 +24,7 @@ import { useNavigate } from "react-router-dom";
 import SearchIcon from '@mui/icons-material/Search';
 import Delete from '@mui/icons-material/Delete';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import Close from '@mui/icons-material/Close';
 
 const StyledTitle = styled(Typography)(({ theme }) => ({
     color: theme.palette.modal.main,
@@ -77,7 +79,7 @@ const EmbedButton = styled(Button)(() => ({
     backgroundImage: 'linear-gradient(90deg, #20558A 0%, #650A67 100%)',
     backgroundColor: '#20558A',
     fontSize: '14px',
-    whiteSpace:'nowrap',
+    whiteSpace: 'nowrap',
     maxHeight: '30px',
     color: 'white',
     '&:hover': {
@@ -92,8 +94,8 @@ const EmbedButton = styled(Button)(() => ({
 const DeleteButton = styled(Button)(({ theme }) => ({
     backgroundColor: theme.palette.background.paper,
     fontSize: '14px',
-    marginRight:'2%',
-    whiteSpace:'nowrap',
+    marginRight: '2%',
+    whiteSpace: 'nowrap',
     float: 'right',
     maxHeight: '30px',
     borderColor: '#C00000',
@@ -135,6 +137,19 @@ const StyledInputBase = styled(OutlinedInput)(({ theme }) => ({
     },
 }));
 
+const StyledAlert = styled(Alert)(() => ({
+    marginTop: '1rem',
+    '& span.extend': {
+        color: 'rgb(64, 0, 123)',
+        borderBottom: '1px solid transparent',
+        cursor: 'pointer',
+        transition: '.2s ease border',
+        '&:hover': {
+            borderColor: 'rgb(64, 0, 123)',
+        }
+    }
+}));
+
 export const DocumentManagement = () => {
     const { actions } = useInsight();
     const [isLoading, setIsLoading] = useState(false);
@@ -152,11 +167,14 @@ export const DocumentManagement = () => {
     const [vectorOptions, setVectorOptions] = useState([]);
     const [selectedVectorDB, setSelectedVectorDB] = useState<Model>({});
     const [documents, setDocuments] = useState([]);
+    const [expirationInfo, setExpirationInfo] = useState(false);
     const [rowSelectionModel, setRowSelectionModel] = useState<GridRowSelectionModel>([]);
     //Controlling the Sidebar
     const [sideOpen, setSideOpen] = useState<boolean>(true);
+    const [alertOpen, setAlertOpen] = useState<boolean>(true);
     const dataGridApi = useGridApiRef();
     const navigate = useNavigate();
+    const EXPIRATION_DAYS = 40;
 
 
     function escapeAndJoin(arr) {
@@ -187,7 +205,6 @@ export const DocumentManagement = () => {
             if (e.message) {
                 setError(e.message);
             } else {
-                console.log(e);
                 setError(
                     'There was an error deleting your vector DB, please check pixel calls',
                 );
@@ -214,18 +231,19 @@ export const DocumentManagement = () => {
                 }
 
                 if (Array.isArray(output)) {
-                    if (output.length > 0){
+                    if (output.length > 0) {
                         setVectorOptions(output);
                         setSelectedVectorDB(output[0]);
                     }
-                    else{
+                    else {
                         navigate("/");
                     }
                     setIsLoading(false);
                 }
-            })}
-            catch (e) {
-                setIsLoading(false);
+            })
+        }
+        catch (e) {
+            setIsLoading(false);
             if (e) {
                 setError(e);
             } else {
@@ -242,7 +260,7 @@ export const DocumentManagement = () => {
         dataGridApi.current.setFilterModel({
             items: [
                 {
-                    id: 1,           
+                    id: 1,
                     field: 'fileName',
                     operator: 'contains',
                     value: searchFilter
@@ -253,10 +271,10 @@ export const DocumentManagement = () => {
     }
 
     const formatFileSize = (fileSize) => {
-        if (fileSize < 1000){
+        if (fileSize < 1000) {
             return Math.round(fileSize) + 'KB'
         }
-        else{
+        else {
             return Math.round(fileSize / 1000) + "MB"
         }
     }
@@ -265,6 +283,20 @@ export const DocumentManagement = () => {
             //setError('');
             setIsLoading(true);
             let pixel = `ListDocumentsInVectorDatabase(engine="${selectedVectorDB.database_id}")`;
+            let pixel2 = `GetExpiredVectorDatabases(${EXPIRATION_DAYS})`;
+            actions.run(pixel2).then((response) => {
+                const { output, operationType } = response.pixelReturn[0];
+                if (operationType.indexOf('ERROR') > -1) {
+                    throw new Error(output as string);
+                }
+                if (Object.hasOwn(output[selectedVectorDB.database_id], 'Days Since Last Update')) {
+                    if (output[selectedVectorDB.database_id]['Days Since Last Update'] > EXPIRATION_DAYS) {
+                        setExpirationInfo(true);
+                    } else {
+                        setExpirationInfo(false);
+                    }
+                }
+            });
             actions.run(pixel).then((response) => {
                 const { output, operationType } = response.pixelReturn[0];
                 if (operationType.indexOf('ERROR') > -1) {
@@ -272,19 +304,17 @@ export const DocumentManagement = () => {
                 }
                 if (Array.isArray(output)) {
                     let id = 1
-                    console.log(output)
                     output.forEach(item => {
                         item.id = id
                         item.fileSize = formatFileSize(item.fileSize)
                         id++;
                     })
-                    setDocuments(output)
+                    setDocuments(output.filter(a => a.fileName.substring(a.fileName.length - 3) !== 'csv'))
                     setIsLoading(false);
-                    console.log(documents);
                     setRefresh(false);
 
                 }
-            })
+            });
         }
         catch (e) {
             setIsLoading(false);
@@ -327,7 +357,7 @@ export const DocumentManagement = () => {
         setText(text);
         setId(id);
     }
-    
+
     const columns: GridColDef[] = [
         { field: 'fileName', headerName: 'Name', minWidth: 100, flex: 1 },
         { field: 'lastModified', headerName: 'Date Modified', minWidth: 75, flex: .75 },
@@ -380,14 +410,31 @@ export const DocumentManagement = () => {
                     <StyledTitle variant="h5">
                         {selectedVectorDB.database_name}
                     </StyledTitle>
+                    {expirationInfo && (<Collapse in={alertOpen}>
+                        <StyledAlert severity={'warning'}
+                            action={
+                                <IconButton
+                                    aria-label="close"
+                                    color="inherit"
+                                    size="small"
+                                    onClick={() => {
+                                        setAlertOpen(false);
+                                    }}
+                                >
+                                    <Close fontSize="inherit" />
+                                </IconButton>
+                            }
+                            sx={{ mb: 2 }}
+                        ><Typography variant={'caption'}><strong>This repository will be deleted since the last document was modified over {EXPIRATION_DAYS} days ago.</strong><br/>Would you like to extend the life of the repository? <span className='extend'>Yes.</span> <span className='extend'>No.</span></Typography></StyledAlert>
+                    </Collapse>)}
                     {noDoc && <StyledRedTitle variant="h6">
                         It appears you don't have any Document Repositories to manage. To get started, click "Upload Documents(s)".
                     </StyledRedTitle>}
                     {isLoading && <LoadingOverlay><CircularProgress /></LoadingOverlay>}
                     <Stack spacing={2} color='#4F4F4F'>
                         <div style={{ display: 'flex' }}>
-                            <Search style={{marginLeft:'auto',paddingRight:'2%'}}>
-                            {documents.length > 0 && <StyledInputBase
+                            <Search style={{ marginLeft: 'auto', paddingRight: '2%' }}>
+                                {documents.length > 0 && <StyledInputBase
                                     onChange={(event) => handleSearch(event)}
                                     placeholder="Search files"
                                     endAdornment={

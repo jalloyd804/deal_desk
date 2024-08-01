@@ -21,14 +21,6 @@ const FOOTERLINKS = [
     }
 ]
 
-const StyledWrapper = styled('div')(() => ({
-    display: 'flex',
-    flexDirection: 'column',
-    //minHeight: '100vh',
-    width: '100%',
-    overflow: 'auto',
-}));
-
 const StyledHeader = styled('div')(() => ({
     display: 'flex',
     background: 'linear-gradient(90deg, rgba(32,85,138,1) 0%, rgba(32,85,138,1) 30%, rgba(101,10,103,1) 100%)',
@@ -52,12 +44,6 @@ const StyledMain = styled('div')(() => ({
     flexDirection: 'column',
     flex: '1',
     height: '100vh',
-}));
-
-const StyledContent = styled('div')(({ theme }) => ({
-    display: 'flex',
-    height: '100%',
-    overflow: 'auto',
 }));
 
 const StyledFooter = styled('footer')(({ theme }) => ({
@@ -96,16 +82,10 @@ else if (process.env.DEVELOPMENTFLAG === "dev") {
  */
 export const MainLayout = () => {
     return (
-        <>
-            <StyledMain id='outer'>
-                {/* <StyledWrapper id='wrapper'> */}
-                <StyledHeader><a href={myurl}><img src={NIHLogo} /></a><StyledH1>NIAID | GenAI</StyledH1></StyledHeader>
-                {/* <StyledMain id="main"> */}
-                <Outlet />
-                {/* </StyledMain> */}
-                {/* </StyledWrapper> */}
-                <StyledFooter><StyledFooterLeft><a href="mailto:niaidithelp@niaid.nih.gov">Contact Us</a></StyledFooterLeft><StyledFooterRight>{FOOTERLINKS.map((link, index) => <a key={index} href={link.href}>{link.label}</a>)}</StyledFooterRight></StyledFooter>
-            </StyledMain>
-        </>
+        <StyledMain id='outer'>
+            <StyledHeader><a href={myurl}><img src={NIHLogo} /></a><StyledH1>NIAID | GenAI</StyledH1></StyledHeader>
+            <Outlet />
+            <StyledFooter><StyledFooterLeft><a href="mailto:niaidithelp@niaid.nih.gov">Contact Us</a></StyledFooterLeft><StyledFooterRight>{FOOTERLINKS.map((link, index) => <a key={index} href={link.href}>{link.label}</a>)}</StyledFooterRight></StyledFooter>
+        </StyledMain>
     );
 };

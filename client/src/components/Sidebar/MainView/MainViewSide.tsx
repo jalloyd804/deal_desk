@@ -16,6 +16,7 @@ import {
     ListItemButton,
     ListItemIcon,
 } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 import { LinkBottomBox } from '../Sidebar';
 
@@ -86,7 +87,7 @@ const StyledList = styled(List)(({ theme }) => ({
     flexDirection: 'column',
     gap: '1rem',
     overflow: 'auto',
-    minHeight: '40%',
+    flex: 1,
     scrollbarWidth: 'auto',
     scrollbarColor: '#40007B transparent',
     scrollBehavior: 'smooth',
@@ -105,6 +106,7 @@ export const MainViewSide = ({ vectorOptions,
     selectedVectorDB, setSelectedVectorDB, limit, setLimit, temperature, setTemperature, setError, setOpen, showDocManage, summarySelected, conversations
 }) => {
     const classes = useStyles();
+    const navigate = useNavigate();
     return (
         <>
             <Autocomplete
@@ -247,7 +249,10 @@ export const MainViewSide = ({ vectorOptions,
             }
             </StyledList>
         </>
-            <LinkBottomBox>{showDocManage && <Link color="#40007B" href="https://genai.niaid.nih.gov/documentManagement/">Manage Document Repository</Link>}</LinkBottomBox>
+            <LinkBottomBox>{showDocManage && <Link color="#40007B" component='button' onClick={(e) => {
+                e.preventDefault();
+                navigate('/documentManagement/');
+            }}>Manage Document Repository</Link>}</LinkBottomBox>
         </>
     );
 }

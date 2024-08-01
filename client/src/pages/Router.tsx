@@ -15,11 +15,11 @@ export const router = createBrowserRouter([
             element: <AuthenticatedLayout />,
             children: [
                 {
-                    path: '/docbot',
+                    path: '/',
                     element: <PolicyPage/>
                 },
                 {
-                    path: '/',
+                    path: '/docbot',
                     element: <PolicyPage/>
                 },
                 {
