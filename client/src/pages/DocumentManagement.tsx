@@ -398,8 +398,7 @@ export const DocumentManagement = () => {
                         setRefreshDB={setRefreshDB}
                         isDoc={true}
                         showDocManage={false}
-                        summarySelected={false}
-                        conversations={null} />
+                        summarySelected={false} />
                 ) : (
                     <StyledButton onClick={() => setSideOpen(!sideOpen)}>
                         <ArrowForwardIosIcon />
