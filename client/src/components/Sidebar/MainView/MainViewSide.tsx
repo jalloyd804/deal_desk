@@ -103,7 +103,7 @@ const StyledList = styled(List)(({ theme }) => ({
     }
 }));
 export const MainViewSide = ({ vectorOptions,
-    selectedVectorDB, setSelectedVectorDB, limit, setLimit, temperature, setTemperature, setError, setOpen, showDocManage, summarySelected, conversations
+    selectedVectorDB, setSelectedVectorDB, limit, setLimit, temperature, setTemperature, setError, setOpen, showDocManage, summarySelected
 }) => {
     const classes = useStyles();
     const navigate = useNavigate();
@@ -230,24 +230,6 @@ export const MainViewSide = ({ vectorOptions,
             }}>
                 New Chat
             </DisplayButton>
-            <StyledSectionTitle variant="h5" style={{ color: "#40007B", marginTop: '5%'}}>
-                Chat History
-            </StyledSectionTitle>
-            <StyledList dense={true}>
-                {conversations && Array.from(conversations.keys()).map((c:string)=>{
-                    return(
-                <ListItem key={c} >
-                    <StyledListItemButton>
-                        <StyledListItemIcon>
-                            <ChatBubbleOutlineOutlined fontSize="inherit" />
-                        </StyledListItemIcon>
-                        <span style={{fontSize:'16px'}}>{conversations.get(c)[0].MESSAGE_DATA}</span>
-                    </StyledListItemButton>                       
-                </ListItem>
-                    )
-                })
-            }
-            </StyledList>
         </>
             <LinkBottomBox>{showDocManage && <Link color="#40007B" component='button' onClick={(e) => {
                 e.preventDefault();
