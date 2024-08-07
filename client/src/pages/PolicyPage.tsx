@@ -288,7 +288,7 @@ export const PolicyPage = () => {
 
     function genAnswerDisabled() {
         if (isLoading) return true;
-        if (selectedVectorDB === null) return true;
+        if (selectedVectorDB === null || selectedVectorDB === undefined) return true;
         if (Object.keys(selectedVectorDB).length === 0) return true;
     }
     function runOutput(output) {
