@@ -246,7 +246,7 @@ export const VectorModal = ({
     const firstStep = () => {
         return (
             <>
-                {selectedVectorDB &&
+                {selectedVectorDB || selectedVectorDB === undefined &&
                     <>
                         <StyledButtonGroup>
                             <IconButton onClick={() => setOpen(false)}>
@@ -293,7 +293,7 @@ export const VectorModal = ({
                         </SansTypography>
                     </>
                 }
-                {!selectedVectorDB && <StyledTitle variant="h6">
+                {selectedVectorDB !== undefined && <StyledTitle variant="h6">
                     Upload Files
                 </StyledTitle>}
                 <Dropzone
