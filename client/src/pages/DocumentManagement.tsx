@@ -279,6 +279,7 @@ export const DocumentManagement = () => {
         }
     }
     useEffect(() => {
+        if (Object.keys(selectedVectorDB).length === 0) return;
         try {
             //setError('');
             setIsLoading(true);
