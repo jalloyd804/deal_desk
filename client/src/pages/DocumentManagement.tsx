@@ -430,7 +430,7 @@ export const DocumentManagement = () => {
                         It appears you don't have any Document Repositories to manage. To get started, click "Upload Documents(s)".
                     </StyledRedTitle>}
                     {isLoading && <LoadingOverlay><CircularProgress /></LoadingOverlay>}
-                    <Stack spacing={2} color='#4F4F4F'>
+                    <Stack spacing={2} color='#4F4F4F' height='100%' paddingBottom='2rem'>
                         <div style={{ display: 'flex' }}>
                             <Search style={{ marginLeft: 'auto', paddingRight: '2%' }}>
                                 {documents.length > 0 && <StyledInputBase
