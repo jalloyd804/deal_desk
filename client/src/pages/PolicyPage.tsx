@@ -43,7 +43,7 @@ const StyledLayout = styled('div')(() => ({
     display: 'flex',
     flexDirection: 'row',
     height: '100%',
-    overflow: 'auto',
+    overflow: 'hidden',
 }));
 
 const StyledButton = styled(IconButton)(() => ({
@@ -55,13 +55,14 @@ const StyledButton = styled(IconButton)(() => ({
 const PoweredBy = styled('div')(() => ({
     color: '#4F4F4F',
     alignSelf: 'center',
-    //padding: '0  0 2rem 280px',
+    paddingBottom: '2rem',
 }));
 
 const StyledPolicy = styled('div')(({ theme }) => ({
     display: 'flex',
     flexDirection: 'column',
-    width: '100%'
+    flex: 1,
+    overflow: 'auto'
 }));
 
 const welcomeText = `
