@@ -1,5 +1,6 @@
 package prerna.nih;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,30 +13,42 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import prerna.auth.User;
+import prerna.auth.utils.SecurityEngineUtils;
+import prerna.auth.utils.SecurityQueryUtils;
+import prerna.cluster.util.ClusterUtil;
+import prerna.cluster.util.DeleteEngineRunner;
+import prerna.engine.api.IEngine;
 import prerna.engine.api.IRDBMSEngine;
+import prerna.masterdatabase.DeleteFromMasterDB;
 import prerna.reactor.AbstractReactor;
+import prerna.reactor.utils.DeleteEngineReactor;
+import prerna.sablecc2.om.NounStore;
 import prerna.sablecc2.om.PixelDataType;
+import prerna.sablecc2.om.PixelOperationType;
 import prerna.sablecc2.om.nounmeta.NounMetadata;
+import prerna.usertracking.UserTrackingUtils;
 import prerna.util.Constants;
+import prerna.util.EngineSyncUtility;
+import prerna.util.UploadUtilities;
 import prerna.util.Utility;
 
 
-public class GetExpiredVectorDatabasesReactor extends AbstractReactor {
-	private static final Logger classLogger = LogManager.getLogger(GetExpiredVectorDatabasesReactor.class);
+public class VectorDatabaseManagementReactor extends AbstractReactor {
+	private static final Logger classLogger = LogManager.getLogger(VectorDatabaseManagementReactor.class);
 	private static final String DATABASE_TAG = "DATABASE_TAG";
+	private static final String DAYS_FOR_EXPIRATION = "DAYS TILL DATABASE GET DELETED";
 
-	public GetExpiredVectorDatabasesReactor() {
-		this.keysToGet = new String[] { DATABASE_TAG };
-		this.keyRequired = new int[] { 1 };
+	public VectorDatabaseManagementReactor() {
+		this.keysToGet = new String[] { DAYS_FOR_EXPIRATION, DATABASE_TAG };
+		this.keyRequired = new int[] { 1, 1 };
 	}
 
 	@Override
 	public NounMetadata execute() {
 		organizeKeys();
+		int numberOfDaysTillExpire = Integer.parseInt(this.keyValue.get(DAYS_FOR_EXPIRATION));
 		String database_tag = this.keyValue.get(DATABASE_TAG);
 		// #TODO: Might need a fix if there are multiple users
-		User user = this.insight.getUser();
 //		if (user != null) {
 //		for (AuthProvider provider : user.getLogins()) {
 //			String providerName = provider.name();
@@ -46,19 +59,16 @@ public class GetExpiredVectorDatabasesReactor extends AbstractReactor {
 //			providerMap.put("username", token.getUsername() == null ? "null" : (String) token.getUsername());
 //		}
 //	}
-		if (user != null) {
-			String username = user.getPrimaryLoginToken().getId();
-			Map<String, Map<String, Object>> engineInformation = getEngineInformation(database_tag, username);
-			List<Map<String, Object>> latestEngineInformation = getLatestRanInformation(engineInformation,
-					getStoredIds(engineInformation));
-			return new NounMetadata(latestEngineInformation, PixelDataType.CUSTOM_DATA_STRUCTURE);
-		} else {
-			classLogger.error("Null User found.");
-			return null;
-		}
+		Map<String, Map<String, Object>> engineInformation = getEngineInformation(database_tag);
+		List<Map<String, Object>> latestEngineInformation = getLatestRanInformation(engineInformation,
+				getStoredIds(engineInformation));
+		// Loop through found databases and delete database
+		List<Map<String, Object>> expiringDatabases = getExpiringDatabases(latestEngineInformation, numberOfDaysTillExpire);
+		List<String> deletedDbs = deleteDatabases(expiringDatabases);
+		return new NounMetadata(deletedDbs, PixelDataType.CONST_STRING, PixelOperationType.DELETE_ENGINE);
 	}
 
-	private Map<String, Map<String, Object>> getEngineInformation(String tag, String user) {
+	private Map<String, Map<String, Object>> getEngineInformation(String tag) {
 		IRDBMSEngine security = null;
 		Connection secuirtyCon = null;
 		Map<String, Map<String, Object>> engineInfos = null;
@@ -69,10 +79,9 @@ public class GetExpiredVectorDatabasesReactor extends AbstractReactor {
 					secuirtyCon = security.makeConnection();
 					engineInfos = new HashMap<>();
 					String psString1 = "SELECT ENGINENAME, ENGINE.ENGINEID, CREATEDBY FROM ENGINE INNER JOIN ENGINEMETA ON "
-							+ "ENGINEMETA.ENGINEID = ENGINE.ENGINEID WHERE ENGINEMETA.METAVALUE = ? AND ENGINE.CREATEDBY = ?;";
+							+ "ENGINEMETA.ENGINEID = ENGINE.ENGINEID WHERE ENGINEMETA.METAVALUE = ?;";
 					try (PreparedStatement ps = secuirtyCon.prepareStatement(psString1)) {
 						ps.setString(1, tag);
-						ps.setString(2, user);
 						if (ps.execute()) {
 							ResultSet rs = ps.getResultSet();
 							while (rs.next()) {
@@ -142,7 +151,6 @@ public class GetExpiredVectorDatabasesReactor extends AbstractReactor {
 			classLogger.error("Catch SQLException Error: " + e);
 			return null;
 		}
-		// Compares both maps to the found databaseIds
 		List<Map<String, Object>> listOfInformation = new ArrayList<>();
 		for (int i = 0; i < foundEngineIDs.size(); i++) {
 			if (latestInfo.containsKey(foundEngineIDs.get(i)) && engineData.containsKey(foundEngineIDs.get(i))) {
@@ -155,5 +163,62 @@ public class GetExpiredVectorDatabasesReactor extends AbstractReactor {
 			}
 		}
 		return listOfInformation;
+	}
+	
+	private List<Map<String, Object>> getExpiringDatabases(List<Map<String, Object>> foundDatabases, int expiringDate){
+		List<Map<String, Object>> expiringDatabases = new ArrayList<>();
+		for (int i = 0; i < foundDatabases.size(); i++) {
+			Map<String, Object> currDatabase = foundDatabases.get(i);
+			if (Integer.parseInt((String)currDatabase.get("Days Old")) >= expiringDate){
+				expiringDatabases.add(currDatabase);
+			}
+		}
+		return expiringDatabases;
+	}
+	
+	private List<String> deleteDatabases(List<Map<String, Object>> expiringDatabases){
+		List<String> deletedDbs = new ArrayList<>();
+		for (Map<String, Object> engineIdMap : expiringDatabases) {
+			String engineId = (String)engineIdMap.get("Engine ID");
+			String engineName = (String)engineIdMap.get("Engine Name");
+			// we may have the alias
+			engineId = SecurityQueryUtils.testUserEngineIdForAlias(this.insight.getUser(), engineId);
+			IEngine engine = Utility.getEngine(engineId);
+			IEngine.CATALOG_TYPE engineType = engine.getCatalogType();
+
+			deleteEngines(engine, engineType);
+			EngineSyncUtility.clearEngineCache(engineId);
+			UserTrackingUtils.deleteEngine(engineId);
+			// Run the delete thread in the background for removing from cloud storage
+			if (ClusterUtil.IS_CLUSTER) {
+				Thread deleteAppThread = new Thread(new DeleteEngineRunner(engineId, engineType));
+				deleteAppThread.start();
+			}
+			deletedDbs.add(engineName);
+		}
+		return deletedDbs;
+	}
+	
+	private boolean deleteEngines(IEngine engine, IEngine.CATALOG_TYPE engineType) {
+		String engineId = engine.getEngineId();
+		UploadUtilities.removeEngineFromDIHelper(engineId);
+		// remove from local master if database
+		if (IEngine.CATALOG_TYPE.DATABASE == engineType) {
+			DeleteFromMasterDB remover = new DeleteFromMasterDB();
+			remover.deleteEngineRDBMS(engineId);
+		}
+		// remove from security
+		SecurityEngineUtils.deleteEngine(engineId);
+		// remove from user tracking
+		UserTrackingUtils.deleteEngine(engineId);
+
+		// now try to actually remove from disk
+		try {
+			engine.delete();
+		} catch (IOException e) {
+			classLogger.error(Constants.STACKTRACE, e);
+		}
+
+		return true;
 	}
 }
