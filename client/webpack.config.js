@@ -85,6 +85,17 @@ const config = {
                     'css-loader',
                 ],
             },
+            {
+                test: /\.(png|svg|jpg|gif|pdf)$/,
+                use: [
+                  {
+                    loader: 'file-loader',
+                    options: {
+                      name: '[name].[ext]'
+                    }
+                  }
+                ]
+              }
 
             // Add your rules for custom modules here
             // Learn more about loaders from https://webpack.js.org/loaders/

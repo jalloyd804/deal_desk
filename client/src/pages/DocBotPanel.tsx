@@ -23,12 +23,11 @@ import { RoomDetail } from '../interfaces/RoomDetail'
 
 import { useSearchParams } from 'react-router-dom'
 import NewWindow from 'react-new-window'
-import { Document, Page } from 'react-pdf';
-import { pdfjs } from 'react-pdf';
-import 'pdfjs-dist/build/pdf.worker.min.mjs';
-import 'react-pdf/dist/Page/AnnotationLayer.css';
-import 'react-pdf/dist/Page/TextLayer.css';
+import { Page } from 'react-pdf';
 import { PDFViewer } from './PDFViewer';
+import axios from 'axios';
+import mammoth from 'mammoth';
+
 
 const DisplayButton = styled(Button)(() => ({
     backgroundImage: 'linear-gradient(90deg, #20558A 0%, #650A67 100%)',
@@ -137,16 +136,53 @@ export const DocBotPanel = ({
     }
 
 
-    const openPDF = (document) => {
-        let currentPDFS = [];
-        PDFS.forEach(pdf => {
-            currentPDFS.push(pdf)
-        })
-        currentPDFS.push(<NewWindow features={{ width: 673, height: 950, scrollbars: false }}>
-            <PDFViewer insight={document.insight} downloadkey={document.downloadKey}></PDFViewer>
-        </NewWindow>)
-        setPDFS(currentPDFS)
-        // `)
+    const openPDF = async (document) => {
+        console.log(document);
+        let extension = getExtension(document.documentName);
+        let uri = "";
+        console.log(extension);
+        let fileName = document.fileLocation.substring(document.fileLocation.lastIndexOf('/') + 1);
+        if (extension === 'docx' || extension === 'pdf') {
+
+            let currentPDFS = [];
+            PDFS.forEach(pdf => {
+                currentPDFS.push(pdf);
+            })
+            const file = `${process.env.ENDPOINT}${process.env.MODULE}/api/engine/downloadFile?insightId=${document.insight}&fileKey=${encodeURIComponent(document.downloadKey)}`
+            if (extension === 'docx') {
+                uri = file
+                const response = await axios.get(
+                    uri = file,
+                    {
+                        responseType: 'blob', // Important
+                    }
+                );
+
+                const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+                const reader = new FileReader();
+                reader.readAsArrayBuffer(blob);
+                reader.onload = () => {
+                    console.log(reader.result)
+                    mammoth.convertToHtml({ arrayBuffer: reader.result as ArrayBuffer }).then(result => {
+                        console.log(result)
+                        currentPDFS.push(<NewWindow features={{ width: 700, height: 960, scrollbars: false, url: window.location.href }}><div dangerouslySetInnerHTML={{ __html: result.value }}></div></NewWindow>)
+                    })
+
+
+                };
+            }
+            else {
+                uri = file
+                currentPDFS.push(
+                    <PDFViewer uri={uri} isDocX={extension === 'docx'} title={fileName}></PDFViewer>
+                )
+            }
+            setPDFS(currentPDFS)
+        }
+    }
+    const getExtension = (filename) => {
+        let extension = filename.split('.').pop()
+        return extension.split(',')[0]
     }
 
     /**
