@@ -1,5 +1,4 @@
-//package prerna.nih.xmlparser;
-package genai_docbot.java;
+package prerna.nih;
 
 import java.io.File;
 import java.io.FileInputStream;
