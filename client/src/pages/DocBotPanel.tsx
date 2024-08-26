@@ -10,7 +10,8 @@ import {
     Paper,
     Alert,
     Button,
-    Modal
+    Modal,
+    Link
 } from '@mui/material';
 import { Controller, useForm } from 'react-hook-form';
 import { Markdown } from '@/components/common';
@@ -430,9 +431,9 @@ export const DocBotPanel = ({
                                         documents.map((document, index) => (
                                             <SourceBox key={index}>
                                                 <Typography color='#40007B' display={'inline'}>Source:</Typography>{' '}
-                                                <a onClick={() => openPDF(document)} target="_blank">
+                                                <Link onClick={() => openPDF(document)}>
                                                     {document.documentName}
-                                                </a>
+                                                </Link>
                                             </SourceBox>
                                         ))}
                                 </>}
