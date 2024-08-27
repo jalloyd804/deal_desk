@@ -16,15 +16,10 @@ import {
 import { Controller, useForm } from 'react-hook-form';
 import { Markdown } from '@/components/common';
 import Close from '@mui/icons-material/Close';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useInsight } from '@semoss/sdk-react';
 import { VectorModal } from '@/components/VectorModal';
-import { Room } from '../interfaces/Room'
-import { RoomDetail } from '../interfaces/RoomDetail'
-
-import { useSearchParams } from 'react-router-dom'
-import NewWindow from 'react-new-window'
-import { Page } from 'react-pdf';
+import NewWindow from 'react-new-window';
 import { PDFViewer } from './PDFViewer';
 import axios from 'axios';
 import mammoth from 'mammoth';
@@ -72,19 +67,9 @@ const LoadingOverlay = styled('div')(() => ({
 
 const SourceBox = styled('div')(() => ({
     marginTop: '1rem',
-    '& > a': {
-        color: '#4f4f4f',
+    '& button': {
+        cursor: 'pointer',
     }
-}));
-
-const StyledPdfViewer = styled('div')(() => ({
-    paddingRight: '50px',
-    paddingTop: '10px'
-
-}));
-const StyledPage = styled(Page)(() => ({
-    display: 'content'
-
 }));
 
 interface Dictionary {
@@ -114,7 +99,7 @@ export const DocBotPanel = ({
     const [isAnswered, setIsAnswered] = useState(false);
     const [documents, setDocuments] = useState([]);
 
-    const [PDFS, setPDFS] = useState([]);
+    const [PDFs, setPDFs] = useState([]);
     //From the LLM
     const [answer, setAnswer] = useState({
         question: '',
@@ -138,17 +123,10 @@ export const DocBotPanel = ({
 
 
     const openPDF = async (document) => {
-        console.log(document);
         let extension = getExtension(document.documentName);
         let uri = "";
-        console.log(extension);
         let fileName = document.fileLocation.substring(document.fileLocation.lastIndexOf('/') + 1);
         if (extension === 'docx' || extension === 'pdf') {
-
-            let currentPDFS = [];
-            PDFS.forEach(pdf => {
-                currentPDFS.push(pdf);
-            })
             const file = `${process.env.ENDPOINT}${process.env.MODULE}/api/engine/downloadFile?insightId=${document.insight}&fileKey=${encodeURIComponent(document.downloadKey)}`
             if (extension === 'docx') {
                 uri = file
@@ -162,23 +140,16 @@ export const DocBotPanel = ({
                 const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
                 const reader = new FileReader();
                 reader.readAsArrayBuffer(blob);
-                reader.onload = () => {
-                    console.log(reader.result)
-                    mammoth.convertToHtml({ arrayBuffer: reader.result as ArrayBuffer }).then(result => {
-                        console.log(result)
-                        currentPDFS.push(<NewWindow features={{ width: 700, height: 960, scrollbars: false, url: window.location.href }}><div dangerouslySetInnerHTML={{ __html: result.value }}></div></NewWindow>)
+                reader.onload = async () => {
+                    await mammoth.convertToHtml({ arrayBuffer: reader.result as ArrayBuffer }).then(result => {
+                        setPDFs([...PDFs, <NewWindow features={{ width: 700, height: 960, scrollbars: false, url: window.location.href }} title={fileName}><div dangerouslySetInnerHTML={{ __html: result.value }}></div></NewWindow>]);
                     })
-
-
                 };
             }
             else {
-                uri = file
-                currentPDFS.push(
-                    <PDFViewer uri={uri} isDocX={extension === 'docx'} title={fileName}></PDFViewer>
-                )
+                uri = file;
+                setPDFs([...PDFs, <PDFViewer uri={uri} isDocX={extension === 'docx'} title={fileName}></PDFViewer>]);
             }
-            setPDFS(currentPDFS)
         }
     }
     const getExtension = (filename) => {
@@ -431,7 +402,7 @@ export const DocBotPanel = ({
                                         documents.map((document, index) => (
                                             <SourceBox key={index}>
                                                 <Typography color='#40007B' display={'inline'}>Source:</Typography>{' '}
-                                                <Link onClick={() => openPDF(document)}>
+                                                <Link color='#40007B' onClick={() => openPDF(document)} title='Open Document' component='button'>
                                                     {document.documentName}
                                                 </Link>
                                             </SourceBox>
@@ -454,7 +425,7 @@ export const DocBotPanel = ({
                     existingVectorDB={null}
                     documents={documents} />
             </Modal>
-            <div>{PDFS}</div>
+            <>{PDFs.length > 0 && PDFs}</>
         </>
     )
 }

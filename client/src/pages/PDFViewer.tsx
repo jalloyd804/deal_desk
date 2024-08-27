@@ -224,7 +224,7 @@ export const PDFViewer = ({ uri, isDocX, title }) => {
 
     if (!isDocX){
         return (
-            <NewWindow onOpen={openWindow} features={{ width: 700, height: 1000, scrollbars: false }} title={''}>
+            <NewWindow onOpen={openWindow} features={{ width: 700, height: 1000, scrollbars: false }} title={title}>
             <StyledPdfViewer>
                 <TopBar><ZoomButtons><button onClick={() => {
                     if (scale >= 10) return;
