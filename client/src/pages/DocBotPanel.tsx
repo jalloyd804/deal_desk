@@ -309,7 +309,7 @@ export const DocBotPanel = ({
                     <Stack spacing={2} color='#4F4F4F'>
                         <Stack spacing={2} style={{ fontSize: '12px' }}>
                             <Typography variant="h5" color='#40007B'><strong>Hello!</strong> Welcome to NIAID’s AI Document Bot</Typography>
-                            <Typography variant="body1">{welcomeText}</Typography>
+                            <Typography variant="body1">{welcomeText} <strong>Note: Any document repositories not used after 60 days are automatically removed.</strong></Typography>
                             {error && <Alert color="error">{error.toString()}</Alert>}
                             <Collapse in={openBeta}>
                                 <Alert severity={'info'}

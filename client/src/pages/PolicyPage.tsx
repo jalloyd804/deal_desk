@@ -73,8 +73,7 @@ To begin, select a document repository on the left or create a new one.
 The Document Bot searches through the selected documents for content to answer questions.
 It is best to spell out acronyms to improve the results.
 If the user was to ask about large language models, it is recommended to format the
-question as: What are large language models (LLMs)? Note: Any document repositories not used
-after 60 days are automatically removed.
+question as: What are large language models (LLMs)?
 `;
 
 const warningText = `
