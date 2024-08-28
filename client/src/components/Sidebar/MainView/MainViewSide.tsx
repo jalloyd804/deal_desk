@@ -37,6 +37,14 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
+let myurl = "";
+if (process.env.DEVELOPMENTFLAG === "prod") {
+    myurl = "https://genai.niaid.nih.gov/documentManagement/"
+}
+else if (process.env.DEVELOPMENTFLAG === "dev") {
+    myurl = "https://genaidev.niaid.nih.gov/documentManagement/"
+}
+
 const filter = createFilterOptions();
 
 const limitTooltipText = `
@@ -223,7 +231,7 @@ export const MainViewSide = ({ vectorOptions,
                 className={classes.root}
                 disabled={tabSelected===1 || showDisclaimer}
             />
-            <LinkBottomBox>{showDocManage && <Link color="#40007B" href="https://genai.niaid.nih.gov/documentManagement/">Manage Document Repository</Link>}</LinkBottomBox>
+            <LinkBottomBox>{showDocManage && <Link color="#40007B" href={myurl}>Manage Document Repository</Link>}</LinkBottomBox>
         </>
     );
 }
