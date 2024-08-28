@@ -21,6 +21,7 @@ import { useInsight } from '@semoss/sdk-react';
 import { VectorModal } from '@/components/VectorModal';
 import NewWindow from 'react-new-window';
 import { PDFViewer } from './PDFViewer';
+import { runPixel } from '@semoss/sdk';
 import axios from 'axios';
 import mammoth from 'mammoth';
 
@@ -80,7 +81,6 @@ export const DocBotPanel = ({
     welcomeText,
     openBeta,
     setOpenBeta,
-    warningText,
     genAnswerDisabled,
     showContext,
     setShowContext,
@@ -91,10 +91,10 @@ export const DocBotPanel = ({
     setRefresh,
     limit,
     open,
-    setOpen
+    setOpen,
+    roomId,
+    setIsLoading
 }) => {
-
-    const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
     const [isAnswered, setIsAnswered] = useState(false);
     const [documents, setDocuments] = useState([]);
@@ -108,7 +108,7 @@ export const DocBotPanel = ({
     });
     const { control, handleSubmit } = useForm({
         defaultValues: {
-            QUESTION: '',
+            QUESTION: ''
         },
     });
 
@@ -156,7 +156,6 @@ export const DocBotPanel = ({
         let extension = filename.split('.').pop()
         return extension.split(',')[0]
     }
-
     /**
 * Allow the user to ask a question
 */
@@ -164,17 +163,17 @@ export const DocBotPanel = ({
         try {
             // turn on loading
             setError('');
-            setIsLoading(true);
             setIsAnswered(false);
-
+            setIsLoading(true);
             if (!data.QUESTION) {
                 throw new Error('Question is required');
             }
+
             let pixel = `
             VectorDatabaseQuery(engine="${selectedVectorDB.database_id}" , command="<encode>${data.QUESTION}</encode>", limit=${limit})
             `;
 
-            const response = await actions.run<Record<string, any>[]>(pixel);
+            const response = await runPixel<Record<string, any>[]>(pixel,roomId);
 
             const { output, operationType } = response.pixelReturn[0];
 
@@ -188,7 +187,9 @@ export const DocBotPanel = ({
             // Storing the insight cache ID
             let storedPath;
             let insightID = "";
-            let docs_used = 0
+            let docs_used = 0;
+
+
             for (let i = 0; i <= output.length - 1; i++) {
                 if (output[i].score || output[i].Score <= 1.5) {
                     const content = output[i].content || output[i].Content;
@@ -263,8 +264,8 @@ export const DocBotPanel = ({
             // only need to call LLM if documents that meet the threshold were found
             let conclusion = ''
             if (docs_used > 0) {
-                const LLMresponse = await actions.run<[{ response: string }]>(
-                    pixel,
+                const LLMresponse = await runPixel<[{ response: string }]>(
+                    pixel, roomId
                 );
 
                 const { output: LLMOutput, operationType: LLMOperationType } =
@@ -305,29 +306,11 @@ export const DocBotPanel = ({
         <>
             <StyledBox width={sideOpen ? '100%' : '100%'} id='styledcontainer'>
                 <StyledPaper variant={'elevation'} elevation={2} square>
-                    {isLoading && <LoadingOverlay><CircularProgress /></LoadingOverlay>}
                     <Stack spacing={2} color='#4F4F4F'>
                         <Stack spacing={2} style={{ fontSize: '12px' }}>
                             <Typography variant="h5" color='#40007B'><strong>Hello!</strong> Welcome to NIAID’s AI Document Bot</Typography>
                             <Typography variant="body1">{welcomeText} <strong>Note: Any document repositories not used after 60 days are automatically removed.</strong></Typography>
                             {error && <Alert color="error">{error.toString()}</Alert>}
-                            <Collapse in={openBeta}>
-                                <Alert severity={'info'}
-                                    action={
-                                        <IconButton
-                                            aria-label="close"
-                                            color="inherit"
-                                            size="small"
-                                            onClick={() => {
-                                                setOpenBeta(false);
-                                            }}
-                                        >
-                                            <Close fontSize="inherit" />
-                                        </IconButton>
-                                    }
-                                    sx={{ mb: 2 }}
-                                ><Typography variant={'caption'}>{warningText}</Typography></Alert>
-                            </Collapse>
                         </Stack>
                         <Controller
                             name={'QUESTION'}

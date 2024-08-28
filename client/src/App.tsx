@@ -1,6 +1,5 @@
 import { Env } from '@semoss/sdk';
 import { InsightProvider } from '@semoss/sdk-react';
-
 import { router } from '@/pages/Router';
 import { Theme } from '@/components/common';
 import { RouterProvider } from 'react-router-dom';

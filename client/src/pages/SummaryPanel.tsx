@@ -90,13 +90,13 @@ const welcomeTextSum = `The AI Document Summarization is a tool the generates su
 
 export const SummaryPanel = ({
     sideOpen,
-    temperature
+    temperature,
+    setIsLoading
 }) => {
 
     const [file, setFile] = useState<File[] | null>([]);
     const [totalSize, setTotalSize] = useState<number>(0);
     const [error, setError] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
     const { actions } = useInsight();
     const [isGenerated, setIsGenerated] = useState(false);
     const [documents, setDocuments] = useState([]);
@@ -138,6 +138,7 @@ export const SummaryPanel = ({
             setIsLoading(true);
 
             const fileUpload = await actions.upload(file, '');
+            const fileName = fileUpload.map(o => o.fileName);
             const fileLocation = escapeAndJoin(fileUpload.map(o => o.fileLocation));
             // Pixel call to generate a map from the .pdf file
             let pixel = `DocumentSummarization(filePath = [ ${fileLocation} ] )`;
@@ -177,7 +178,7 @@ export const SummaryPanel = ({
 
                 pixel =
                 `
-            LLM(engine="` + model + `", command=["<encode>Please read the provided text, organized by page numbers, and create a brief summary (no more than 500 words) that adheres to the following instructions:\n\n1. Detailed Summary: Provide a detailed summary of the text, ensuring each significant element discussed is captured, with page numbers cited for each.\n2. Clarity and Coherence: Write the summary clearly and coherently, ensuring it can be understood independently of the full text.\n3. Content Focus: Directly summarize the information given in the text, avoiding the inclusion of personal opinions or external details.\n4. Logical Organization: Arrange the summary in a logical manner, using page numbers to guide the reader through the structure of the original text.${instructions ? "\n\nIn addition, consider the following areas to emphasize in the response. If these areas are not mentioned in the document, please mention so in the answer.\n\nAreas to emphasize: " + instructions : ""}\n\nFull Text:\n${formattedMap}</encode>"], paramValues=[{"temperature":${temperature}}])
+            LLM(engine="` + model + `", command=["<encode>${instructions ? instructions:"Summarize " + fileName}</encode>"], paramValues=[{"full_prompt":[{'role':'system', 'content':"<encode>Please read the provided text, organized by page numbers, and create a brief summary (no more than 500 words) that adheres to the following instructions:\n\n1. Detailed Summary: Provide a detailed summary of the text, ensuring each significant element discussed is captured, with page numbers cited for each.\n2. Clarity and Coherence: Write the summary clearly and coherently, ensuring it can be understood independently of the full text.\n3. Content Focus: Directly summarize the information given in the text, avoiding the inclusion of personal opinions or external details.\n4. Logical Organization: Arrange the summary in a logical manner, using page numbers to guide the reader through the structure of the original text.${instructions ? "\n\nIn addition, consider the following areas to emphasize in the response. If these areas are not mentioned in the document, please mention so in the answer.\n\nAreas to emphasize: " + instructions : ""}\n\nFull Text:\n${formattedMap}</encode>"} ] }, temperature=${temperature}])
             `;
 
             const response = await actions.run<Record<string, any>[]>(pixel);
@@ -212,7 +213,6 @@ export const SummaryPanel = ({
     return (
         <StyledBox width={sideOpen ? '100%' : '100%'} id='styledcontainer'>
             <StyledPaper variant={'elevation'} elevation={2} square>
-                {isLoading && <LoadingOverlay><CircularProgress /></LoadingOverlay>}
                 <Stack spacing={2} color='#4F4F4F'>
                     <Stack spacing={2} style={{ fontSize: '12px' }}>
                         <Typography variant="h5" color='#40007B'><strong>Hello!</strong> Welcome to NIAID’s AI Document Summarization ​</Typography>
@@ -270,8 +270,8 @@ export const SummaryPanel = ({
                             >
                                 <div
                                     style={{
-                                        paddingTop: '36px',
-                                        paddingBottom: '36px',
+                                        paddingTop: '2%',
+                                        paddingBottom: '2%',
                                     }}
                                     {...getRootProps({ className: 'dropzone' })}
                                 >
@@ -311,6 +311,7 @@ export const SummaryPanel = ({
                                                 alignItems: 'center',
                                             }}
                                         >
+                                            <Stack flexDirection={'row'}>
                                             <Avatar
                                                 sx={{
                                                     bgcolor: '#ebd6ff',
@@ -321,7 +322,20 @@ export const SummaryPanel = ({
                                                     sx={{ color: '#40a0ff' }}
                                                 />
                                             </Avatar>
-                                            <div><StyledLink>Click to upload</StyledLink> or drag and drop.<br />Maximum file size: 15MB.</div>
+                                            <Stack flexDirection={'column'} style={{flex:'1'}}>
+                                                <Stack flexDirection={'row'}>
+                                                    <StyledLink>Click to upload</StyledLink>&nbsp;or drag and drop.
+                                                </Stack>
+                                                <Stack>
+                                                Maximum file size: 15MB.
+                                                </Stack>
+                                                {file[0]?.name &&
+                                                    <Stack flexDirection={'row'} style={{marginTop:'5%'}}>
+                                                        <span style={{color:'#40007B', paddingRight:'1%'}}>Document:</span><span style={{fontWeight:'400',marginLeft:'1%'}}>{file[0]?.name}</span>
+                                                    </Stack>
+                                                }
+                                            </Stack>
+                                            </Stack>
                                         </Typography>
                                     </label>
                                 </div>
@@ -338,7 +352,7 @@ export const SummaryPanel = ({
                     >
                         <DisplayButton
                             variant="contained"
-                            disabled={isLoading || !file.length}
+                            disabled={!file.length}
                             onClick={generateSummary}
                             sx={{ flex: 1, width: '85%' }}
                         >
@@ -352,7 +366,6 @@ export const SummaryPanel = ({
                             color='#40007B'
                             marginTop='2%'
                         >
-                            {(file.length > 0 && totalSize <= 40000000) && <span>Document: <span style={{ color: '#4f4f4f' }}>{file[0].name}</span></span>}
                             {fileError !== null && <FormatError text={fileError.replace("10000000 bytes", "10MB")}></FormatError>}
                             {totalSize > 40000000 && <Typography color="red" fontSize="inherit">Error: Maximum set of documents size cannot exceeded 40MB.</Typography>}
                         </Typography>

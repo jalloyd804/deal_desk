@@ -410,9 +410,14 @@ export const DocumentManagement = () => {
                         setError={setError}
                         setRefresh={setRefresh}
                         setRefreshDB={setRefreshDB}
-                        isDoc={true}
+                        view='doc'
                         showDocManage={false}
-                        summarySelected={false} />
+                        tabSelected={''}
+                        setActiveConversation={null}
+                        activeConversation={null}
+                        showDisclaimer={false} 
+                        roomId={null}
+                        setRoomId={null}/>
                 ) : (
                     <StyledButton onClick={() => setSideOpen(!sideOpen)}>
                         <ArrowForwardIosIcon />

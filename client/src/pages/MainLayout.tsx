@@ -40,7 +40,7 @@ const StyledH1 = styled('h1')(() => ({
 }));
 
 const StyledMain = styled('div')(() => ({
-    display: 'flex', 
+    display: 'flex',
     flexDirection: 'column',
     flex: '1',
     height: '100vh',

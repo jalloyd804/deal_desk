@@ -25,7 +25,7 @@ const config = {
     devServer: {
         host: 'localhost',
         hot: true,
-        port: '3000',
+        port: '3001',
         proxy: {
             [MODULE]: {
                 target: ENDPOINT,

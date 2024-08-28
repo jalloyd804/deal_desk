@@ -6,18 +6,19 @@ import {
 import CloseIcon from '@mui/icons-material/Close';
 import { MainViewSide } from './MainView/MainViewSide';
 import { DocViewSide } from './DocView/DocViewSide'
+import { DocHistorySide } from './HistoryView/DocHistorySide';
 
 const StyledSidebar = styled('div')(({ theme }) => ({
     display: 'flex',
     flexDirection: 'column',
     borderRadius: '0',
     gap: theme.spacing(2),
-    width: '26rem',
-    minWidth: '26rem',
+    width: '15%',
+    minWidth: '15%',
     backgroundImage: 'linear-gradient(to bottom, #e7ecf8, #f9effd)',
     padding: `${theme.spacing(2)} ${theme.spacing(1)}`,
     left: '0%',
-    zIndex: 2,
+    overflow:'auto'
 }));
 
 const StyledButton = styled(IconButton)(() => ({
@@ -27,7 +28,6 @@ const StyledButton = styled(IconButton)(() => ({
 
 export const LinkBottomBox = styled(Box)(() => ({
     alignSelf: 'center',
-    marginTop: 'auto',
 }));
 
 export const Sidebar = ({
@@ -44,9 +44,14 @@ export const Sidebar = ({
     setError,
     setRefresh,
     setRefreshDB,
-    isDoc,
+    view,
     showDocManage,
-    summarySelected
+    tabSelected,
+    setActiveConversation,
+    activeConversation,
+    roomId,
+    setRoomId,
+    showDisclaimer
 }) => {
 
     return (
@@ -55,7 +60,7 @@ export const Sidebar = ({
                 <CloseIcon />
             </StyledButton>
 
-            {!isDoc && <MainViewSide
+            {((tabSelected===0 || tabSelected ===1) && view==='main') && <MainViewSide
                 vectorOptions={vectorOptions}
                 selectedVectorDB={selectedVectorDB}
                 setSelectedVectorDB={setSelectedVectorDB}
@@ -66,9 +71,11 @@ export const Sidebar = ({
                 setError={setError}
                 setOpen={setOpen}
                 showDocManage={showDocManage}
-                summarySelected={summarySelected}
+                tabSelected={tabSelected}
+                showDisclaimer={showDisclaimer}
+
             />}
-            {isDoc && <DocViewSide
+            {(view === 'doc') && <DocViewSide
                 vectorOptions={vectorOptions}
                 selectedVectorDB={selectedVectorDB}
                 setSelectedVectorDB={setSelectedVectorDB}
@@ -76,6 +83,12 @@ export const Sidebar = ({
                 setError={setError}
                 setRefresh={setRefresh}
                 setRefreshDB={setRefreshDB} />}
+            {(tabSelected===2 && view==='main') && <DocHistorySide
+                setActiveConversation={setActiveConversation}
+                activeConversation={activeConversation}
+                roomId={roomId}
+                setRoomId={setRoomId} />}
+
 
         </StyledSidebar>
     );

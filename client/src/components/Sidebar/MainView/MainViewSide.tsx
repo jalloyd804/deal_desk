@@ -1,7 +1,7 @@
 import { createFilterOptions } from '@mui/material/Autocomplete';
 import { makeStyles } from "@material-ui/core/styles";
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
-import { ChatBubbleOutlineOutlined } from '@mui/icons-material';
+
 import {
     styled,
     Autocomplete,
@@ -103,7 +103,7 @@ const StyledList = styled(List)(({ theme }) => ({
     }
 }));
 export const MainViewSide = ({ vectorOptions,
-    selectedVectorDB, setSelectedVectorDB, limit, setLimit, temperature, setTemperature, setError, setOpen, showDocManage, summarySelected
+    selectedVectorDB, setSelectedVectorDB, limit, setLimit, temperature, setTemperature, setError, setOpen, showDocManage, tabSelected, showDisclaimer
 }) => {
     const classes = useStyles();
     const navigate = useNavigate();
@@ -112,7 +112,7 @@ export const MainViewSide = ({ vectorOptions,
             <Autocomplete
                 disableClearable
                 freeSolo
-                disabled={summarySelected}
+                disabled={tabSelected===1 || showDisclaimer}
                 options={vectorOptions}
                 value={selectedVectorDB}
                 filterOptions={(options, params) => {
@@ -159,7 +159,7 @@ export const MainViewSide = ({ vectorOptions,
             <StyledDiv style={{ display: 'flex' }}>
                 <Typography style={{ width: '100%', textAlign: 'center', fontWeight: '700', color: '#40007B' }}>Or</Typography>
             </StyledDiv>
-            <DisplayButton disabled={summarySelected} variant="contained" onClick={() => {
+            <DisplayButton disabled={tabSelected===1 || showDisclaimer} variant="contained" onClick={() => {
                 setError('');
                 setOpen(true);
             }}>
@@ -187,7 +187,7 @@ export const MainViewSide = ({ vectorOptions,
                 valueLabelDisplay="auto"
                 onChange={(event, newValue) => setLimit(newValue)}
                 className={classes.root}
-                disabled={summarySelected}
+                disabled={tabSelected===1 || showDisclaimer}
             />
 
             <StyledDiv>
@@ -221,20 +221,9 @@ export const MainViewSide = ({ vectorOptions,
                 valueLabelDisplay="auto"
                 onChange={(event, newValue) => setTemperature(newValue)}
                 className={classes.root}
-                disabled={summarySelected}
+                disabled={tabSelected===1 || showDisclaimer}
             />
-            <>
-            <DisplayButton variant="contained" onClick={() => {
-                setError('');
-                setOpen(true);
-            }}>
-                New Chat
-            </DisplayButton>
-        </>
-            <LinkBottomBox>{showDocManage && <Link color="#40007B" component='button' onClick={(e) => {
-                e.preventDefault();
-                navigate('/documentManagement/');
-            }}>Manage Document Repository</Link>}</LinkBottomBox>
+            <LinkBottomBox>{showDocManage && <Link color="#40007B" href="https://genai.niaid.nih.gov/documentManagement/">Manage Document Repository</Link>}</LinkBottomBox>
         </>
     );
 }
