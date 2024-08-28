@@ -174,7 +174,7 @@ export const DocumentManagement = () => {
     const [alertOpen, setAlertOpen] = useState<boolean>(true);
     const dataGridApi = useGridApiRef();
     const navigate = useNavigate();
-    const EXPIRATION_DAYS = 40;
+    const EXPIRATION_WARNING = 40;
 
 
     function escapeAndJoin(arr) {
@@ -283,19 +283,20 @@ export const DocumentManagement = () => {
         try {
             //setError('');
             setIsLoading(true);
-            let pixel = `ListDocumentsInVectorDatabase(engine="${selectedVectorDB.database_id}")`;
-            let pixel2 = `GetExpiredVectorDatabases(${EXPIRATION_DAYS})`;
+            let pixel = `ListDocumentsInVectorDatabase(engine="${selectedVectorDB.database_id}");`;
+            let pixel2 = `GetExpiredVectorDatabases('Docbot_Repo');`;
             actions.run(pixel2).then((response) => {
                 const { output, operationType } = response.pixelReturn[0];
                 if (operationType.indexOf('ERROR') > -1) {
                     throw new Error(output as string);
                 }
-                if (Object.hasOwn(output[selectedVectorDB.database_id], 'Days Since Last Update')) {
-                    if (output[selectedVectorDB.database_id]['Days Since Last Update'] > EXPIRATION_DAYS) {
-                        setExpirationInfo(true);
-                    } else {
-                        setExpirationInfo(false);
-                    }
+                if (Array.isArray(output)) {
+                    output.map(item => {
+                        if (item['Engine ID'] === selectedVectorDB.database_id) {
+                            setAlertOpen(true);
+                            Number(item['Days Old']) > EXPIRATION_WARNING ? setExpirationInfo(true): setExpirationInfo(false);
+                        }
+                    });
                 }
             });
             actions.run(pixel).then((response) => {
@@ -339,25 +340,37 @@ export const DocumentManagement = () => {
 
     const deleteSingle = (fileName) => {
         DeleteDocs([fileName]);
-    }
+    };
 
     const deleteSelected = () => {
         let selectedRows = dataGridApi.current.getSelectedRows();
         const array: string[] = Array.from(selectedRows, ([fileName, value]) => ({ fileName, value })).map(item => item.value.fileName);
         DeleteDocs(array);
-    }
+    };
 
     const Confirm = (text: string, id: string) => {
         setOpen(true);
         setText(text);
         setId(id);
-    }
+    };
 
     const ConfirmSingle = (text: string, id: string) => {
         setOpenDelete(true);
         setText(text);
         setId(id);
-    }
+    };
+
+    const extendLife = async () => {
+        console.log(selectedVectorDB.database_id);
+        let pixel = `VectorDatabaseQuery(engine = "${selectedVectorDB.database_id}" , command = "<encode>...</encode>", limit = 1);`;
+        const response = await actions.run(pixel);
+        const { output, operationType } = response.pixelReturn[0];
+        if (operationType.indexOf('ERROR') > -1) {
+            throw new Error(output as string);
+        } else {
+            setAlertOpen(false);
+        }
+    };
 
     const columns: GridColDef[] = [
         { field: 'fileName', headerName: 'Name', minWidth: 100, flex: 1 },
@@ -425,7 +438,7 @@ export const DocumentManagement = () => {
                                 </IconButton>
                             }
                             sx={{ mb: 2 }}
-                        ><Typography variant={'caption'}><strong>This repository will be deleted since the last document was modified over {EXPIRATION_DAYS} days ago.</strong><br/>Would you like to extend the life of the repository? <span className='extend'>Yes.</span> <span className='extend'>No.</span></Typography></StyledAlert>
+                        ><Typography variant={'caption'}><strong>This repository will soon be deleted since the last document to be modified was over {EXPIRATION_WARNING} days ago.</strong><br/>Would you like to extend the life of the repository? <span className='extend' onClick={extendLife}>Yes.</span> <span className='extend' onClick={() => setAlertOpen(false)}>No.</span></Typography></StyledAlert>
                     </Collapse>)}
                     {noDoc && <StyledRedTitle variant="h6">
                         It appears you don't have any Document Repositories to manage. To get started, click "Upload Documents(s)".
