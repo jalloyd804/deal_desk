@@ -13,12 +13,12 @@ const StyledSidebar = styled('div')(({ theme }) => ({
     flexDirection: 'column',
     borderRadius: '0',
     gap: theme.spacing(2),
-    width: '15%',
-    minWidth: '15%',
+    width: '26rem',
+    minWidth: '26rem',
     backgroundImage: 'linear-gradient(to bottom, #e7ecf8, #f9effd)',
     padding: `${theme.spacing(2)} ${theme.spacing(1)}`,
     left: '0%',
-    overflow:'auto'
+    zIndex: 2,
 }));
 
 const StyledButton = styled(IconButton)(() => ({
@@ -28,6 +28,7 @@ const StyledButton = styled(IconButton)(() => ({
 
 export const LinkBottomBox = styled(Box)(() => ({
     alignSelf: 'center',
+    marginTop: 'auto',
 }));
 
 export const Sidebar = ({
@@ -51,7 +52,8 @@ export const Sidebar = ({
     activeConversation,
     roomId,
     setRoomId,
-    showDisclaimer
+    showDisclaimer,
+    expiringDatabases,
 }) => {
 
     return (
@@ -82,7 +84,8 @@ export const Sidebar = ({
                 actions={actions}
                 setError={setError}
                 setRefresh={setRefresh}
-                setRefreshDB={setRefreshDB} />}
+                setRefreshDB={setRefreshDB}
+                expiringDatabases={expiringDatabases} />}
             {(tabSelected===2 && view==='main') && <DocHistorySide
                 setActiveConversation={setActiveConversation}
                 activeConversation={activeConversation}

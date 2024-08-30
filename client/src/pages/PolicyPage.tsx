@@ -366,7 +366,8 @@ export const PolicyPage = () => {
                             activeConversation={activeConversation}
                             roomId={roomId}
                             setRoomId={setRoomId}
-                            showDisclaimer={!cookies.DOCBOT} />
+                            showDisclaimer={!cookies.DOCBOT}
+                            expiringDatabases={null} />
                     ) : (
                         <StyledButton onClick={() => setSideOpen(!sideOpen)}>
                             <ArrowForwardIosIcon />

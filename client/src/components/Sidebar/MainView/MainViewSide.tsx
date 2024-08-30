@@ -231,7 +231,10 @@ export const MainViewSide = ({ vectorOptions,
                 className={classes.root}
                 disabled={tabSelected===1 || showDisclaimer}
             />
-            <LinkBottomBox>{showDocManage && <Link color="#40007B" href={myurl}>Manage Document Repository</Link>}</LinkBottomBox>
+            {showDocManage && <LinkBottomBox><Link color="#40007B" component='button' onClick={(e) => {
+                e.preventDefault();
+                navigate('/documentManagement/');
+            }}>Manage Document Repository</Link></LinkBottomBox>}
         </>
     );
 }

@@ -4,6 +4,8 @@ import {
     List,
     ListItem,
     ListItemIcon,
+    ListItemText,
+    IconButton,
     ListItemButton,
     CircularProgress,
     Stack,
@@ -32,6 +34,13 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
+const StyledSectionTitle = styled(Typography)(() => ({
+    color: "#40007B",
+    marginBottom: 0,
+    alignSelf: 'center',
+    textAlign: 'center',
+}));
+
 const StyledEllipses = styled(Typography)(({ theme }) => ({
     overflow: 'hidden',
     textOverflow: 'ellipsis',
@@ -39,9 +48,9 @@ const StyledEllipses = styled(Typography)(({ theme }) => ({
 }));
 
 const StyledListItemIcon = styled(ListItemIcon)(() => ({
-    //color: 'inherit',
-    minWidth: 'auto',
-    color: '#40007B'
+    '& svg': {
+        fill: '#40007B',
+    }
 }));
 
 const StyledListItemButton = styled(ListItemButton)(({ theme, selected }) => ({
@@ -86,6 +95,24 @@ const StyledList = styled(List)(({ theme }) => ({
     },
     '&::-webkit-scrollbar-track': {
         background: 'none',
+    }
+}));
+
+const StyledListItem = styled(ListItem)(() => ({
+    cursor: 'pointer',
+    borderRadius: '5px',
+    '&.selected': {
+        backgroundColor: '#CCCEEB',
+        cursor: 'default',
+    }
+}));
+
+const StyledListText = styled(ListItemText)(() => ({
+    paddingRight: '6px',
+    '& > span': {
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
     }
 }));
 
@@ -155,31 +182,25 @@ export const DocHistorySide = ({ setActiveConversation, activeConversation, room
     return (
         <>
             {isLoading && <LoadingOverlay><CircularProgress /></LoadingOverlay>}
-            <Typography variant="h5" style={{ color: "#40007B", marginTop: '5%', textAlign: 'center' }}>
+            <StyledSectionTitle variant="h5">
                 Chat History
-            </Typography>
-            <Stack>
-            <StyledList dense={true} className={classes.root}>
-                {conversations.map((convo) => {
-                    return (
-                        <StyledListItemButton selected={convo.ROOM_ID === activeConversation} onClick={() => setActiveConversation(convo.ROOM_ID)}>
-                            <StyledListItemIcon>
-                                <ChatBubbleOutlineOutlined fontSize="inherit" />
-                            </StyledListItemIcon>
-                            <StyledEllipses style={{ fontSize: '16px' }}>{convo.ROOM_NAME ? convo.ROOM_NAME : convo.ROOM_ID}</StyledEllipses>
-                            <StyledListItemIcon style={{ marginLeft: 'auto' }} onClick={() => removeConversation(convo.ROOM_ID)}>
-                                <Close fontSize="inherit" />
-                            </StyledListItemIcon>
-                        </StyledListItemButton>
-                    );
-                })}
+            </StyledSectionTitle>
+            <StyledList dense={true}>
+                {conversations.map((convo, index) =>
+                    <StyledListItem onClick={() => setActiveConversation(convo.ROOM_ID)} key={index} className={convo.ROOM_ID === activeConversation ? 'selected' : undefined} secondaryAction={
+                        <IconButton onClick={() => removeConversation(convo.ROOM_ID)}>
+                            <svg viewBox="196.856 158.35 14 18" width="14" height="18" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M 197.856 174.35 C 197.856 175.45 198.756 176.35 199.856 176.35 L 207.856 176.35 C 208.956 176.35 209.856 175.45 209.856 174.35 L 209.856 162.35 L 197.856 162.35 L 197.856 174.35 Z M 210.856 159.35 L 207.356 159.35 L 206.356 158.35 L 201.356 158.35 L 200.356 159.35 L 196.856 159.35 L 196.856 161.35 L 210.856 161.35 L 210.856 159.35 Z" style={{ fill: '#40007B' }} transform="matrix(1, 0, 0, 1, 3.552713678800501e-15, 0)" />
+                            </svg>
+                        </IconButton>}>
+                        <StyledListItemIcon><ChatBubbleOutlineOutlined /></StyledListItemIcon>
+                        <StyledListText primary={convo.ROOM_NAME ? convo.ROOM_NAME : convo.ROOM_ID} />
+                    </StyledListItem>)}
             </StyledList>
-            <LinkBottomBox>{<Link color="#40007B" component='button' onClick={(e) => {
+            <LinkBottomBox><Link color="#40007B" component='button' onClick={(e) => {
                 e.preventDefault();
                 navigate('/documentManagement/');
-            }}>Manage Document Repository</Link>}</LinkBottomBox>
-
-            </Stack>
+            }}>Manage Document Repository</Link></LinkBottomBox>
         </>
     );
 }

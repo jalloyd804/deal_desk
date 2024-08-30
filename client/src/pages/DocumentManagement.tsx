@@ -160,6 +160,7 @@ export const DocumentManagement = () => {
     const [openEmbed, setOpenEmbed] = useState<boolean>(false);
     const [text, setText] = useState<string>(null);
     const [id, setId] = useState<string>(null);
+    const [expiringDatabases, setExpiringDatabases] = useState([]);
     const [refresh, setRefresh] = useState<boolean>(false);
     const [refreshDB, setRefreshDB] = useState<boolean>(false);
     const [noDoc, setNoDoc] = useState<boolean>(false);
@@ -283,18 +284,26 @@ export const DocumentManagement = () => {
         try {
             //setError('');
             setIsLoading(true);
-            let pixel = `ListDocumentsInVectorDatabase(engine="${selectedVectorDB.database_id}");`;
-            let pixel2 = `GetExpiredVectorDatabases('Docbot_Repo');`;
+            //const pixelLocalDev = (`SetContext("25a8a9d6-7706-405c-851a-02680028eca5");`); // IMPORTANT: Make sure this line is toggled when deploying to prod
+            const pixel = `ListDocumentsInVectorDatabase(engine="${selectedVectorDB.database_id}");`;
+            const pixel2 = `GetExpiredVectorDatabases('Docbot_Repo');`;
+            /* actions.run(pixelLocalDev).then((response) => {
+                const { output, operationType } = response.pixelReturn[0];
+                if (operationType.indexOf('ERROR') > -1) {
+                    throw new Error(output as string);
+                }
+            }); */ // IMPORTANT: Make sure this block is toggled when deploying to prod
             actions.run(pixel2).then((response) => {
                 const { output, operationType } = response.pixelReturn[0];
                 if (operationType.indexOf('ERROR') > -1) {
                     throw new Error(output as string);
                 }
                 if (Array.isArray(output)) {
+                    setExpiringDatabases(output.filter((item) => item['Days Old'] >= EXPIRATION_WARNING));
                     output.map(item => {
                         if (item['Engine ID'] === selectedVectorDB.database_id) {
                             setAlertOpen(true);
-                            Number(item['Days Old']) > EXPIRATION_WARNING ? setExpirationInfo(true): setExpirationInfo(false);
+                            Number(item['Days Old']) >= EXPIRATION_WARNING ? setExpirationInfo(true): setExpirationInfo(false);
                         }
                     });
                 }
@@ -362,7 +371,7 @@ export const DocumentManagement = () => {
 
     const extendLife = async () => {
         console.log(selectedVectorDB.database_id);
-        let pixel = `VectorDatabaseQuery(engine = "${selectedVectorDB.database_id}" , command = "<encode>...</encode>", limit = 1);`;
+        const pixel = `VectorDatabaseQuery(engine = "${selectedVectorDB.database_id}" , command = "<encode>...</encode>", limit = 1);`;
         const response = await actions.run(pixel);
         const { output, operationType } = response.pixelReturn[0];
         if (operationType.indexOf('ERROR') > -1) {
@@ -417,6 +426,7 @@ export const DocumentManagement = () => {
                         activeConversation={null}
                         showDisclaimer={false} 
                         roomId={null}
+                        expiringDatabases={expiringDatabases}
                         setRoomId={null}/>
                 ) : (
                     <StyledButton onClick={() => setSideOpen(!sideOpen)}>
@@ -429,7 +439,7 @@ export const DocumentManagement = () => {
                         {selectedVectorDB.database_name}
                     </StyledTitle>
                     {expirationInfo && (<Collapse in={alertOpen}>
-                        <StyledAlert severity={'warning'}
+                        <StyledAlert severity='error'
                             action={
                                 <IconButton
                                     aria-label="close"
@@ -443,7 +453,7 @@ export const DocumentManagement = () => {
                                 </IconButton>
                             }
                             sx={{ mb: 2 }}
-                        ><Typography variant={'caption'}><strong>This repository will soon be deleted since the last document to be modified was over {EXPIRATION_WARNING} days ago.</strong><br/>Would you like to extend the life of the repository? <span className='extend' onClick={extendLife}>Yes.</span> <span className='extend' onClick={() => setAlertOpen(false)}>No.</span></Typography></StyledAlert>
+                        ><Typography variant={'caption'}><strong>This repository hasn't been used in {EXPIRATION_WARNING} days. At 60 days it will be deleted.</strong><br/>Would you like to extend the life of the repository? <span className='extend' onClick={extendLife}>Yes.</span> <span className='extend' onClick={() => setAlertOpen(false)}>No.</span></Typography></StyledAlert>
                     </Collapse>)}
                     {noDoc && <StyledRedTitle variant="h6">
                         It appears you don't have any Document Repositories to manage. To get started, click "Upload Documents(s)".
