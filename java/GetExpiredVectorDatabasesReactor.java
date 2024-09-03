@@ -24,6 +24,7 @@ import prerna.util.Utility;
 public class GetExpiredVectorDatabasesReactor extends AbstractReactor {
 	private static final Logger classLogger = LogManager.getLogger(GetExpiredVectorDatabasesReactor.class);
 	private static final String DATABASE_TAG = "DATABASE_TAG";
+	private static final String DEFFERED_DATE = "2024-09-01 00:00:00"; //September 15, 2024
 
 	public GetExpiredVectorDatabasesReactor() {
 		this.keysToGet = new String[] { DATABASE_TAG };
@@ -120,8 +121,9 @@ public class GetExpiredVectorDatabasesReactor extends AbstractReactor {
 				modelInference = (IRDBMSEngine) Utility.getDatabase(Constants.MODEL_INFERENCE_LOGS_DB);
 				modelInferenceCon = modelInference.makeConnection();
 				String psString1 = "SELECT AGENT_ID, MAX(DATE_CREATED) as LAST_RUN, DATEDIFF(day, MAX(DATE_CREATED), CURRENT_TIMESTAMP) "
-						+ "AS DAYS_OLD FROM MESSAGE GROUP BY AGENT_ID;";
+						+ "AS DAYS_OLD, DATEDIFF(day, ?, CURRENT_TIMESTAMP) AS DEFFERED_DAYS_OLD FROM MESSAGE GROUP BY AGENT_ID;";
 				try (PreparedStatement ps = modelInferenceCon.prepareStatement(psString1)) {
+					ps.setString(1, DEFFERED_DATE);
 					if (ps.execute()) {
 						ResultSet rs = ps.getResultSet();
 						while (rs.next()) {
@@ -129,6 +131,7 @@ public class GetExpiredVectorDatabasesReactor extends AbstractReactor {
 							currEngine.put("Engine ID", rs.getString(1));
 							currEngine.put("Last Run", rs.getString(2));
 							currEngine.put("Days Old", rs.getString(3));
+							currEngine.put("Deffered Days Old", rs.getString(4));
 							latestInfo.put(rs.getString(1), currEngine);
 						}
 					}
