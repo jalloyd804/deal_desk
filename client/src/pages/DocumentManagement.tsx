@@ -284,18 +284,17 @@ export const DocumentManagement = () => {
         try {
             //setError('');
             setIsLoading(true);
-            const pixelLocalDev = (`SetContext("25a8a9d6-7706-405c-851a-02680028eca5");`); // IMPORTANT: Make sure this line is toggled when deploying to prod
+            // const pixelLocalDev = (`SetContext("25a8a9d6-7706-405c-851a-02680028eca5");`); // IMPORTANT: Make sure this line is toggled when deploying to prod
             const pixel = `ListDocumentsInVectorDatabase(engine="${selectedVectorDB.database_id}");`;
             const pixel2 = `GetExpiredVectorDatabases('Docbot_Repo');`;
-            actions.run(pixelLocalDev).then((response) => {
+            /* actions.run(pixelLocalDev).then((response) => {
                 const { output, operationType } = response.pixelReturn[0];
                 if (operationType.indexOf('ERROR') > -1) {
                     throw new Error(output as string);
                 }
-            }); // IMPORTANT: Make sure this block is toggled when deploying to prod
+            }); */ // IMPORTANT: Make sure this block is toggled when deploying to prod
             actions.run(pixel2).then((response) => {
                 const { output, operationType } = response.pixelReturn[0];
-                console.log(output);
                 if (operationType.indexOf('ERROR') > -1) {
                     throw new Error(output as string);
                 }
