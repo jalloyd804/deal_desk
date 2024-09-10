@@ -277,7 +277,7 @@ export const PolicyPage = () => {
             }
         });
         //Grabbing all the Vector Databases in CfG
-        pixel = `MyEngines ( engineTypes=["VECTOR"]);`;
+        pixel = `MyEngines ( engineTypes=["VECTOR"], metaFilters = [ {"tag": ["Docbot_Repo", "Global_Repo"] } ] );`;
 
         actions.run(pixel).then((response) => {
             const { output, operationType } = response.pixelReturn[0];
@@ -296,7 +296,7 @@ export const PolicyPage = () => {
     }, []);
 
     useEffect(() => {
-        let pixel = `MyEngines ( engineTypes=["VECTOR"]);`;
+        let pixel = `MyEngines ( engineTypes=["VECTOR"], metaFilters = [ {"tag": ["Docbot_Repo", "Global_Repo"] } ] );`;
 
         actions.run(pixel).then((response) => {
             const { output, operationType } = response.pixelReturn[0];
@@ -308,7 +308,7 @@ export const PolicyPage = () => {
             }
         });
 
-        pixel = `MyEngines ( engineTypes=["VECTOR"], permissionFilters=[1]);`;
+        pixel = `MyEngines ( engineTypes=["VECTOR"], permissionFilters=[1], metaFilters = [ {"tag": ["Docbot_Repo", "Global_Repo"] } ] );`;
         actions.run(pixel).then((response) => {
             const { output, operationType } = response.pixelReturn[0];
             if (operationType.indexOf('ERROR') > -1) {
