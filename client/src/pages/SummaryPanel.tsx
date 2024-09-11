@@ -148,7 +148,7 @@ export const SummaryPanel = ({
                 throw new Error(documentMap.response);
 
             // define token limit for input text
-            let tokenLimit = 5000;
+            let tokenLimit = 110000;
 
             // populate map while checking for potential truncation
             let adjDocumentMap = {};
