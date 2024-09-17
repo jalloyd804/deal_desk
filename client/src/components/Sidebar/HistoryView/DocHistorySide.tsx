@@ -116,7 +116,7 @@ const StyledListText = styled(ListItemText)(() => ({
     }
 }));
 
-export const DocHistorySide = ({ setActiveConversation, activeConversation, roomId, setRoomId }) => {
+export const DocHistorySide = ({ setActiveConversation, activeConversation, roomId, setRoomId, showDocManage }) => {
     const [conversations, setConversations] = useState([])
     const [isLoading, setIsLoading] = useState(false);
     const { actions } = useInsight();
@@ -197,10 +197,10 @@ export const DocHistorySide = ({ setActiveConversation, activeConversation, room
                         <StyledListText primary={convo.ROOM_NAME ? convo.ROOM_NAME : convo.ROOM_ID} />
                     </StyledListItem>)}
             </StyledList>
-            <LinkBottomBox><Link color="#40007B" component='button' onClick={(e) => {
+            {showDocManage && <LinkBottomBox>{<Link color="#40007B" component='button' onClick={(e) => {
                 e.preventDefault();
                 navigate('/documentManagement/');
-            }}>Manage Document Repository</Link></LinkBottomBox>
+            }}>Manage Document Repository</Link>}</LinkBottomBox>}
         </>
     );
 }

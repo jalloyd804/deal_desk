@@ -90,7 +90,8 @@ export const Sidebar = ({
                 setActiveConversation={setActiveConversation}
                 activeConversation={activeConversation}
                 roomId={roomId}
-                setRoomId={setRoomId} />}
+                setRoomId={setRoomId}
+                showDocManage={showDocManage} />}
 
 
         </StyledSidebar>
