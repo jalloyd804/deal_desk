@@ -148,7 +148,7 @@ export const SummaryPanel = ({
                 throw new Error(documentMap.response);
 
             // define token limit for input text
-            let tokenLimit = 110000;
+            let tokenLimit = 60000;
 
             // populate map while checking for potential truncation
             let adjDocumentMap = {};
@@ -157,12 +157,12 @@ export const SummaryPanel = ({
             for (let [index, key] of Object.keys(documentMap).entries()) {
                 let newKey = `Page ${index + 1}`;
                 let pageContent = `${documentMap[key]}`;
-                let pageTokensCount = pageContent.length / 4; 
+                let pageTokensCount = pageContent.length / 2.5; 
                 
                 if (currentTokensCount + pageTokensCount > tokenLimit) {
                     setIsTruncated(true);
                     setTruncationKey(newKey);
-                    let remainingContentLength = (tokenLimit - currentTokensCount) * 4;
+                    let remainingContentLength = (tokenLimit - currentTokensCount) * 2.5;
                     adjDocumentMap[newKey] = pageContent.substring(0, remainingContentLength);
                     break; // Stop processing further pages
                 } else {
