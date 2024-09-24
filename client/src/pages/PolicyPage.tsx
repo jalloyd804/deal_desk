@@ -83,13 +83,23 @@ const StyledPolicy = styled('div')(({ theme }) => ({
 const welcomeText = `
 The AI Document Bot is a chat interface between users and uploaded documents.
 Upload policies, proposals, meeting minutes, operational procedures,
-policy manuals as PDF’s or Word documents and ask questions.
+policy manuals as PDF’s, PowerPoints, or Word documents and ask questions.
 To begin, select a document repository on the left or create a new one.
 The Document Bot searches through the selected documents for content to answer questions.
 It is best to spell out acronyms to improve the results.
 If the user was to ask about large language models, it is recommended to format the
-question as: What are large language models (LLMs)?
+question as: What are large language models (LLMs)? 
 `;
+
+const disclaimer = `
+As of October 1, 2024 Document Bot can process images within the uploaded documents.  Any Repository 
+created before October 1, 2024 will not include this feature.  Please create new repositories if you
+ want images to be included in the response
+`;
+
+const reminder = `
+Note: Any document repositories not used after 60 days are automatically removed. 
+`
 
 export interface VectorContext {
     score: string;
@@ -168,8 +178,6 @@ function BasicTabs({
             <CustomTabPanel value={value} index={0}>
             <DocBotPanel    sideOpen={sideOpen}
                             welcomeText={welcomeText}
-                            openBeta={openBeta}
-                            setOpenBeta={setOpenBeta}
                             genAnswerDisabled={genAnswerDisabled}
                             showContext={showContext}
                             setShowContext={setShowContext}
@@ -182,7 +190,9 @@ function BasicTabs({
                             open = {open}
                             setOpen ={setOpen}
                             roomId= {roomId}
-                            setIsLoading = {setIsLoading}/>
+                            setIsLoading = {setIsLoading}
+                            disclaimer={disclaimer}
+                            reminder={reminder}/>
             </CustomTabPanel>
             <CustomTabPanel value={value} index={1}>
                 <SummaryPanel 

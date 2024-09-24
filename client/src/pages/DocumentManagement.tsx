@@ -369,8 +369,14 @@ export const DocumentManagement = () => {
         setId(id);
     };
 
+    const GetDatabaseTitle = () =>
+    {
+        console.log(selectedVectorDB);
+        return `${selectedVectorDB?.database_name} - Date Created: ${new Date(selectedVectorDB?.database_date_created)?.toLocaleDateString()}`;
+    };
+
     const extendLife = async () => {
-        console.log(selectedVectorDB.database_id);
+        console.log(selectedVectorDB);
         const pixel = `VectorDatabaseQuery(engine = "${selectedVectorDB.database_id}" , command = "<encode>...</encode>", limit = 1);`;
         const response = await actions.run(pixel);
         const { output, operationType } = response.pixelReturn[0];
@@ -436,7 +442,7 @@ export const DocumentManagement = () => {
 
                 <StyledPaper variant={'elevation'} elevation={2} square>
                     <StyledTitle variant="h5">
-                        {selectedVectorDB.database_name}
+                        {GetDatabaseTitle()}
                     </StyledTitle>
                     {expirationInfo && (<Collapse in={alertOpen}>
                         <StyledAlert severity='error'

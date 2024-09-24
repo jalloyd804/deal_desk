@@ -290,7 +290,7 @@ export const VectorModal = ({
                             Step 2: Document(s) to embed
                         </StyledTitle>
                         <SansTypography variant="body2" >
-                            Drag and drop .pdf or .docx files to your document repository. Please rename any files containing special characters before uploading. <strong>Note: Any document repositories not used after 60 days are automatically removed.</strong>
+                            Drag and drop .pdf, .docx, or .pptx files to your document repository. Please rename any files containing special characters before uploading. <strong>Note: Any document repositories not used after 60 days are automatically removed.</strong>
                         </SansTypography>
                     </>
                 }
@@ -298,7 +298,7 @@ export const VectorModal = ({
                     Upload Files
                 </StyledTitle>}
                 <Dropzone
-                    accept={{ 'text/pdf': ['.pdf'], 'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'] }}
+                    accept={{ 'text/pdf': ['.pdf'], 'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'], 'application/vnd.openxmlformats-officedocument.presentationml.presentation': ['.pptx']  }}
                     onDrop={(acceptedFiles, fileRejections) => {
                         let tempMaxTotal = 0;
                         if (fileRejections.length > 0) {
@@ -353,7 +353,7 @@ export const VectorModal = ({
                                 {...getRootProps({ className: 'dropzone' })}
                             >
                                 <input
-                                    accept=".pdf, .docx"
+                                    accept=".pdf, .docx, .pptx"
                                     {...(getInputProps() as GetInputPropsOptionsRef)}
                                     onClick={(e) => e.stopPropagation()}
                                 />

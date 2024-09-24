@@ -79,8 +79,6 @@ interface Dictionary {
 export const DocBotPanel = ({
     sideOpen,
     welcomeText,
-    openBeta,
-    setOpenBeta,
     genAnswerDisabled,
     showContext,
     setShowContext,
@@ -93,7 +91,10 @@ export const DocBotPanel = ({
     open,
     setOpen,
     roomId,
-    setIsLoading
+    setIsLoading,
+    disclaimer,
+    reminder
+
 }) => {
     const [error, setError] = useState('');
     const [isAnswered, setIsAnswered] = useState(false);
@@ -309,7 +310,10 @@ export const DocBotPanel = ({
                     <Stack spacing={2} color='#4F4F4F'>
                         <Stack spacing={2} style={{ fontSize: '12px' }}>
                             <Typography variant="h5" color='#40007B'><strong>Hello!</strong> Welcome to NIAID’s AI Document Bot</Typography>
-                            <Typography variant="body1">{welcomeText} <strong>Note: Any document repositories not used after 60 days are automatically removed.</strong></Typography>
+                            <Typography variant="body1">{welcomeText}</Typography>
+                        </Stack>
+                        <Stack spacing={2} style={{ fontSize: '12px' }}>
+                            <Typography variant="body1">{disclaimer} <strong>{reminder}</strong></Typography>
                             {error && <Alert color="error">{error.toString()}</Alert>}
                         </Stack>
                         <Controller
