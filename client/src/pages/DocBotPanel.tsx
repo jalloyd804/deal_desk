@@ -195,7 +195,9 @@ export const DocBotPanel = ({
                 if (output[i].score || output[i].Score <= 1.5) {
                     const content = output[i].content || output[i].Content;
                     const document_name = output[i].source || output[i].Source;
-                    const source = document_name + ", Page(s): " + output[i].Divider;
+                    const extension_name = getExtension(document_name);
+                    const label = (extension_name === "pptx") ? "Slide(s)" : "Page(s)";
+                    const source = document_name + ", " + label + ": " + output[i].Divider;
                     context_docs += `{'role': 'system', 'content': '<encode>${content}</encode>'},`;
                     if (!(document_name in documentTracker)) {
                         docs_used += 1;
