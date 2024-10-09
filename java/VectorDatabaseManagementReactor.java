@@ -35,7 +35,7 @@ public class VectorDatabaseManagementReactor extends AbstractReactor {
 	private static final Logger classLogger = LogManager.getLogger(VectorDatabaseManagementReactor.class);
 	private static final String DATABASE_TAG = "DATABASE_TAG";
 	private static final String DAYS_FOR_EXPIRATION = "DAYS TILL DATABASE GET DELETED";
-	private static final String DEFFERED_DATE = "2024-09-01 00:00:00"; //September 15, 2024
+	private static final String DEFFERED_DATE = "2024-10-01 00:00:00"; //October 1, 2024
 
 	public VectorDatabaseManagementReactor() {
 		this.keysToGet = new String[] { DAYS_FOR_EXPIRATION, DATABASE_TAG };

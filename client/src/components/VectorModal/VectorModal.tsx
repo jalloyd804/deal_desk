@@ -290,7 +290,7 @@ export const VectorModal = ({
                             Step 2: Document(s) to embed
                         </StyledTitle>
                         <SansTypography variant="body2" >
-                            Drag and drop .pdf, .docx, or .pptx files to your document repository. Please rename any files containing special characters before uploading. <strong>Note: Any document repositories not used after 60 days are automatically removed.</strong>
+                            Drag and drop .pdf, .docx, or .pptx files to your document repository. Please rename any files containing special characters before uploading. <strong>Note: Any document repositories not used after 120 days are automatically removed.</strong>
                         </SansTypography>
                     </>
                 }

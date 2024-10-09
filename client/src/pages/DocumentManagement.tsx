@@ -459,7 +459,7 @@ export const DocumentManagement = () => {
                                 </IconButton>
                             }
                             sx={{ mb: 2 }}
-                        ><Typography variant={'caption'}><strong>This repository hasn't been used in {EXPIRATION_WARNING} days. At 60 days it will be deleted.</strong><br/>Would you like to extend the life of the repository? <span className='extend' onClick={extendLife}>Yes.</span> <span className='extend' onClick={() => setAlertOpen(false)}>No.</span></Typography></StyledAlert>
+                        ><Typography variant={'caption'}><strong>This repository hasn't been used in {EXPIRATION_WARNING} days. At 120 days it will be deleted.</strong><br/>Would you like to extend the life of the repository? <span className='extend' onClick={extendLife}>Yes.</span> <span className='extend' onClick={() => setAlertOpen(false)}>No.</span></Typography></StyledAlert>
                     </Collapse>)}
                     {noDoc && <StyledRedTitle variant="h6">
                         It appears you don't have any Document Repositories to manage. To get started, click "Upload Documents(s)".

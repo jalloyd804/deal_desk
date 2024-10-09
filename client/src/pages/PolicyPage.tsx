@@ -98,7 +98,7 @@ created before October 1, 2024 will not include this feature.  Please create new
 `;
 
 const reminder = `
-Note: Any document repositories not used after 60 days are automatically removed. 
+Note: Any document repositories not used after 120 days are automatically removed. 
 `
 
 export interface VectorContext {
