@@ -284,7 +284,7 @@ export const DocumentManagement = () => {
         try {
             //setError('');
             setIsLoading(true);
-            // const pixelLocalDev = (`SetContext("25a8a9d6-7706-405c-851a-02680028eca5");`); // IMPORTANT: Make sure this line is toggled when deploying to prod
+            //const pixelLocalDev = (`SetContext("25a8a9d6-7706-405c-851a-02680028eca5");`); // IMPORTANT: Make sure this line is toggled when deploying to prod
             const pixel = `ListDocumentsInVectorDatabase(engine="${selectedVectorDB.database_id}");`;
             const pixel2 = `GetExpiredVectorDatabases('Docbot_Repo');`;
             /* actions.run(pixelLocalDev).then((response) => {

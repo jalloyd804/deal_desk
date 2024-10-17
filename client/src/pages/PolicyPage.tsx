@@ -13,7 +13,6 @@ import { useCookies } from 'react-cookie';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { DocBotPanel } from './DocBotPanel'
 import { ChatHistoryPanel } from './ChatHistoryPanel'
-import { SummaryPanel } from './SummaryPanel'
 import { AIBotError } from './Error'
 import { Model } from '../interfaces/Model'
 import { makeStyles } from '@material-ui/core/styles';
@@ -81,18 +80,18 @@ const StyledPolicy = styled('div')(({ theme }) => ({
 }));
 
 const welcomeText = `
-The AI Document Bot is a chat interface between users and uploaded documents.
+The AI Document Search is a chat interface between users and uploaded documents.
 Upload policies, proposals, meeting minutes, operational procedures,
 policy manuals as PDF’s, PowerPoints, or Word documents and ask questions.
 To begin, select a document repository on the left or create a new one.
-The Document Bot searches through the selected documents for content to answer questions.
+The Document Search searches through the selected documents for content to answer questions.
 It is best to spell out acronyms to improve the results.
 If the user was to ask about large language models, it is recommended to format the
 question as: What are large language models (LLMs)? 
 `;
 
 const disclaimer = `
-As of October 1, 2024 Document Bot can process images within the uploaded documents.  Any Repository 
+As of October 1, 2024 Document Search can process images within the uploaded documents.  Any Repository 
 created before October 1, 2024 will not include this feature.  Please create new repositories if you
  want images to be included in the response
 `;
@@ -170,9 +169,8 @@ function BasicTabs({
         <Box sx={{ width: '100%', padding: '2%' }}>
             <Box sx={{ borderBottom: 1, borderColor: 'divider', padding: 0 }}>
                 <Tabs className={classes.root} value={value} onChange={handleChange} aria-label="basic tabs example">
-                    <Tab label="Document Bot Chat" {...a11yProps(0)} />
-                    <Tab label="Document Summarization" {...a11yProps(1)} />
-                    <Tab label="ChatHistory" {...a11yProps(2)} />
+                    <Tab label="Document Search" {...a11yProps(0)} />
+                    <Tab label="Chat History" {...a11yProps(2)} />
                 </Tabs>
             </Box>
             <CustomTabPanel value={value} index={0}>
@@ -195,12 +193,6 @@ function BasicTabs({
                             reminder={reminder}/>
             </CustomTabPanel>
             <CustomTabPanel value={value} index={1}>
-                <SummaryPanel 
-                sideOpen = {sideOpen}
-                temperature={temperature}
-                setIsLoading={setIsLoading}/>
-            </CustomTabPanel>
-            <CustomTabPanel value={value} index={2}>
                 <ChatHistoryPanel 
                 activeConversation={activeConversation}/>
             </CustomTabPanel>
@@ -245,8 +237,10 @@ export const PolicyPage = () => {
     else if (process.env.ENVIRONMENTFLAG === "NIH") {
         model = "f89f9eec-ba78-4059-9f01-28e52d819171"
     }
-
+   
+                        
     useEffect(() => {
+
         const openRoom = async () => {
             // wait for the pixel to run
             const { pixelReturn } = await actions.run<
@@ -268,6 +262,7 @@ export const PolicyPage = () => {
     }, [])
 
     useEffect(() => {
+
         setIsLoading(true);
         //Grabbing all the Models that are in CfG
         let pixel = `MyEngines ( engineTypes=["MODEL"]);`;

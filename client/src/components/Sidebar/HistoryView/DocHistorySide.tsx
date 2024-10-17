@@ -11,6 +11,7 @@ import {
     Stack,
     Link,
     Tooltip,
+    Button,
 } from '@mui/material';
 import { makeStyles } from "@material-ui/core/styles";
 import { useEffect, useState } from 'react';
@@ -115,7 +116,21 @@ const StyledListText = styled(ListItemText)(() => ({
         overflow: 'hidden',
     }
 }));
+const DisplayButton = styled(Button)(() => ({
+    backgroundImage: 'linear-gradient(90deg, #20558A 0%, #650A67 100%)',
+    backgroundColor: '#20558A',
+    fontSize: '16px',
+    color: 'white',
+    '&:hover': {
+        backgroundImage: 'linear-gradient(90deg, #12005A 0%, #12005A 100%)',
+        backgroundColor: '#12005A',
+    },
+    '&[disabled]': {
+        color: 'rgba(255, 255, 255, .8)',
+        backgroundImage: 'none',
 
+    },
+}));
 export const DocHistorySide = ({ setActiveConversation, activeConversation, roomId, setRoomId, showDocManage }) => {
     const [conversations, setConversations] = useState([])
     const [isLoading, setIsLoading] = useState(false);
@@ -197,10 +212,12 @@ export const DocHistorySide = ({ setActiveConversation, activeConversation, room
                         <StyledListText primary={convo.ROOM_NAME ? convo.ROOM_NAME : convo.ROOM_ID} />
                     </StyledListItem>)}
             </StyledList>
-            {showDocManage && <LinkBottomBox>{<Link color="#40007B" component='button' onClick={(e) => {
+            {showDocManage && <DisplayButton variant="contained" onClick={(e) => {
                 e.preventDefault();
                 navigate('/documentManagement/');
-            }}>Manage Document Repository</Link>}</LinkBottomBox>}
+            }}>
+                Document Repository Management
+            </DisplayButton>}
         </>
     );
 }

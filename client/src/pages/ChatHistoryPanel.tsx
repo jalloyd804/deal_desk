@@ -76,7 +76,7 @@ export const ChatHistoryPanel = ({
                         case "RESPONSE":
                             return (
                                 <div style={{padding:'1% 2%', backgroundColor:'white', marginBottom:'2%', borderRadius:'0 0 10px 10px'}}>
-                                    <ConversationTitle>Document Bot Response:</ConversationTitle>
+                                    <ConversationTitle>Document Search Response:</ConversationTitle>
                                     <Typography style={{overflowWrap:"anywhere"}}><Markdown>{room.MESSAGE_DATA}</Markdown></Typography>
                                 </div>
                             )

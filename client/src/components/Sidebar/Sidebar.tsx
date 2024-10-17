@@ -62,7 +62,7 @@ export const Sidebar = ({
                 <CloseIcon />
             </StyledButton>
 
-            {((tabSelected===0 || tabSelected ===1) && view==='main') && <MainViewSide
+            {((tabSelected===0) && view==='main') && <MainViewSide
                 vectorOptions={vectorOptions}
                 selectedVectorDB={selectedVectorDB}
                 setSelectedVectorDB={setSelectedVectorDB}
@@ -86,7 +86,7 @@ export const Sidebar = ({
                 setRefresh={setRefresh}
                 setRefreshDB={setRefreshDB}
                 expiringDatabases={expiringDatabases} />}
-            {(tabSelected===2 && view==='main') && <DocHistorySide
+            {(tabSelected===1 && view==='main') && <DocHistorySide
                 setActiveConversation={setActiveConversation}
                 activeConversation={activeConversation}
                 roomId={roomId}

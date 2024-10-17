@@ -9,6 +9,7 @@ import {
     IconButton,
     Tooltip,
     Link,
+    Button,
 } from '@mui/material';
 
 import { DeletionModal } from '@/components/DeletionModal/DeletionModal'
@@ -52,7 +53,21 @@ const StyledList = styled(List)(() => ({
         background: 'none',
     }
 }));
+const DisplayButton = styled(Button)(() => ({
+    backgroundImage: 'linear-gradient(90deg, #20558A 0%, #650A67 100%)',
+    backgroundColor: '#20558A',
+    fontSize: '16px',
+    color: 'white',
+    '&:hover': {
+        backgroundImage: 'linear-gradient(90deg, #12005A 0%, #12005A 100%)',
+        backgroundColor: '#12005A',
+    },
+    '&[disabled]': {
+        color: 'rgba(255, 255, 255, .8)',
+        backgroundImage: 'none',
 
+    },
+}));
 const StyledListItem = styled(ListItem)(() => ({
     cursor: 'pointer',
     borderRadius: '5px',
@@ -147,15 +162,12 @@ export const DocViewSide = ({ vectorOptions, actions, setError, setRefresh, setS
                     </StyledListItem>);
                 })}
             </StyledList>
-            <LinkBottomBox><Link color="#40007B" component='button' onClick={(e) => {
+            <DisplayButton variant="contained" onClick={(e) => {
                 e.preventDefault();
                 navigate('/docbot/');
-            }}>GenAI Document Bot</Link> <Tooltip title={tooltipGuidance}>
-                <HelpOutlineIcon
-                    color="primary"
-                    sx={{ fontSize: 15, marginLeft: '5px' }}
-                />
-            </Tooltip></LinkBottomBox>
+            }}>
+                GenAI Document Repository Search
+            </DisplayButton>
 
             <Modal open={open} onClose={() => setOpen(false)}>
                 <DeletionModal

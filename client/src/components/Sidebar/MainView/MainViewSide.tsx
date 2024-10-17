@@ -118,6 +118,7 @@ export const MainViewSide = ({ vectorOptions,
     return (
         <>
             <Autocomplete
+                forcePopupIcon={true}
                 disableClearable
                 freeSolo
                 disabled={tabSelected===1 || showDisclaimer}
@@ -171,8 +172,14 @@ export const MainViewSide = ({ vectorOptions,
                 setError('');
                 setOpen(true);
             }}>
-                Upload Document(s)
+                Create New Repository
             </DisplayButton>
+            {showDocManage && <DisplayButton variant="contained" onClick={(e) => {
+                e.preventDefault();
+                navigate('/documentManagement/');
+            }}>
+                Document Repository Management
+            </DisplayButton>}
             <StyledDiv style={{ display: 'flex', marginTop: '10%', marginBottom: '1%' }}>
                 <Typography style={{ width: '100%', textAlign: 'center', fontWeight: '700', color: '#40007B' }}>Advanced Settings</Typography>
             </StyledDiv>
@@ -231,10 +238,7 @@ export const MainViewSide = ({ vectorOptions,
                 className={classes.root}
                 disabled={tabSelected===1 || showDisclaimer}
             />
-            {showDocManage && <LinkBottomBox><Link color="#40007B" component='button' onClick={(e) => {
-                e.preventDefault();
-                navigate('/documentManagement/');
-            }}>Manage Document Repository</Link></LinkBottomBox>}
+
         </>
     );
 }
