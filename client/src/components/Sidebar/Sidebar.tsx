@@ -1,7 +1,8 @@
 import {
     styled,
     IconButton,
-    Box
+    Box,
+    CircularProgress
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { MainViewSide } from './MainView/MainViewSide';
@@ -54,10 +55,13 @@ export const Sidebar = ({
     setRoomId,
     showDisclaimer,
     expiringDatabases,
+    isLoading
 }) => {
 
     return (
-        <StyledSidebar>
+        <>
+        
+        <StyledSidebar> 
             <StyledButton onClick={() => setSideOpen(false)}>
                 <CloseIcon />
             </StyledButton>
@@ -75,6 +79,7 @@ export const Sidebar = ({
                 showDocManage={showDocManage}
                 tabSelected={tabSelected}
                 showDisclaimer={showDisclaimer}
+                isLoading={isLoading}
 
             />}
             {(view === 'doc') && <DocViewSide
@@ -95,5 +100,6 @@ export const Sidebar = ({
 
 
         </StyledSidebar>
+        </>
     );
 };

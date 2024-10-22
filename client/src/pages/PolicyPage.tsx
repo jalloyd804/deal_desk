@@ -23,7 +23,7 @@ const useStyles = makeStyles(theme => ({
     root: {
         '& [class*="MuiButtonBase-root MuiTab-root"]': {
             'max-width': "100%",
-            'width': '33.3333333333333333%',
+            'width': '50%',
             'border': 'solid',
             'border-color': 'lightgray',
             'border-radius': '5px 5px 0 0'
@@ -148,6 +148,7 @@ function BasicTabs({
     selectedVectorDB,
     setSelectedVectorDB,
     vectorOptions,
+    allVectors,
     setRefresh,
     limit,
     open,
@@ -169,8 +170,8 @@ function BasicTabs({
         <Box sx={{ width: '100%', padding: '2%' }}>
             <Box sx={{ borderBottom: 1, borderColor: 'divider', padding: 0 }}>
                 <Tabs className={classes.root} value={value} onChange={handleChange} aria-label="basic tabs example">
-                    <Tab label="Document Search" {...a11yProps(0)} />
-                    <Tab label="Chat History" {...a11yProps(2)} />
+                    <Tab label="Document Bot Chat" {...a11yProps(0)} />
+                    <Tab label="ChatHistory" {...a11yProps(1)} />
                 </Tabs>
             </Box>
             <CustomTabPanel value={value} index={0}>
@@ -182,7 +183,7 @@ function BasicTabs({
                             selectedVectorDB={selectedVectorDB}
                             temperature = {temperature}
                             setSelectedVectorDB = {setSelectedVectorDB}
-                            vectorOptions={vectorOptions}
+                            vectorOptions={allVectors}
                             setRefresh = {setRefresh}
                             limit = {limit}
                             open = {open}
@@ -215,6 +216,7 @@ export const PolicyPage = () => {
 
     // Vector DB catalog and first vector DB in dropdown
     const [vectorOptions, setVectorOptions] = useState([]);
+    const [allVectors, setAllVectors] = useState([])
     const [selectedVectorDB, setSelectedVectorDB] = useState<Model>({});
     //Controlling the modal
     const [refresh, setRefresh] = useState<boolean>(false);
@@ -295,6 +297,21 @@ export const PolicyPage = () => {
             }
         });
 
+                //Grabbing all the Vector Databases in CfG
+                pixel = `MyEngines ( engineTypes=["VECTOR"]);`;
+
+                actions.run(pixel).then((response) => {
+                    const { output, operationType } = response.pixelReturn[0];
+        
+                    if (operationType.indexOf('ERROR') > -1) {
+                        throw new Error(output as string);
+                    }
+                    if (Array.isArray(output)) {
+                        setAllVectors(output)
+                    }
+                });
+
+
         setIsLoading(false);
 
 
@@ -372,7 +389,8 @@ export const PolicyPage = () => {
                             roomId={roomId}
                             setRoomId={setRoomId}
                             showDisclaimer={!cookies.DOCBOT}
-                            expiringDatabases={null} />
+                            expiringDatabases={null}
+                            isLoading={isLoading} />
                     ) : (
                         <StyledButton onClick={() => setSideOpen(!sideOpen)}>
                             <ArrowForwardIosIcon />
@@ -392,6 +410,7 @@ export const PolicyPage = () => {
                             selectedVectorDB={selectedVectorDB}
                             setSelectedVectorDB={setSelectedVectorDB}
                             vectorOptions={vectorOptions}
+                            allVectors={allVectors}
                             setRefresh={setRefresh}
                             limit={limit}
                             open={open}

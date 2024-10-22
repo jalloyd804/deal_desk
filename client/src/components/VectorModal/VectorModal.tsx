@@ -128,7 +128,6 @@ export const VectorModal = ({
     const [totalSize, setTotalSize] = useState<number>(0);
 
     const classes = useStyles();
-
     const fileInput = useRef<HTMLInputElement>();
 
     useEffect(() => {
@@ -163,6 +162,9 @@ export const VectorModal = ({
         let engine;
         if (newVector) {
             try {
+
+
+
                 let embedder = ''
                 if (process.env.ENVIRONMENTFLAG === "Deloitte") {
                     embedder = "e4449559-bcff-4941-ae72-0e3f18e06660"
@@ -170,7 +172,7 @@ export const VectorModal = ({
                 else if (process.env.ENVIRONMENTFLAG === "NIH") {
                     embedder = "6ce2e1ac-224c-47a3-a0f9-8ba147599b68"
                 }
-                const pixel = `CreateVectorDatabaseEngine ( database = [ "${newVector}" ] , conDetails = [ { "CONNECTION_URL" : "@BaseFolder@/vector/@ENGINE@/", "VECTOR_TYPE" : "FAISS" , "NAME" : "${newVector}" , "EMBEDDER_ENGINE_ID":"` + embedder + `","CONTENT_LENGTH":"512","CONTENT_OVERLAP":"0","DISTANCE_METHOD":"Squared Euclidean (L2) distance", "CUSTOM_DOCUMENT_PROCESSOR": "true", "CUSTOM_DOCUMENT_PROCESSOR_FUNCTION_ID": "atdd15a2-8eb2-4f9d-99f1-2c61607f8feb" } ] ) ;`;
+                 const pixel = `CreateVectorDatabaseEngine ( database = [ "${newVector}" ] , conDetails = [ { "CONNECTION_URL" : "@BaseFolder@/vector/@ENGINE@/", "VECTOR_TYPE" : "FAISS" , "NAME" : "${newVector}" , "EMBEDDER_ENGINE_ID":"` + embedder + `","CONTENT_LENGTH":"512","CONTENT_OVERLAP":"0","DISTANCE_METHOD":"Squared Euclidean (L2) distance", "CUSTOM_DOCUMENT_PROCESSOR": "true", "CUSTOM_DOCUMENT_PROCESSOR_FUNCTION_ID": "atdd15a2-8eb2-4f9d-99f1-2c61607f8feb" } ] ) ;`;
 
                 const response = await actions.run(pixel);
                 const { output, operationType } = response.pixelReturn[0];

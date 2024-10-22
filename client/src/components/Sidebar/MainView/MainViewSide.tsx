@@ -15,6 +15,7 @@ import {
     List,
     ListItemButton,
     ListItemIcon,
+    CircularProgress,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
@@ -64,6 +65,18 @@ const StyledSectionTitle = styled(Typography)(({ theme }) => ({
 const StyledDiv = styled('div')(() => ({
     display: 'flex',
 }));
+const LoadingOverlay = styled('div')(() => ({
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(255, 255, 255, .5)',
+    top: '0',
+    left: '0',
+    zIndex: '2',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+}));
 const StyledListItemIcon = styled(ListItemIcon)(() => ({
     //color: 'inherit',
     minWidth: 'auto',
@@ -111,12 +124,13 @@ const StyledList = styled(List)(({ theme }) => ({
     }
 }));
 export const MainViewSide = ({ vectorOptions,
-    selectedVectorDB, setSelectedVectorDB, limit, setLimit, temperature, setTemperature, setError, setOpen, showDocManage, tabSelected, showDisclaimer
+    selectedVectorDB, setSelectedVectorDB, limit, setLimit, temperature, setTemperature, setError, setOpen, showDocManage, tabSelected, showDisclaimer, isLoading
 }) => {
     const classes = useStyles();
     const navigate = useNavigate();
     return (
         <>
+        {(isLoading) && <LoadingOverlay><CircularProgress /></LoadingOverlay>}
             <Autocomplete
                 forcePopupIcon={true}
                 disableClearable
@@ -165,9 +179,6 @@ export const MainViewSide = ({ vectorOptions,
                     />
                 )}
             />
-            <StyledDiv style={{ display: 'flex' }}>
-                <Typography style={{ width: '100%', textAlign: 'center', fontWeight: '700', color: '#40007B' }}>Or</Typography>
-            </StyledDiv>
             <DisplayButton disabled={tabSelected===1 || showDisclaimer} variant="contained" onClick={() => {
                 setError('');
                 setOpen(true);

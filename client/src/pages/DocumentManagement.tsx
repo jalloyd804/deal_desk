@@ -166,6 +166,7 @@ export const DocumentManagement = () => {
     const [noDoc, setNoDoc] = useState<boolean>(false);
     // Vector DB catalog and first vector DB in dropdown
     const [vectorOptions, setVectorOptions] = useState([]);
+    const [allVectors, setAllVectors] = useState([])
     const [selectedVectorDB, setSelectedVectorDB] = useState<Model>({});
     const [documents, setDocuments] = useState([]);
     const [expirationInfo, setExpirationInfo] = useState(false);
@@ -222,8 +223,20 @@ export const DocumentManagement = () => {
             setIsLoading(true);
 
             //Grabbing all the Vector Databases in CfG
-            let pixel = `MyEngines ( engineTypes=["VECTOR"], permissionFilters=[1], metaFilters = [ {"tag": ["Docbot_Repo", "Global_Repo"] } ] );`;
+            let pixel = `MyEngines ( engineTypes=["VECTOR"]);`;
 
+            actions.run(pixel).then((response) => {
+                const { output, operationType } = response.pixelReturn[0];
+    
+                if (operationType.indexOf('ERROR') > -1) {
+                    throw new Error(output as string);
+                }
+                if (Array.isArray(output)) {
+                    setAllVectors(output)
+                }
+            });
+             pixel = `MyEngines ( engineTypes=["VECTOR"], permissionFilters=[1], metaFilters = [ {"tag": ["Docbot_Repo", "Global_Repo"] } ] );`;
+            
             actions.run(pixel).then((response) => {
                 const { output, operationType } = response.pixelReturn[0];
 
@@ -433,7 +446,8 @@ export const DocumentManagement = () => {
                         showDisclaimer={false} 
                         roomId={null}
                         expiringDatabases={expiringDatabases}
-                        setRoomId={null}/>
+                        setRoomId={null}
+                        isLoading={isLoading}/>
                 ) : (
                     <StyledButton onClick={() => setSideOpen(!sideOpen)}>
                         <ArrowForwardIosIcon />
@@ -535,7 +549,7 @@ export const DocumentManagement = () => {
                 <VectorModal
                     setOpen={setOpenEmbed}
                     open={openEmbed}
-                    vectorOptions={vectorOptions}
+                    vectorOptions={allVectors}
                     setRefresh={setRefresh}
                     setSelectedVectorDB={setSelectedVectorDB}
                     selectedVectorDB={null}
