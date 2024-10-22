@@ -502,7 +502,7 @@ export const DocumentManagement = () => {
                                 Delete Selected
                             </DeleteButton>)}
                             <EmbedButton variant="contained" onClick={() => { setOpenEmbed(true) }}>
-                                Embed New Document
+                                Upload New Document
                             </EmbedButton>
                         </div>
                         {error && <Alert color="error">{error.toString()}</Alert>}

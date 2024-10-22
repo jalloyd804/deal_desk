@@ -69,7 +69,7 @@ export const ChatHistoryPanel = ({
                         case "INPUT":
                             return (
                                 <div style={{padding:'2% 2% 0 2%', backgroundColor:'white', borderRadius:'10px 10px 0 0 '}}>
-                                    <ConversationTitle>Question/User Input:</ConversationTitle>
+                                    <ConversationTitle>User Input:</ConversationTitle>
                                     <div>{room.MESSAGE_DATA}</div>
                                 </div>
                             )

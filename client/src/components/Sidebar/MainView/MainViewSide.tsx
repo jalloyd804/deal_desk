@@ -97,6 +97,7 @@ const DisplayButton = styled(Button)(() => ({
 
     },
 }));
+
 const StyledListItemButton = styled(ListItemButton)(({ theme, selected }) => ({
     gap: theme.spacing(1.5),
     padding: theme.spacing(1),
@@ -191,7 +192,7 @@ export const MainViewSide = ({ vectorOptions,
             }}>
                 Document Repository Management
             </DisplayButton>}
-            <StyledDiv style={{ display: 'flex', marginTop: '10%', marginBottom: '1%' }}>
+            <StyledDiv style={{ display: 'flex', marginTop: '50%', marginBottom: '1%' }}>
                 <Typography style={{ width: '100%', textAlign: 'center', fontWeight: '700', color: '#40007B' }}>Advanced Settings</Typography>
             </StyledDiv>
             <StyledDiv style={{ display: 'flex' }}>
