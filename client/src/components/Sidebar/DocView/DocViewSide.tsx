@@ -10,15 +10,17 @@ import {
     Tooltip,
     Link,
     Button,
+    CircularProgress,
 } from '@mui/material';
 
 import { DeletionModal } from '@/components/DeletionModal/DeletionModal'
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import { LinkBottomBox } from '../Sidebar';
-
+import ImageIcon from '@mui/icons-material/Image';
 import { useNavigate } from 'react-router-dom';
+import { Console } from 'console';
 
 const tooltipGuidance = `
 This link will take you back to the
@@ -32,7 +34,18 @@ const StyledSectionTitle = styled(Typography)(() => ({
     alignSelf: 'center',
     textAlign: 'center',
 }));
-
+const LoadingOverlay = styled('div')(() => ({
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(255, 255, 255, .5)',
+    top: '0',
+    left: '0',
+    zIndex: '2',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+}));
 const StyledList = styled(List)(() => ({
     display: 'flex',
     flexDirection: 'column',
@@ -91,8 +104,30 @@ export const DocViewSide = ({ vectorOptions, actions, setError, setRefresh, setS
     const [open, setOpen] = useState<boolean>(false);
     const [text, setText] = useState<string>(null);
     const [id, setId] = useState<string>(null);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const navigate = useNavigate();
 
+    useEffect(() => {
+        setIsLoading(true)
+        vectorOptions.forEach(element => {
+            const pixel3 = `GetEngineSMSS ( "${element.database_id}")`
+            actions.run(pixel3).then((response) => {
+                const { output, operationType } = response.pixelReturn[0];
+                if (operationType.indexOf('ERROR') > -1) {
+                    throw new Error(output as string);
+                }
+                if (typeof output === 'string'){
+                    if (output.indexOf('CUSTOM_DOCUMENT_PROCESSOR	true') > -1)
+                        element.imagesEnabled = true
+                    else
+                    element.imagesEnabled = false
+                    console.log(element.imagesEnabled)
+                }
+            });
+        });
+       setIsLoading(false)
+    }, [vectorOptions])
+    
     let engine;
     const DelectVectorDB = async (id: string) => {
 
@@ -131,12 +166,14 @@ export const DocViewSide = ({ vectorOptions, actions, setError, setRefresh, setS
         setId(id);
     }
 
+
     return (
         <>
+            {isLoading && <LoadingOverlay><CircularProgress /></LoadingOverlay>}
             <StyledSectionTitle variant="h5">
                 Document Repositories
             </StyledSectionTitle>
-            <StyledList dense={true}>
+            {!isLoading &&<StyledList dense={true}>
                 {vectorOptions.map((item, index) => {
                     let expiringSoon = false;
                     if (expiringDatabases.length > 0) {
@@ -150,18 +187,22 @@ export const DocViewSide = ({ vectorOptions, actions, setError, setRefresh, setS
                                 <path d="M 197.856 174.35 C 197.856 175.45 198.756 176.35 199.856 176.35 L 207.856 176.35 C 208.956 176.35 209.856 175.45 209.856 174.35 L 209.856 162.35 L 197.856 162.35 L 197.856 174.35 Z M 210.856 159.35 L 207.356 159.35 L 206.356 158.35 L 201.356 158.35 L 200.356 159.35 L 196.856 159.35 L 196.856 161.35 L 210.856 161.35 L 210.856 159.35 Z" style={{ fill: '#40007B' }} transform="matrix(1, 0, 0, 1, 3.552713678800501e-15, 0)" />
                             </svg>
                         </IconButton>}>
-                        <ListItemIcon>
+                        {item.imagesEnabled !== undefined && <ListItemIcon>
+                            
                             {expiringSoon ? <ErrorOutlineIcon color='error' /> : 
+                            item.imagesEnabled ? 
+                            <ImageIcon style={{ fill: '#40007B', marginRight: '5px' }} /> 
+                            : 
                             <svg viewBox="293.887 172.527 16 20" width="16" height="20" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M 295.887 172.527 C 294.787 172.527 293.897 173.427 293.897 174.527 L 293.887 190.527 C 293.887 191.627 294.777 192.527 295.877 192.527 L 307.887 192.527 C 308.987 192.527 309.887 191.627 309.887 190.527 L 309.887 178.527 L 303.887 172.527 L 295.887 172.527 Z M 302.887 179.527 L 302.887 174.027 L 308.387 179.527 L 302.887 179.527 Z" style={{ fill: '#40007B' }} transform="matrix(1, 0, 0, 1, 3.552713678800501e-15, 0)" />
                             </svg>
                         }
-                        </ListItemIcon>
+                        </ListItemIcon>}
                         <StyledListText primary={item.app_name}
                         />
                     </StyledListItem>);
                 })}
-            </StyledList>
+            </StyledList>}
             <DisplayButton variant="contained" onClick={(e) => {
                 e.preventDefault();
                 navigate('/docbot/');

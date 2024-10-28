@@ -343,14 +343,12 @@ export const VectorModal = ({
                             />
                         </SansTypography>
                         <StyledTitle variant="h6">
-                            Step 2: Should this Database Handle Images?
+                            Step 2: Does this Document Repository need to handle images?
                         </StyledTitle>
-                        <SansTypography variant="body2" >
-                        <strong>Note: Databases that handle images will be restricted to a small fize size upload and will take longer to complete and may even error out.</strong>
-                        </SansTypography>
                         <SansTypography variant="body2" >
                         <ImageButtons
                         variant="contained"
+                        style={{ backgroundColor: imagesEnabled ? '#12005A': '#20558A', backgroundImage: imagesEnabled ? 'linear-gradient(90deg, #12005A 0%, #12005A 100%)':'linear-gradient(90deg, #20558A 0%, #650A67 100%)'}}
                         // disabled={}
                         onClick={click =>setImagesButtomClick(true)}
                         >
@@ -359,6 +357,8 @@ export const VectorModal = ({
                         </ImageButtons>
                         <ImageButtons
                         variant="contained"
+                        style={{ backgroundColor: imagesEnabled === false ? '#12005A': '#20558A', backgroundImage: imagesEnabled === false  ? 'linear-gradient(90deg, #12005A 0%, #12005A 100%)':'linear-gradient(90deg, #20558A 0%, #650A67 100%)'}}
+                        
                         // disabled={}
                         onClick={click => setImagesButtomClick(false)}
                         >
@@ -371,6 +371,10 @@ export const VectorModal = ({
                         <StyledTitle variant="h6">
                             Step 2: Document(s) to embed {imagesEnabled ? 'with' : 'without'} Image Handling
                         </StyledTitle>
+                        {imagesEnabled &&
+                        <SansTypography variant="body2" >
+                            Only 1 file may be uploaded at a time. To upload additional files, go to Document Repository Management
+                        </SansTypography>}
                         <SansTypography variant="body2" >
                             Drag and drop .pdf, .docx, or .pptx files to your document repository. Please rename any files containing special characters before uploading. <strong>Note: Any document repositories not used after 120 days are automatically removed.</strong>
                         </SansTypography>
