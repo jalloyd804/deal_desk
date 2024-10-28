@@ -67,7 +67,7 @@ export const DisclaimerPage = ({
                                         <b>Professional Advice:</b> The output from the NIAID GenAI tools should not be considered professional advice or a substitute for qualified experts in the relevant field. While the results can be impressive, it is essential to verify and cross-reference the information provided by the tool with reliable sources. The tool's responses may be inaccurate, outdated, incomplete, or not aligned with specific needs.
                                     </li>
                                     <li>
-                                        <b>Limited Knowledge Base:</b> The tool is not intended to be an up-to-date knowledge base and GPT-4o is trained on information available prior to October 2023. If you require information dependent on data after the cutoff date, please be cautious as the tool may provide outdated information.
+                                        <b>Limited Knowledge Base:</b> This tool is designed with a fixed knowledge base, incorporating information available up to October 2023. It is not intended to function as a real-time search engine. Additionally, the tool may generate responses that are subject to hallucination or bias. For inquiries requiring the most current or precise information, please verify with up-to-date and reliable sources.
                                     </li>
                                 </ol>
                             </Stack>

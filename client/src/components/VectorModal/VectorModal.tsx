@@ -221,11 +221,11 @@ export const VectorModal = ({
                 }
                 let pixel = ''
                 if (imagesEnabled){
-                    pixel = `CreateVectorDatabaseEngine ( database = [ "${newVector}" ] , conDetails = [ { "CONNECTION_URL" : "@BaseFolder@/vector/@ENGINE@/", "VECTOR_TYPE" : "FAISS" , "NAME" : "${newVector}" , "EMBEDDER_ENGINE_ID":"` + embedder + `","CONTENT_LENGTH":"512","CONTENT_OVERLAP":"0","DISTANCE_METHOD":"Squared Euclidean (L2) distance", "CUSTOM_DOCUMENT_PROCESSOR": "true", "CUSTOM_DOCUMENT_PROCESSOR_FUNCTION_ID": "atdd15a2-8eb2-4f9d-99f1-2c61607f8feb" } ] ) ;`;;
+                    pixel = `CreateVectorDatabaseEngine ( database = [ "${newVector}" ] , conDetails = [ { "CONNECTION_URL" : "@BaseFolder@/vector/@ENGINE@/", "VECTOR_TYPE" : "FAISS" , "NAME" : "${newVector}" , "EMBEDDER_ENGINE_ID":"` + embedder + `","CONTENT_LENGTH":"512","CONTENT_OVERLAP":"0","DISTANCE_METHOD":"Squared Euclidean (L2) distance", "CUSTOM_DOCUMENT_PROCESSOR": "true", "CUSTOM_DOCUMENT_PROCESSOR_FUNCTION_ID": "atdd15a2-8eb2-4f9d-99f1-2c61607f8feb", "KEEP_INPUT_OUTPUT" : "true" } ] ) ;`;;
 
                 }
                 else{
-                    pixel= `CreateVectorDatabaseEngine ( database = [ "${newVector}" ] , conDetails = [ { "CONNECTION_URL" : "@BaseFolder@/vector/@ENGINE@/", "VECTOR_TYPE" : "FAISS" , "NAME" : "${newVector}" , "EMBEDDER_ENGINE_ID":"` + embedder + `","CONTENT_LENGTH":"512","CONTENT_OVERLAP":"0","DISTANCE_METHOD":"Squared Euclidean (L2) distance"} ] ) ;`;
+                    pixel= `CreateVectorDatabaseEngine ( database = [ "${newVector}" ] , conDetails = [ { "CONNECTION_URL" : "@BaseFolder@/vector/@ENGINE@/", "VECTOR_TYPE" : "FAISS" , "NAME" : "${newVector}" , "EMBEDDER_ENGINE_ID":"` + embedder + `","CONTENT_LENGTH":"512","CONTENT_OVERLAP":"0","DISTANCE_METHOD":"Squared Euclidean (L2) distance", "KEEP_INPUT_OUTPUT" : "true"} ] ) ;`;
                 }
                   
                 const response = await actions.run(pixel);
