@@ -12,7 +12,8 @@ import {
     OutlinedInput,
     InputAdornment,
     Collapse,
-    Modal
+    Modal,
+    ListItemIcon
 } from '@mui/material';
 import { DataGrid, GridColDef, useGridApiRef, GridRowSelectionModel } from '@mui/x-data-grid';
 import { VectorModal } from '../components/VectorModal';
@@ -25,9 +26,13 @@ import SearchIcon from '@mui/icons-material/Search';
 import Delete from '@mui/icons-material/Delete';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import Close from '@mui/icons-material/Close';
+import ImageIcon from '@mui/icons-material/Image';
 
 const StyledTitle = styled(Typography)(({ theme }) => ({
     color: theme.palette.modal.main,
+    maxWidth: '50%',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
 }));
 
 const StyledRedTitle = styled(Typography)(({ theme }) => ({
@@ -170,6 +175,7 @@ export const DocumentManagement = () => {
     const [selectedVectorDB, setSelectedVectorDB] = useState<Model>({});
     const [documents, setDocuments] = useState([]);
     const [expirationInfo, setExpirationInfo] = useState(false);
+    const [imagesEnabled, setImagesEnabled] = useState<any>(false);
     const [rowSelectionModel, setRowSelectionModel] = useState<GridRowSelectionModel>([]);
     //Controlling the Sidebar
     const [sideOpen, setSideOpen] = useState<boolean>(true);
@@ -299,7 +305,9 @@ export const DocumentManagement = () => {
             setIsLoading(true);
             //const pixelLocalDev = (`SetContext("25a8a9d6-7706-405c-851a-02680028eca5");`); // IMPORTANT: Make sure this line is toggled when deploying to prod
             const pixel = `ListDocumentsInVectorDatabase(engine="${selectedVectorDB.database_id}");`;
+
             const pixel2 = `GetExpiredVectorDatabases('Docbot_Repo');`;
+            const pixel3 = `GetEngineSMSS ( "${selectedVectorDB.database_id}")`
             /* actions.run(pixelLocalDev).then((response) => {
                 const { output, operationType } = response.pixelReturn[0];
                 if (operationType.indexOf('ERROR') > -1) {
@@ -321,6 +329,20 @@ export const DocumentManagement = () => {
                     });
                 }
             });
+
+            actions.run(pixel3).then((response) => {
+                const { output, operationType } = response.pixelReturn[0];
+                if (operationType.indexOf('ERROR') > -1) {
+                    throw new Error(output as string);
+                }
+                if (typeof output === 'string'){
+                    if (output.indexOf('CUSTOM_DOCUMENT_PROCESSOR	true') > -1)
+                        setImagesEnabled(true);
+                    else
+                        setImagesEnabled(false)
+                }
+            });
+            
             actions.run(pixel).then((response) => {
                 const { output, operationType } = response.pixelReturn[0];
                 if (operationType.indexOf('ERROR') > -1) {
@@ -455,9 +477,16 @@ export const DocumentManagement = () => {
                 )}
 
                 <StyledPaper variant={'elevation'} elevation={2} square>
+                <div style={{ display: 'flex' }}>
                     <StyledTitle variant="h5">
                         {GetDatabaseTitle()}
                     </StyledTitle>
+                    <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
+                            <ImageIcon style={{ fill: '#40007B', marginRight: '5px' }} />
+                            <p style={{ fontSize: '12px' }}>Image Processing: {imagesEnabled ? 'On' : 'Off'}</p>
+                             </div>
+                    </div>
+
                     {expirationInfo && (<Collapse in={alertOpen}>
                         <StyledAlert severity='error'
                             action={
@@ -501,6 +530,8 @@ export const DocumentManagement = () => {
                             {showDelete && (<DeleteButton variant="contained" onClick={() => { Confirm(`This will remove ALL selected files from the document repository.​`, 'ALL') }}>
                                 Delete Selected
                             </DeleteButton>)}
+                            <></>
+
                             <EmbedButton variant="contained" onClick={() => { setOpenEmbed(true) }}>
                                 Upload New Document
                             </EmbedButton>
@@ -555,7 +586,8 @@ export const DocumentManagement = () => {
                     selectedVectorDB={null}
                     existingVectorDB={selectedVectorDB.database_id}
                     setError={setError}
-                    documents={documents} />
+                    documents={documents}
+                    dbImagesEnabled={imagesEnabled} />
             </Modal>
         </>
     )

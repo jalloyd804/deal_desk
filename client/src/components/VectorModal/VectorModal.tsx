@@ -96,6 +96,26 @@ const StyledButtonOpen = styled(Button)(({ theme }) => ({
 const StyledButton = styled(Button)(({ theme }) => ({
     marginRight: theme.spacing(0.5),
 }));
+const ImageButtons = styled(Button)(({ theme }) => ({
+    backgroundImage: 'linear-gradient(90deg, #20558A 0%, #650A67 100%)',
+    backgroundColor: '#20558A',
+    marginLeft: '15%',
+    marginRight: '15%',
+    marginTop: '30px',
+    width:'20%',
+    height:'60px',
+    fontSize: '16px',
+    color: 'white',
+    '&:hover': {
+        backgroundImage: 'linear-gradient(90deg, #12005A 0%, #12005A 100%)',
+        backgroundColor: '#12005A',
+    },
+    '&[disabled]': {
+        color: 'rgba(255, 255, 255, .8)',
+        backgroundImage: 'none',
+
+    },
+}));
 
 const StyledAutocomplete = styled(Autocomplete)(({ theme }) => ({
     margin: theme.spacing(3),
@@ -115,11 +135,13 @@ export const VectorModal = ({
     selectedVectorDB,
     setError,
     existingVectorDB,
-    documents
+    documents,
+    dbImagesEnabled
 }) => {
     const [newVector, setNewVectorDB] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [file, setFile] = useState<File[] | null>([]);
+    const [imagesEnabled, setImagesEnabled] = useState<any>(null);
     const { actions } = useInsight();
 
     const [fileError, setFileError] = useState<string | null>(null);
@@ -133,6 +155,12 @@ export const VectorModal = ({
     useEffect(() => {
         setNewVectorDB(null);
     }, [open]);
+
+    useEffect(() => {
+        if(dbImagesEnabled !== null){
+            setImagesEnabled(dbImagesEnabled)
+        }
+    }, [dbImagesEnabled]);
 
     const closingFunctions = () => {
         setLoading(false);
@@ -149,6 +177,25 @@ export const VectorModal = ({
     {
         if (existingVectorDB !== null) return file.length === 0;
         else return (!file.length || fileError !== null || vectorNameError !== null);
+    }
+
+    function setImagesButtomClick(set){
+        if (set){
+            if (!imagesEnabled){
+                setFile([])
+                setTotalSize(0)
+                setFileError(null)
+            }
+            setImagesEnabled(true)
+        }
+        if (!set){
+            if (imagesEnabled){
+                setFile([])
+                setTotalSize(0)
+                setFileError(null)
+            }
+            setImagesEnabled(false)
+        }
     }
 
     function addUrlParam(e) {
@@ -172,8 +219,15 @@ export const VectorModal = ({
                 else if (process.env.ENVIRONMENTFLAG === "NIH") {
                     embedder = "6ce2e1ac-224c-47a3-a0f9-8ba147599b68"
                 }
-                 const pixel = `CreateVectorDatabaseEngine ( database = [ "${newVector}" ] , conDetails = [ { "CONNECTION_URL" : "@BaseFolder@/vector/@ENGINE@/", "VECTOR_TYPE" : "FAISS" , "NAME" : "${newVector}" , "EMBEDDER_ENGINE_ID":"` + embedder + `","CONTENT_LENGTH":"512","CONTENT_OVERLAP":"0","DISTANCE_METHOD":"Squared Euclidean (L2) distance", "CUSTOM_DOCUMENT_PROCESSOR": "true", "CUSTOM_DOCUMENT_PROCESSOR_FUNCTION_ID": "atdd15a2-8eb2-4f9d-99f1-2c61607f8feb" } ] ) ;`;
+                let pixel = ''
+                if (imagesEnabled){
+                    pixel = `CreateVectorDatabaseEngine ( database = [ "${newVector}" ] , conDetails = [ { "CONNECTION_URL" : "@BaseFolder@/vector/@ENGINE@/", "VECTOR_TYPE" : "FAISS" , "NAME" : "${newVector}" , "EMBEDDER_ENGINE_ID":"` + embedder + `","CONTENT_LENGTH":"512","CONTENT_OVERLAP":"0","DISTANCE_METHOD":"Squared Euclidean (L2) distance", "CUSTOM_DOCUMENT_PROCESSOR": "true", "CUSTOM_DOCUMENT_PROCESSOR_FUNCTION_ID": "atdd15a2-8eb2-4f9d-99f1-2c61607f8feb" } ] ) ;`;;
 
+                }
+                else{
+                    pixel= `CreateVectorDatabaseEngine ( database = [ "${newVector}" ] , conDetails = [ { "CONNECTION_URL" : "@BaseFolder@/vector/@ENGINE@/", "VECTOR_TYPE" : "FAISS" , "NAME" : "${newVector}" , "EMBEDDER_ENGINE_ID":"` + embedder + `","CONTENT_LENGTH":"512","CONTENT_OVERLAP":"0","DISTANCE_METHOD":"Squared Euclidean (L2) distance"} ] ) ;`;
+                }
+                  
                 const response = await actions.run(pixel);
                 const { output, operationType } = response.pixelReturn[0];
                 engine = output;
@@ -289,27 +343,61 @@ export const VectorModal = ({
                             />
                         </SansTypography>
                         <StyledTitle variant="h6">
-                            Step 2: Document(s) to embed
+                            Step 2: Should this Database Handle Images?
+                        </StyledTitle>
+                        <SansTypography variant="body2" >
+                        <strong>Note: Databases that handle images will be restricted to a small fize size upload and will take longer to complete and may even error out.</strong>
+                        </SansTypography>
+                        <SansTypography variant="body2" >
+                        <ImageButtons
+                        variant="contained"
+                        // disabled={}
+                        onClick={click =>setImagesButtomClick(true)}
+                        >
+
+                        Yes
+                        </ImageButtons>
+                        <ImageButtons
+                        variant="contained"
+                        // disabled={}
+                        onClick={click => setImagesButtomClick(false)}
+                        >
+
+                        No
+                        </ImageButtons>
+                        </SansTypography>
+                        {imagesEnabled !== null &&
+                        <div>
+                        <StyledTitle variant="h6">
+                            Step 2: Document(s) to embed {imagesEnabled ? 'with' : 'without'} Image Handling
                         </StyledTitle>
                         <SansTypography variant="body2" >
                             Drag and drop .pdf, .docx, or .pptx files to your document repository. Please rename any files containing special characters before uploading. <strong>Note: Any document repositories not used after 120 days are automatically removed.</strong>
                         </SansTypography>
+                        </div>
+                        }
                     </>
                 }
-                {!selectedVectorDB && <StyledTitle variant="h6">
+                {imagesEnabled !== null && !selectedVectorDB && <StyledTitle variant="h6">
                     Upload Files
                 </StyledTitle>}
-                <Dropzone
+                {imagesEnabled !== null && <Dropzone
                     accept={{ 'text/pdf': ['.pdf'], 'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'], 'application/vnd.openxmlformats-officedocument.presentationml.presentation': ['.pptx']  }}
                     onDrop={(acceptedFiles, fileRejections) => {
                         let tempMaxTotal = 0;
                         if (fileRejections.length > 0) {
                             setFileError(fileRejections[0].errors[0].message);
                             setFile([]);
-                        } else {
+                        } 
+                        if (!imagesEnabled && acceptedFiles.length + file.length > 7){
+                            setFileError('Error: Documents cannot exceeded 7');
+                        }
+                            
+                        else {
                             acceptedFiles.map(file => tempMaxTotal += file.size);
                             let duplicateFound = false;
                             let errorMessage = '';
+
                             documents.forEach(document => {
                                 acceptedFiles.forEach(acceptedFile => {
                                     if (acceptedFile.name === document.fileName){
@@ -322,8 +410,14 @@ export const VectorModal = ({
                                 })
                             });
                             if (!duplicateFound){
+                                if (imagesEnabled && acceptedFiles.length > 0){
+                                    setFile([acceptedFiles[0]])
+                                    setFileError(null);
+                                }
+                                else{
                                 setFile([...file, ...acceptedFiles]);
                                 setFileError(null);
+                                }
                             }
                             else{
                                 setFile([]);
@@ -333,7 +427,7 @@ export const VectorModal = ({
                             
                         }
                         setTotalSize(tempMaxTotal);
-                    }} multiple={true} maxFiles={7} maxSize={10000000}
+                    }} multiple={!imagesEnabled} maxFiles={7} maxSize={imagesEnabled ? 3000000 : 10000000}
                 >
                     {({ getRootProps, getInputProps }) => (
                         <Container
@@ -360,7 +454,7 @@ export const VectorModal = ({
                                     onClick={(e) => e.stopPropagation()}
                                 />
 
-                                <label>
+                                <div>
                                     <TextField
                                         variant="outlined"
                                         type="text"
@@ -400,19 +494,24 @@ export const VectorModal = ({
                                                 sx={{ color: '#40a0ff' }}
                                             />
                                         </Avatar>
-                                        <div><StyledLink>Click to upload</StyledLink> or drag and drop.<br />Maximum individual file size: 10MB.<br />Maximum set of documents size: 40MB.</div>
+                                        <div><StyledLink>Click to upload</StyledLink> or drag and drop.<br />Maximum individual file size: {imagesEnabled ? '3MB' : '10MB'}.<br />{!imagesEnabled && 'Maximum set of documents size: 40MB.'}</div>
                                     </Typography>
-                                </label>
+                                </div>
                             </div>
                         </Container>
                     )}
-                </Dropzone>
-                <SansTypography variant="caption">
+                </Dropzone>}
+                {imagesEnabled === true && <SansTypography variant="caption">
+                    {(file.length > 0 && totalSize <= 3000000) && <ul>{file.map((file, index) => <li key={index}>{file.name}</li>)}</ul>}
+                    {fileError !== null && <FormatError text = {fileError.replace("3000000 bytes", "3MB")}></FormatError>}
+                    {totalSize > 3000000 && <Typography color="red" fontSize="inherit">Error: Document size cannot exceeded 3MB.</Typography>}
+                </SansTypography> }
+                {imagesEnabled === false && <SansTypography variant="caption">
                     {(file.length > 0 && totalSize <= 40000000) && <ul>{file.map((file, index) => <li key={index}>{file.name}</li>)}</ul>}
                     {fileError !== null && <FormatError text = {fileError.replace("10000000 bytes", "10MB")}></FormatError>}
                     {totalSize > 40000000 && <Typography color="red" fontSize="inherit">Error: Maximum set of documents size cannot exceeded 40MB.</Typography>}
-                </SansTypography>
-                <StyledButtonGroup>
+                </SansTypography> }
+                {imagesEnabled !== null && <StyledButtonGroup>
                     <StyledButtonOpen
                         variant="contained"
                         color="error"
@@ -430,7 +529,7 @@ export const VectorModal = ({
                         {' '}
                         Upload{' '}
                     </StyledButton>
-                </StyledButtonGroup>
+                </StyledButtonGroup>}
             </>
         );
     };

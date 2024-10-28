@@ -5,7 +5,7 @@ import {
     Box,
     Paper
 } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useInsight } from '@semoss/sdk-react';
 import { RoomDetail } from '../interfaces/RoomDetail'
 import 'pdfjs-dist/build/pdf.worker.min.mjs';
@@ -60,8 +60,40 @@ export const ChatHistoryPanel = ({
     const [isLoading, setIsLoading] = useState(false);
     const [pairedDetails, setPairedDetails] = useState([]);
     const { actions } = useInsight();
+    const [lastLoaded, setLastLoaded] = useState(false)
+    const notLastRef = useRef<HTMLDivElement>(null);
+    const lastRef = useRef<HTMLDivElement>(null);
+    useEffect(() => {
+        if (lastRef.current !== null)
+            lastRef!.current!.scrollIntoView({ block: 'start', behavior: 'smooth' }); 
+     }, [lastRef.current]);
 
     const renderResponse = (roomDetails:RoomDetail[], last:boolean) => {
+        if (last){
+            //setLastLoaded(true)
+            return (
+                <div ref={lastRef} style={{borderRadius:'10px',boxShadow:'-1px 7px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12)'}}>
+                    {roomDetails.map((room,index) =>{
+                        switch (room.MESSAGE_TYPE) {
+                            case "INPUT":
+                                return (
+                                    <div style={{padding:'2% 2% 0 2%', backgroundColor:'white', borderRadius:'10px 10px 0 0 '}}>
+                                        <ConversationTitle>User Input:</ConversationTitle>
+                                        <div>{room.MESSAGE_DATA}</div>
+                                    </div>
+                                )
+                            case "RESPONSE":
+                                return (
+                                    <div style={{padding:'1% 2%', backgroundColor:'white', marginBottom:'2%', borderRadius:'0 0 10px 10px'}}>
+                                        <ConversationTitle>Document Search Response:</ConversationTitle>
+                                        <Typography style={{overflowWrap:"anywhere"}}><Markdown>{room.MESSAGE_DATA}</Markdown></Typography>
+                                    </div>
+                                )
+                        }
+                    })}
+                </div>
+            )
+        } else
         return (
             <div style={{borderRadius:'10px',boxShadow:'-1px 7px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12)'}}>
                 {roomDetails.map((room,index) =>{

@@ -412,7 +412,8 @@ export const DocBotPanel = ({
                     selectedVectorDB={selectedVectorDB}
                     setError={setError}
                     existingVectorDB={null}
-                    documents={documents} />
+                    documents={documents}
+                    dbImagesEnabled={null} />
             </Modal>
             <>{PDFs.length > 0 && PDFs}</>
         </>
