@@ -176,6 +176,9 @@ export const MainViewSide = ({ vectorOptions,
                     <TextField
                         {...params}
                         label="Document Repository"
+                        InputLabelProps={{
+                            style : {fontSize: 24, top: -10}
+                        }}
                         variant="standard"
                     />
                 )}
@@ -184,7 +187,7 @@ export const MainViewSide = ({ vectorOptions,
                 setError('');
                 setOpen(true);
             }}>
-                Create New Repository
+                Create New Document Repository
             </DisplayButton>
             {showDocManage && <DisplayButton variant="contained" onClick={(e) => {
                 e.preventDefault();

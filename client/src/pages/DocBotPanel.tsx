@@ -311,7 +311,7 @@ export const DocBotPanel = ({
                 <StyledPaper variant={'elevation'} elevation={2} square>
                     <Stack spacing={2} color='#4F4F4F'>
                         <Stack spacing={2} style={{ fontSize: '12px' }}>
-                            <Typography variant="h5" color='#40007B'><strong>Hello!</strong> Welcome to NIAID’s AI Document Search</Typography>
+                            <Typography variant="h5" color='#40007B'><strong>Hello!</strong> Welcome to NIAID’s AI Document Repository Q&A</Typography>
                             <Typography variant="body1">{welcomeText}</Typography>
                         </Stack>
                         <Stack spacing={2} style={{ fontSize: '12px' }}>

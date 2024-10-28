@@ -80,21 +80,17 @@ const StyledPolicy = styled('div')(({ theme }) => ({
 }));
 
 const welcomeText = `
-The AI Document Search is a chat interface between users and uploaded documents.
+The AI Document Repository Q&A is a chat interface between users and uploaded documents.
 Upload policies, proposals, meeting minutes, operational procedures,
 policy manuals as PDF’s, PowerPoints, or Word documents and ask questions.
 To begin, select a document repository on the left or create a new one.
-The Document Search searches through the selected documents for content to answer questions.
+The Document Repository Q&A searches through the selected documents for content to answer questions.
 It is best to spell out acronyms to improve the results.
 If the user was to ask about large language models, it is recommended to format the
 question as: What are large language models (LLMs)? 
 `;
 
-const disclaimer = `
-As of October 1, 2024 Document Search can process images within the uploaded documents.  Any Repository 
-created before October 1, 2024 will not include this feature.  Please create new repositories if you
- want images to be included in the response
-`;
+const disclaimer = ``;
 
 const reminder = `
 Note: Any document repositories not used after 120 days are automatically removed. 
@@ -170,8 +166,8 @@ function BasicTabs({
         <Box sx={{ width: '100%', padding: '2%' }}>
             <Box sx={{ borderBottom: 1, borderColor: 'divider', padding: 0 }}>
                 <Tabs className={classes.root} value={value} onChange={handleChange} aria-label="basic tabs example">
-                    <Tab label="Document Bot Chat" {...a11yProps(0)} />
-                    <Tab label="ChatHistory" {...a11yProps(1)} />
+                    <Tab label="Document Repository Q&A" {...a11yProps(0)} />
+                    <Tab label="Document Repository Q&A History" {...a11yProps(1)} />
                 </Tabs>
             </Box>
             <CustomTabPanel value={value} index={0}>

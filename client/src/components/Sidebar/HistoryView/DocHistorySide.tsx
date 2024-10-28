@@ -198,7 +198,7 @@ export const DocHistorySide = ({ setActiveConversation, activeConversation, room
         <>
             {isLoading && <LoadingOverlay><CircularProgress /></LoadingOverlay>}
             <StyledSectionTitle variant="h5">
-                Chat History
+                Document Repository Q&A History
             </StyledSectionTitle>
             <StyledList dense={true}>
                 {conversations.map((convo, index) =>
