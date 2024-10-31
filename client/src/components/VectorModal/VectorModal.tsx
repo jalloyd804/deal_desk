@@ -270,7 +270,10 @@ export const VectorModal = ({
                     }
                 });
             } catch (e) {
-                if (e.message) {
+                if (e.message.includes('JSON')) {
+                    setError("Request Timed Out: Your request likely timed out due to too many images in your file. To resolve this issue, consider either splitting your file into smaller documents or creating a new repository that excludes images. For help or questions, please contact genai-support@mail.nih.gov.")                    
+                }
+                else if (e.message) {
                     setError(e.message);
                 } else {
                     setError(
