@@ -343,14 +343,14 @@ export const VectorModal = ({
                             />
                         </SansTypography>
                         <StyledTitle variant="h6">
-                            Step 2: Does this Document Repository need to handle images?
+                            Step 2: Does this Document Repository need to include images?
                         </StyledTitle>
                         <SansTypography variant="body2" >
                         <ImageButtons
                         variant="contained"
                         style={{ backgroundColor: imagesEnabled ? '#12005A': '#20558A', backgroundImage: imagesEnabled ? 'linear-gradient(90deg, #12005A 0%, #12005A 100%)':'linear-gradient(90deg, #20558A 0%, #650A67 100%)'}}
                         // disabled={}
-                        onClick={click =>setImagesButtomClick(true)}
+                        onClick={() =>setImagesButtomClick(true)}
                         >
 
                         Yes
@@ -360,7 +360,7 @@ export const VectorModal = ({
                         style={{ backgroundColor: imagesEnabled === false ? '#12005A': '#20558A', backgroundImage: imagesEnabled === false  ? 'linear-gradient(90deg, #12005A 0%, #12005A 100%)':'linear-gradient(90deg, #20558A 0%, #650A67 100%)'}}
                         
                         // disabled={}
-                        onClick={click => setImagesButtomClick(false)}
+                        onClick={() => setImagesButtomClick(false)}
                         >
 
                         No
@@ -368,12 +368,19 @@ export const VectorModal = ({
                         </SansTypography>
                         {imagesEnabled !== null &&
                         <div>
+
                         <StyledTitle variant="h6">
-                            Step 2: Document(s) to embed {imagesEnabled ? 'with' : 'without'} Image Handling
+                            Step 3: Document(s) to add {imagesEnabled ? 'with' : 'without'} Image Handling
                         </StyledTitle>
+                        {imagesEnabled && <SansTypography variant="body1" >
+                            Warning! Users will need to upload one document at a time. Including images may take up to 15 minutes.
+                        </SansTypography>}
+                        {!imagesEnabled && <SansTypography variant="body1" >
+                            Any images that are in the documents will be <u>not</u> be included in the Generative AI input
+                        </SansTypography>}
                         {imagesEnabled &&
                         <SansTypography variant="body2" >
-                            Only 1 file may be uploaded at a time. To upload additional files, go to Document Repository Management
+                            To upload additional files, go to Document Repository Management
                         </SansTypography>}
                         <SansTypography variant="body2" >
                             Drag and drop .pdf, .docx, or .pptx files to your document repository. Please rename any files containing special characters before uploading. <strong>Note: Any document repositories not used after 120 days are automatically removed.</strong>
@@ -392,6 +399,9 @@ export const VectorModal = ({
                         if (fileRejections.length > 0) {
                             setFileError(fileRejections[0].errors[0].message);
                             setFile([]);
+                            if (imagesEnabled){
+                                tempMaxTotal = fileRejections[0].file.size
+                            }
                         } 
                         if (!imagesEnabled && acceptedFiles.length + file.length > 7){
                             setFileError('Error: Documents cannot exceeded 7');
@@ -419,8 +429,12 @@ export const VectorModal = ({
                                     setFileError(null);
                                 }
                                 else{
-                                setFile([...file, ...acceptedFiles]);
-                                setFileError(null);
+                                file.map(f => tempMaxTotal += f.size)
+                                if (tempMaxTotal < 40000000)
+                                {
+                                    setFile([...file, ...acceptedFiles]);
+                                    setFileError(null);
+                                }
                                 }
                             }
                             else{
@@ -511,7 +525,7 @@ export const VectorModal = ({
                     {totalSize > 3000000 && <Typography color="red" fontSize="inherit">Error: Document size cannot exceeded 3MB.</Typography>}
                 </SansTypography> }
                 {imagesEnabled === false && <SansTypography variant="caption">
-                    {(file.length > 0 && totalSize <= 40000000) && <ul>{file.map((file, index) => <li key={index}>{file.name}</li>)}</ul>}
+                    {(file.length > 0) && <ul>{file.map((file, index) => <li key={index}>{file.name}</li>)}</ul>}
                     {fileError !== null && <FormatError text = {fileError.replace("10000000 bytes", "10MB")}></FormatError>}
                     {totalSize > 40000000 && <Typography color="red" fontSize="inherit">Error: Maximum set of documents size cannot exceeded 40MB.</Typography>}
                 </SansTypography> }

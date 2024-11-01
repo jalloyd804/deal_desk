@@ -63,10 +63,6 @@ export const ChatHistoryPanel = ({
     const [lastLoaded, setLastLoaded] = useState(false)
     const notLastRef = useRef<HTMLDivElement>(null);
     const lastRef = useRef<HTMLDivElement>(null);
-    useEffect(() => {
-        if (lastRef.current !== null)
-            lastRef!.current!.scrollIntoView({ block: 'start', behavior: 'smooth' }); 
-     }, [lastRef.current]);
 
     const renderResponse = (roomDetails:RoomDetail[], last:boolean) => {
         if (last){
