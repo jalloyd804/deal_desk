@@ -207,7 +207,7 @@ export const DocViewSide = ({ vectorOptions, actions, setError, setRefresh, setS
                 e.preventDefault();
                 navigate('/docbot/');
             }}>
-                GenAI Document Repository Search
+                GenAI Document Repository Q&A
             </DisplayButton>
 
             <Modal open={open} onClose={() => setOpen(false)}>
