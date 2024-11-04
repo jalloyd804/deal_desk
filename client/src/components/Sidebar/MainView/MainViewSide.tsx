@@ -132,6 +132,7 @@ export const MainViewSide = ({ vectorOptions,
     return (
         <>
         {(isLoading) && <LoadingOverlay><CircularProgress /></LoadingOverlay>}
+        
             <Autocomplete
                 forcePopupIcon={true}
                 disableClearable
@@ -195,7 +196,8 @@ export const MainViewSide = ({ vectorOptions,
             }}>
                 Document Repository Management
             </DisplayButton>}
-            <StyledDiv style={{ display: 'flex', marginTop: '50%', marginBottom: '1%' }}>
+            <div style={{display: 'flex',flexDirection: 'column', justifyContent: 'end',height: '-webkit-fill-available'}}> 
+            <StyledDiv style={{ display: 'flex', marginBottom: '1%' }}>
                 <Typography style={{ width: '100%', textAlign: 'center', fontWeight: '700', color: '#40007B' }}>Advanced Settings</Typography>
             </StyledDiv>
             <StyledDiv style={{ display: 'flex' }}>
@@ -253,6 +255,7 @@ export const MainViewSide = ({ vectorOptions,
                 className={classes.root}
                 disabled={tabSelected===1 || showDisclaimer}
             />
+            </div>
 
         </>
     );
