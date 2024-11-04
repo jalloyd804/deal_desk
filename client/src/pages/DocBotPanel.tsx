@@ -130,22 +130,23 @@ export const DocBotPanel = ({
         if (extension === 'docx' || extension === 'pdf') {
             const file = `${process.env.ENDPOINT}${process.env.MODULE}/api/engine/downloadFile?insightId=${document.insight}&fileKey=${encodeURIComponent(document.downloadKey)}`
             if (extension === 'docx') {
-                uri = file
-                const response = await axios.get(
-                    uri = file,
-                    {
-                        responseType: 'blob', // Important
-                    }
-                );
+                window.open(file, '_blank');
+                // uri = file
+                // const response = await axios.get(
+                //     uri = file,
+                //     {
+                //         responseType: 'blob', // Important
+                //     }
+                // );
 
-                const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
-                const reader = new FileReader();
-                reader.readAsArrayBuffer(blob);
-                reader.onload = async () => {
-                    await mammoth.convertToHtml({ arrayBuffer: reader.result as ArrayBuffer }).then(result => {
-                        setPDFs([...PDFs, <NewWindow features={{ width: 700, height: 960, scrollbars: false, url: window.location.href }} title={fileName}><div dangerouslySetInnerHTML={{ __html: result.value }}></div></NewWindow>]);
-                    })
-                };
+                // const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+                // const reader = new FileReader();
+                // reader.readAsArrayBuffer(blob);
+                // reader.onload = async () => {
+                //     await mammoth.convertToHtml({ arrayBuffer: reader.result as ArrayBuffer }).then(result => {
+                //         setPDFs([...PDFs, <NewWindow features={{ width: 700, height: 960, scrollbars: false, url: window.location.href }} title={fileName}><div dangerouslySetInnerHTML={{ __html: result.value }}></div></NewWindow>]);
+                //     })
+                // };
             }
             else {
                 uri = file;

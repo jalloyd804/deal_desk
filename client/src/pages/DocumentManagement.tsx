@@ -303,17 +303,17 @@ export const DocumentManagement = () => {
         try {
             //setError('');
             setIsLoading(true);
-            //const pixelLocalDev = (`SetContext("25a8a9d6-7706-405c-851a-02680028eca5");`); // IMPORTANT: Make sure this line is toggled when deploying to prod
+            // const pixelLocalDev = (`SetContext("25a8a9d6-7706-405c-851a-02680028eca5");`); // IMPORTANT: Make sure this line is toggled when deploying to prod
             const pixel = `ListDocumentsInVectorDatabase(engine="${selectedVectorDB.database_id}");`;
 
             const pixel2 = `GetExpiredVectorDatabases('Docbot_Repo');`;
             const pixel3 = `GetEngineSMSS ( "${selectedVectorDB.database_id}")`
-            /* actions.run(pixelLocalDev).then((response) => {
-                const { output, operationType } = response.pixelReturn[0];
-                if (operationType.indexOf('ERROR') > -1) {
-                    throw new Error(output as string);
-                }
-            }); */ // IMPORTANT: Make sure this block is toggled when deploying to prod
+            //  actions.run(pixelLocalDev).then((response) => {
+            //     const { output, operationType } = response.pixelReturn[0];
+            //     if (operationType.indexOf('ERROR') > -1) {
+            //         throw new Error(output as string);
+            //     }
+            // });  // IMPORTANT: Make sure this block is toggled when deploying to prod
             actions.run(pixel2).then((response) => {
                 const { output, operationType } = response.pixelReturn[0];
                 if (operationType.indexOf('ERROR') > -1) {
@@ -483,7 +483,7 @@ export const DocumentManagement = () => {
                     </StyledTitle>
                     <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
                             <ImageIcon style={{ fill: '#40007B', marginRight: '5px' }} />
-                            <p style={{ fontSize: '12px' }}>Image Processing: {imagesEnabled ? 'On' : 'Off'}</p>
+                            <p style={{ fontSize: '12px' }}>Image Handling: {imagesEnabled ? 'On' : 'Off'}</p>
                              </div>
                     </div>
 
