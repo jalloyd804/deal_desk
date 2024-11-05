@@ -244,7 +244,12 @@ export const VectorModal = ({
                 addUrlParam(newVector);
             } catch (e) {
                 if (e.message) {
-                    setError(e.message);
+                    if (e.message.search("Engine name already exists. Please provide a unique engine name")){
+                        setError("Sorry another user already created a Document Repository with that name, please try again with a different name!");
+                    }
+                    else{
+                        setError(e.message);
+                    }
                 } else {
                     console.log(e);
                     setError(
