@@ -9,29 +9,14 @@ import {
     Button,
     IconButton,
     TextField,
-    Autocomplete
+    Autocomplete,
 } from '@mui/material';
 import { FileUploadOutlined } from '@mui/icons-material';
 import { createFilterOptions } from '@mui/material/Autocomplete';
 import Dropzone from 'react-dropzone';
 import { useInsight } from '@semoss/sdk-react';
-import { makeStyles } from "@material-ui/core/styles";
 
 import CloseIcon from '@mui/icons-material/Close';
-
-const useStyles = makeStyles(theme => ({
-    root: {
-        "& .MuiFormLabel-root": {
-            'font-family': "Public Sans"
-        },
-        "& .MuiInputBase-input": {
-            'font-family': "Public Sans"
-        },
-        "& .MuiFilledInput-root": {
-            'background-color': "white"
-        },
-    }
-}));
 
 interface GetInputPropsOptionsRef {
     ref?: React.RefObject<HTMLInputElement>;
@@ -59,72 +44,38 @@ const StyledLoadingDiv = styled('div')(() => ({
     alignItems: 'center',
 }));
 
-const IndentedListItem = styled('li')(() => ({
-    paddingLeft: '20px',
-}));
-
-
 const StyledTypography = styled(Typography)(({ theme }) => ({
     marginTop: theme.spacing(4),
 }));
 
-const SansTypography = styled(Typography)(({ theme }) => ({
-    fontFamily: theme.typography.modal.fontFamily,
-}));
-const StyledTextField = styled(TextField)(({ theme }) => ({
-    fontFamily: theme.typography.modal.fontFamily,
-    backgroundColor: 'white'
-}));
-
 const StyledButtonGroup = styled('div')(() => ({
     display: 'flex',
-    justifyContent: 'flex-end'
+    justifyContent: 'flex-end',
 }));
 
 const StyledTitle = styled(Typography)(({ theme }) => ({
-    color: theme.palette.modal.main,
-    fontSize: theme.typography.modal.fontSize,
+    color: theme.palette.primary.main,
     alignItems: 'center',
     marginTop: theme.spacing(3),
-    fontFamily: theme.typography.modal.fontFamily,
-}));
-
-const StyledButtonOpen = styled(Button)(({ theme }) => ({
-    marginRight: theme.spacing(0.5),
 }));
 
 const StyledButton = styled(Button)(({ theme }) => ({
     marginRight: theme.spacing(0.5),
-}));
-const ImageButtons = styled(Button)(({ theme }) => ({
-    backgroundImage: 'linear-gradient(90deg, #20558A 0%, #650A67 100%)',
-    backgroundColor: '#20558A',
-    marginLeft: '15%',
-    marginRight: '15%',
-    marginTop: '30px',
-    width:'20%',
-    height:'60px',
-    fontSize: '16px',
-    color: 'white',
-    '&:hover': {
-        backgroundImage: 'linear-gradient(90deg, #12005A 0%, #12005A 100%)',
-        backgroundColor: '#12005A',
-    },
-    '&[disabled]': {
-        color: 'rgba(255, 255, 255, .8)',
-        backgroundImage: 'none',
-
-    },
 }));
 
 const StyledAutocomplete = styled(Autocomplete)(({ theme }) => ({
     margin: theme.spacing(3),
 }));
 
-const StyledLink = styled('span')(({ theme }) => ({
+const StyledLink = styled('button')(({ theme }) => ({
+    display: 'inline-block',
     color: theme.palette.primary.main,
     cursor: 'pointer',
+    backgroundColor: theme.palette.background.paper,
+    border: '0px',
 }));
+
+const ENCODER_OPTIONS = ['FAISS', 'Weaviate', 'Pinecone', 'pgvector'];
 
 export const VectorModal = ({
     setOpen,
@@ -134,33 +85,19 @@ export const VectorModal = ({
     setSelectedVectorDB,
     selectedVectorDB,
     setError,
-    existingVectorDB,
-    documents,
-    dbImagesEnabled
 }) => {
     const [newVector, setNewVectorDB] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
-    const [file, setFile] = useState<File[] | null>([]);
-    const [imagesEnabled, setImagesEnabled] = useState<any>(null);
+    const [file, setFile] = useState<File | null>(null);
     const { actions } = useInsight();
 
     const [fileError, setFileError] = useState<string | null>(null);
-    const [vectorNameError, setVectorNameError] = useState<string | null>("Name not selected");
 
-    const [totalSize, setTotalSize] = useState<number>(0);
-
-    const classes = useStyles();
     const fileInput = useRef<HTMLInputElement>();
 
     useEffect(() => {
         setNewVectorDB(null);
     }, [open]);
-
-    useEffect(() => {
-        if(dbImagesEnabled !== null){
-            setImagesEnabled(dbImagesEnabled)
-        }
-    }, [dbImagesEnabled]);
 
     const closingFunctions = () => {
         setLoading(false);
@@ -169,116 +106,52 @@ export const VectorModal = ({
         setNewVectorDB(null);
         setFile(null);
     };
-    function escapeAndJoin(arr) {
-        return arr.map(str => JSON.stringify(str)).join(',');
-    }
-    
-    function disabled()
-    {
-        if (existingVectorDB !== null) return file.length === 0;
-        else return (!file.length || fileError !== null || vectorNameError !== null);
-    }
-
-    function setImagesButtomClick(set){
-        if (set){
-            if (!imagesEnabled){
-                setFile([])
-                setTotalSize(0)
-                setFileError(null)
-            }
-            setImagesEnabled(true)
-        }
-        if (!set){
-            if (imagesEnabled){
-                setFile([])
-                setTotalSize(0)
-                setFileError(null)
-            }
-            setImagesEnabled(false)
-        }
-    }
-
-    function addUrlParam(e) {
-        const currentUrl = new URL(window.location.href);
-        currentUrl.searchParams.set("newDocRepo", e);
-        window.history.pushState({}, '', currentUrl);
-    }
 
     const handleSubmit = async () => {
         setLoading(true);
         let engine;
         if (newVector) {
             try {
-
-
-
-                let embedder = ''
-                if (process.env.ENVIRONMENTFLAG === "Deloitte") {
-                    embedder = "e4449559-bcff-4941-ae72-0e3f18e06660"
-                }
-                else if (process.env.ENVIRONMENTFLAG === "NIH") {
-                    embedder = "6ce2e1ac-224c-47a3-a0f9-8ba147599b68"
-                }
-                let pixel = ''
-                if (imagesEnabled){
-                    pixel = `CreateVectorDatabaseEngine ( database = [ "${newVector}" ] , conDetails = [ { "CONNECTION_URL" : "@BaseFolder@/vector/@ENGINE@/", "VECTOR_TYPE" : "FAISS" , "NAME" : "${newVector}" , "EMBEDDER_ENGINE_ID":"` + embedder + `","CONTENT_LENGTH":"512","CONTENT_OVERLAP":"0","DISTANCE_METHOD":"Squared Euclidean (L2) distance", "CUSTOM_DOCUMENT_PROCESSOR": "true", "CUSTOM_DOCUMENT_PROCESSOR_FUNCTION_ID": "atdd15a2-8eb2-4f9d-99f1-2c61607f8feb", "KEEP_INPUT_OUTPUT" : "true" } ] ) ;`;;
-
-                }
-                else{
-                    pixel= `CreateVectorDatabaseEngine ( database = [ "${newVector}" ] , conDetails = [ { "CONNECTION_URL" : "@BaseFolder@/vector/@ENGINE@/", "VECTOR_TYPE" : "FAISS" , "NAME" : "${newVector}" , "EMBEDDER_ENGINE_ID":"` + embedder + `","CONTENT_LENGTH":"512","CONTENT_OVERLAP":"0","DISTANCE_METHOD":"Squared Euclidean (L2) distance", "KEEP_INPUT_OUTPUT" : "true"} ] ) ;`;
-                }
-                  
+                const pixel = `CreateVectorDatabaseEngine ( database = [ "${newVector}" ] , conDetails = [ { "VECTOR_TYPE" : "FAISS" , "NAME" : "${newVector}" , "CONNECTION_URL" : "@BaseFolder@/vector/@ENGINE@/" , "ENCODER_NAME" : "BAAI/bge-large-en-v1.5" , "ENCODER_TYPE" : "huggingface" } ] ) ;`;
                 const response = await actions.run(pixel);
                 const { output, operationType } = response.pixelReturn[0];
                 engine = output;
                 if (operationType.indexOf('ERROR') > -1) {
                     throw new Error(output as string);
                 }
-                const embedEngineTag = existingVectorDB || engine?.database_id;
-                const pixelTag = `SetEngineMetadata ( engine = [ "${embedEngineTag}" ], meta=[{"tag":["Docbot_Repo"]}], jsonCleanup=[true]) ;`;
-                const responseTag = await actions.run(pixelTag);
-                const { output:outputTag, operationType:operationTypeTag } = responseTag.pixelReturn[0];
-                if (operationTypeTag.indexOf('ERROR') > -1) {
-                    throw new Error(outputTag as string);
-                }
-                addUrlParam(newVector);
             } catch (e) {
                 if (e.message) {
-                    if (e.message.search("Engine name already exists. Please provide a unique engine name")){
-                        setError("Sorry another user already created a Document Repository with that name, please try again with a different name!");
-                    }
-                    else{
-                        setError(e.message);
-                    }
+                    setError(e.message);
                 } else {
                     console.log(e);
                     setError(
                         'There was an error creating your vector DB, please check pixel calls',
                     );
                 }
+            } finally {
                 closingFunctions();
-                return;
             }
         }
 
-        if (file.length) {
+        if (file) {
             try {
                 const fileUpload = await actions.upload(file, '');
-                const fileLocation = escapeAndJoin(fileUpload.map(o => o.fileLocation));
-                const embedEngine = existingVectorDB || engine?.database_id;
+                const { fileLocation } = fileUpload[0];
+                const embedEngine = engine || selectedVectorDB;
                 const pixel = `
-                CreateEmbeddingsFromDocuments ( engine = "${embedEngine}" , filePaths = [ ${fileLocation} ] ) ;`;
+                CreateEmbeddingsFromDocuments ( engine = "${
+                    embedEngine.database_id
+                }" , filePaths = [ "${fileLocation.slice(1)}" ] ) ;
+                `;
                 await actions.run(pixel).then((response) => {
                     const { output, operationType } = response.pixelReturn[0];
+                    console.log(operationType.indexOf('ERROR'));
                     if (operationType.indexOf('ERROR') > -1) {
                         throw new Error(output as string);
                     }
                 });
             } catch (e) {
-                if (e.message.includes('JSON')) {
-                    setError("Request Timed Out: Your request likely timed out due to too many images in your file. To resolve this issue, consider either splitting your file into smaller documents or creating a new repository that excludes images. For help or questions, please contact genai-support@mail.nih.gov.")                    
-                }
-                else if (e.message) {
+                if (e.message) {
                     setError(e.message);
                 } else {
                     setError(
@@ -287,173 +160,106 @@ export const VectorModal = ({
                 }
             } finally {
                 closingFunctions();
-                return;
             }
         }
     };
 
-    function FormatError(props) {
-        const textWithBreaks = props.text.split('\n').map((text, index) => {
-          if (index === 0)
-            return <React.Fragment key={index}>
-                {text}
-            </React.Fragment>
-          else
-            return <React.Fragment key={index}>
-            <IndentedListItem>{text}</IndentedListItem>
-            
-        </React.Fragment>
-        });
-      
-        return <Typography color="red" fontSize="inherit">Error: {textWithBreaks}</Typography>;
-      }
-
     const firstStep = () => {
         return (
             <>
-                {selectedVectorDB &&
-                    <>
-                        <StyledButtonGroup>
-                            <IconButton onClick={() => setOpen(false)}>
-                                {' '}
-                                <CloseIcon />
-                            </IconButton>
-                        </StyledButtonGroup>
-                        <StyledTitle variant="h6">
-                            Step 1: Create a Document Repository
-                        </StyledTitle>
-                        <SansTypography variant="body2">
-                            Type the name of the document repository.
-                        </SansTypography>
-                        <SansTypography>
-                            <StyledTextField
-                                autoComplete='off'
-                                className={classes.root}
-                                required
-                                id="filled-required"
-                                label="Document Repository​"
-                                defaultValue=""
-                                helperText={vectorNameError}
-                                variant="filled"
-                                value={newVector}
-                                style={{ minWidth: '100%' }}
-                                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                                    setNewVectorDB(event.target.value);
-                                    if (vectorOptions.find(op => op?.app_name.toUpperCase() === event.target.value?.toUpperCase())) {
-                                        setVectorNameError("Document repository name is not available");
-                                    } else if (!event.target.value) {
-                                        setVectorNameError("Document repository name cannot be left empty");
-                                    } else {
-                                        setVectorNameError(null);
-                                    }
-                                }}
-                                error={vectorOptions.find(op => op?.app_name.toUpperCase() === newVector?.toUpperCase())}
-                            />
-                        </SansTypography>
-                        <StyledTitle variant="h6">
-                            Step 2: Does this Document Repository need to include images?
-                        </StyledTitle>
-                        <SansTypography variant="body2" >
-                        <ImageButtons
-                        variant="contained"
-                        style={{ backgroundColor: imagesEnabled ? '#12005A': '#20558A', backgroundImage: imagesEnabled ? 'linear-gradient(90deg, #12005A 0%, #12005A 100%)':'linear-gradient(90deg, #20558A 0%, #650A67 100%)'}}
-                        // disabled={}
-                        onClick={() =>setImagesButtomClick(true)}
-                        >
+                <StyledButtonGroup>
+                    <IconButton onClick={() => setOpen(false)}>
+                        {' '}
+                        <CloseIcon />
+                    </IconButton>
+                </StyledButtonGroup>
+                <StyledTitle variant="h6">
+                    Step 1: Name a Knowledge Repository
+                </StyledTitle>
+                <Typography variant="caption">
+                    Create or select a Vector Database to embed your documents
+                    in. If creating a new Database, make sure to select Add
+                    *database name*
+                </Typography>
+                <StyledAutocomplete
+                    freeSolo
+                    selectOnFocus
+                    clearOnBlur
+                    handleHomeEndKeys
+                    options={vectorOptions}
+                    value={selectedVectorDB}
+                    filterOptions={(options, params) => {
+                        const filtered = filter(options, params);
 
-                        Yes
-                        </ImageButtons>
-                        <ImageButtons
-                        variant="contained"
-                        style={{ backgroundColor: imagesEnabled === false ? '#12005A': '#20558A', backgroundImage: imagesEnabled === false  ? 'linear-gradient(90deg, #12005A 0%, #12005A 100%)':'linear-gradient(90deg, #20558A 0%, #650A67 100%)'}}
-                        
-                        // disabled={}
-                        onClick={() => setImagesButtomClick(false)}
-                        >
-
-                        No
-                        </ImageButtons>
-                        </SansTypography>
-                        {imagesEnabled !== null &&
-                        <div>
-
-                        <StyledTitle variant="h6">
-                            Step 3: Document(s) to add {imagesEnabled ? 'with' : 'without'} Image Handling
-                        </StyledTitle>
-                        {imagesEnabled && <SansTypography variant="body1" >
-                            Warning! Users will need to upload one document at a time. Including images may take up to 15 minutes.
-                        </SansTypography>}
-                        {!imagesEnabled && <SansTypography variant="body1" >
-                            Any images that are in the documents will be <u>not</u> be included in the Generative AI input
-                        </SansTypography>}
-                        {imagesEnabled &&
-                        <SansTypography variant="body2" >
-                            To upload additional files, go to Document Repository Management
-                        </SansTypography>}
-                        <SansTypography variant="body2" >
-                            Drag and drop .pdf, .docx, or .pptx files to your document repository. Please rename any files containing special characters before uploading. <strong>Note: Any document repositories not used after 120 days are automatically removed.</strong>
-                        </SansTypography>
-                        </div>
+                        if (params.inputValue !== '') {
+                            filtered.push({
+                                inputValue: params.inputValue,
+                                database_name: `Add "${params.inputValue}"`,
+                            });
                         }
-                    </>
-                }
-                {imagesEnabled !== null && !selectedVectorDB && <StyledTitle variant="h6">
-                    Upload Files
-                </StyledTitle>}
-                {imagesEnabled !== null && <Dropzone
-                    accept={{ 'text/pdf': ['.pdf'], 'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'], 'application/vnd.openxmlformats-officedocument.presentationml.presentation': ['.pptx']  }}
+                        return filtered;
+                    }}
+                    getOptionLabel={(option: any) => {
+                        if (typeof option === 'string') {
+                            return option;
+                        }
+
+                        if (option?.inputValue) {
+                            return option.inputValue;
+                        }
+
+                        return option.database_name;
+                    }}
+                    renderOption={(props, option: any) => (
+                        <li {...props}>{option.database_name}</li>
+                    )}
+                    onChange={(event, newVectorDB: any) => {
+                        if (newVectorDB.inputValue) {
+                            setNewVectorDB(newVectorDB.inputValue);
+                        }
+                        setSelectedVectorDB(newVectorDB);
+                    }}
+                    renderInput={(params) => (
+                        <TextField
+                            {...params}
+                            label="Vector Database"
+                            variant="standard"
+                        />
+                    )}
+                />
+
+                <StyledTitle variant="h6">Step 2: Select Type</StyledTitle>
+                <StyledTypography variant="caption">
+                    Select an encoder to use
+                </StyledTypography>
+
+                <StyledAutocomplete
+                    disableClearable
+                    options={ENCODER_OPTIONS}
+                    value={ENCODER_OPTIONS[0]}
+                    getOptionLabel={(option: string) => option}
+                    getOptionDisabled={(option) => option !== 'FAISS'}
+                    renderInput={(params) => (
+                        <TextField {...params} variant="standard" />
+                    )}
+                />
+
+                <StyledTitle variant="h6">
+                    Step 3: Document(s) to embed
+                </StyledTitle>
+                <Typography variant="caption">
+                    Drag and Drop .csv or .pdf files to embed your vector db
+                </Typography>
+                <Dropzone
+                    accept={{ 'text/pdf': ['.pdf'], 'text/csv': ['.csv'] }}
                     onDrop={(acceptedFiles, fileRejections) => {
-                        let tempMaxTotal = 0;
                         if (fileRejections.length > 0) {
                             setFileError(fileRejections[0].errors[0].message);
-                            setFile([]);
-                            if (imagesEnabled){
-                                tempMaxTotal = fileRejections[0].file.size
-                            }
-                        } 
-                        if (!imagesEnabled && acceptedFiles.length + file.length > 7){
-                            setFileError('Error: Documents cannot exceeded 7');
+                        } else {
+                            setFile(acceptedFiles[0]);
+                            setFileError(null);
                         }
-                            
-                        else {
-                            acceptedFiles.map(file => tempMaxTotal += file.size);
-                            let duplicateFound = false;
-                            let errorMessage = '';
-
-                            documents.forEach(document => {
-                                acceptedFiles.forEach(acceptedFile => {
-                                    if (acceptedFile.name === document.fileName){
-                                        if (!duplicateFound){
-                                            errorMessage += 'The following document(s) already exist in this repository: '
-                                        }
-                                        errorMessage += '\n' + acceptedFile.name + ''
-                                        duplicateFound = true
-                                    }
-                                })
-                            });
-                            if (!duplicateFound){
-                                if (imagesEnabled && acceptedFiles.length > 0){
-                                    setFile([acceptedFiles[0]])
-                                    setFileError(null);
-                                }
-                                else{
-                                file.map(f => tempMaxTotal += f.size)
-                                if (tempMaxTotal < 40000000)
-                                {
-                                    setFile([...file, ...acceptedFiles]);
-                                    setFileError(null);
-                                }
-                                }
-                            }
-                            else{
-                                setFile([]);
-                                setFileError(errorMessage);
-                            }
-                            
-                            
-                        }
-                        setTotalSize(tempMaxTotal);
-                    }} multiple={!imagesEnabled} maxFiles={7} maxSize={imagesEnabled ? 3000000 : 10000000}
+                    }}
                 >
                     {({ getRootProps, getInputProps }) => (
                         <Container
@@ -464,7 +270,6 @@ export const VectorModal = ({
                                 borderColor: 'rgba(0,0,0,0.23)',
                                 marginTop: '16px',
                                 marginBottom: '16px',
-                                fontFamily: 'Public Sans'
                             }}
                         >
                             <div
@@ -475,12 +280,12 @@ export const VectorModal = ({
                                 {...getRootProps({ className: 'dropzone' })}
                             >
                                 <input
-                                    accept=".pdf, .docx, .pptx"
+                                    accept=".pdf, .csv"
                                     {...(getInputProps() as GetInputPropsOptionsRef)}
                                     onClick={(e) => e.stopPropagation()}
                                 />
 
-                                <div>
+                                <label>
                                     <TextField
                                         variant="outlined"
                                         type="text"
@@ -507,55 +312,57 @@ export const VectorModal = ({
                                         sx={{
                                             display: 'flex',
                                             justifyContent: 'center',
-                                            alignItems: 'center',
                                         }}
                                     >
                                         <Avatar
                                             sx={{
-                                                bgcolor: '#ebd6ff',
-                                                marginRight: '16px'
+                                                bgcolor: '#E1F5FE',
+                                                marginRight: '16px',
                                             }}
                                         >
                                             <FileUploadOutlined
                                                 sx={{ color: '#40a0ff' }}
                                             />
                                         </Avatar>
-                                        <div><StyledLink>Click to upload</StyledLink> or drag and drop.<br />Maximum individual file size: {imagesEnabled ? '3MB' : '10MB'}.<br />{!imagesEnabled && 'Maximum set of documents size: 40MB.'}</div>
+                                        <span>
+                                            {
+                                                <StyledLink>
+                                                    Click to Upload
+                                                </StyledLink>
+                                            }
+                                            &nbsp;or drag and drop
+                                            <Typography variant="subtitle2">
+                                                Maximum File size 100MB.
+                                            </Typography>
+                                        </span>
                                     </Typography>
-                                </div>
+                                </label>
                             </div>
                         </Container>
                     )}
-                </Dropzone>}
-                {imagesEnabled === true && <SansTypography variant="caption">
-                    {(file.length > 0 && totalSize <= 3000000) && <ul>{file.map((file, index) => <li key={index}>{file.name}</li>)}</ul>}
-                    {fileError !== null && <FormatError text = {fileError.replace("3000000 bytes", "3MB")}></FormatError>}
-                    {totalSize > 3000000 && <Typography color="red" fontSize="inherit">Error: Document size cannot exceeded 3MB.</Typography>}
-                </SansTypography> }
-                {imagesEnabled === false && <SansTypography variant="caption">
-                    {(file.length > 0) && <ul>{file.map((file, index) => <li key={index}>{file.name}</li>)}</ul>}
-                    {fileError !== null && <FormatError text = {fileError.replace("10000000 bytes", "10MB")}></FormatError>}
-                    {totalSize > 40000000 && <Typography color="red" fontSize="inherit">Error: Maximum set of documents size cannot exceeded 40MB.</Typography>}
-                </SansTypography> }
-                {imagesEnabled !== null && <StyledButtonGroup>
-                    <StyledButtonOpen
+                </Dropzone>
+                <Typography variant="caption">
+                    {file?.name}
+                    {fileError}
+                </Typography>
+                <StyledButtonGroup>
+                    <StyledButton
                         variant="contained"
-                        color="error"
+                        color="primary"
                         onClick={() => setOpen(false)}
                     >
                         {' '}
-                        Cancel{' '}
-                    </StyledButtonOpen>
+                        Close{' '}
+                    </StyledButton>
                     <StyledButton
-                        variant="contained"
-                        color="success"
-                        disabled={disabled()}
+                        variant="outlined"
+                        disabled={!file?.name && !newVector}
                         onClick={handleSubmit}
                     >
                         {' '}
-                        Upload{' '}
+                        Finish{' '}
                     </StyledButton>
-                </StyledButtonGroup>}
+                </StyledButtonGroup>
             </>
         );
     };

@@ -1,40 +1,9 @@
-import { PaletteColor } from '@material-ui/core/styles/createPalette';
 import { ThemeOptions, styled, PaletteOptions } from '@mui/material';
-import { Typography, TypographyOptions } from '@mui/material/styles/createTypography';
-import "@fontsource/public-sans"; // Defaults to weight 400
 // import { ShapeOptions } from "@material-ui/core/styles";
 // export specifics from the library
 export { styled };
 export type { ThemeOptions };
 
-declare module '@mui/material/styles' {
-    interface TypographyVariants {
-        modal?: React.CSSProperties;
-        body1_medium?:React.CSSProperties;
-    }
-    // allow configuration using `createTheme`
-    interface TypographyVariantsOptions {
-        modal?: React.CSSProperties;
-        body1_medium?:React.CSSProperties;
-    }
-}
-
-// Update the Typography's variant prop options
-declare module '@mui/material/Typography' {
-    interface TypographyPropsVariantOverrides {
-        modal: true;
-        body1_medium:true;
-    }
-}
-declare module '@mui/material/styles' {
-    interface Palette {
-        modal: Palette['primary'];
-    }
-
-    interface PaletteOptions {
-        modal?: PaletteOptions['primary'];
-    }
-}
 export interface CustomPaletteColor {
     50?: string;
     100?: string;
@@ -53,12 +22,8 @@ export interface CustomPaletteOptions extends PaletteOptions {
     darkBlue?: CustomPaletteColor;
     pink?: CustomPaletteColor;
     purple?: CustomPaletteColor;
-    modal?: PaletteColor;
 }
 
-export interface CustomTypologyOptions extends TypographyOptions {
-    modal?: Typography
-}
 export interface CustomThemeOptions extends ThemeOptions {
     palette: CustomPaletteOptions;
     shape: {
@@ -87,7 +52,6 @@ export interface CustomThemeOptions extends ThemeOptions {
         '12': string;
         '13': string;
     };
-    typography?: CustomTypologyOptions;
 }
 
 export const lightTheme: CustomThemeOptions = {
@@ -124,14 +88,8 @@ export const lightTheme: CustomThemeOptions = {
             dark: '#006500',
         },
         background: {
-            default: '#F2F2F2',
+            default: '#FAFAFA',
             paper: '#FFF',
-        },
-        modal: {
-            main: '#40007b',
-            light: '#22A4FF',
-            dark: 'red',
-            contrastText: '#1260DD'
         },
         semossBlue: {
             '50': '#E2F2FF',
@@ -204,14 +162,6 @@ export const lightTheme: CustomThemeOptions = {
     },
     typography: {
         fontFamily: '"Inter", sans-serif',
-        body1_medium: {
-            fontSize: '16px',
-            fontStyle: 'normal',
-            fontWeight: '400',
-            lineHeight: '150%',
-            letterSpacing: '0.15px',
-            fontFamily: '"Public Sans"'
-          },
         body1: {
             /* Typography/Body 1 */
             fontSize: '16px',
@@ -227,7 +177,6 @@ export const lightTheme: CustomThemeOptions = {
             fontWeight: '400',
             lineHeight: '143%',
             letterSpacing: '0.17px',
-            color: '#4f4f4f'
         },
         subtitle1: {
             /* Typography/Subtitle 1 */
@@ -317,31 +266,6 @@ export const lightTheme: CustomThemeOptions = {
         button: {
             textTransform: 'none',
         },
-        modal: {
-            h1: undefined,
-            h2: undefined,
-            h3: undefined,
-            h4: undefined,
-            h5: undefined,
-            h6: undefined,
-            subtitle1: undefined,
-            subtitle2: undefined,
-            body1: undefined,
-            body2: undefined,
-            caption: undefined,
-            button: undefined,
-            overline: undefined,
-            fontFamily: "Public Sans",
-            fontSize: 20,
-            fontWeightLight: undefined,
-            fontWeightRegular: undefined,
-            fontWeightMedium: undefined,
-            fontWeightBold: undefined,
-            htmlFontSize: 0,
-            pxToRem: function (px: number): string {
-                throw new Error('Function not implemented.');
-            },
-        }
     },
     space: {
         auto: 'auto',
@@ -361,7 +285,7 @@ export const lightTheme: CustomThemeOptions = {
         '12': '96px',
         '13': '160px',
     },
-    spacing: 8
+    spacing: 8,
 };
 
 // const StyledComponent = styled('div')(({theme}) => {
@@ -425,14 +349,8 @@ export const darkTheme: CustomThemeOptions = {
             dark: '#005A00',
         },
         background: {
-            default: '#F2F2F2',
+            default: '#FAFAFA',
             paper: '#FFF',
-        },
-        modal: {
-            main: '#0471F0',
-            light: '#22A4FF',
-            dark: '#1260DD',
-            contrastText: '#1260DD'
         },
         semossBlue: {
             '50': '#E2F2FF',
@@ -505,11 +423,6 @@ export const darkTheme: CustomThemeOptions = {
     },
     typography: {
         fontFamily: '"Inter", sans-serif',
-        body1_medium: {
-            lineHeight: 1.6,
-            fontSize: 24,
-            fontWeight: 500,
-          },
         body1: {
             /* Typography/Body 1 */
             fontSize: '16px',

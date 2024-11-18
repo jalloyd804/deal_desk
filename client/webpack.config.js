@@ -25,7 +25,7 @@ const config = {
     devServer: {
         host: 'localhost',
         hot: true,
-        port: '3001',
+        port: '3000',
         proxy: {
             [MODULE]: {
                 target: ENDPOINT,
@@ -41,8 +41,8 @@ const config = {
     },
     plugins: [
         new HtmlWebpackPlugin({
-            title: 'NIAID | GenAI',
-            favicon: './src/assets/img/nihwhitelogo.svg',
+            title: 'GPS AIQ',
+            favicon: './src/assets/img/logo.svg',
             scriptLoading: 'module',
             template: './src/template.html',
         }),
@@ -104,7 +104,6 @@ module.exports = () => {
         config.mode = 'production';
     } else {
         config.mode = 'development';
-        config.devtool = 'inline-source-map';
     }
     return config;
 };

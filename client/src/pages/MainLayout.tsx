@@ -1,91 +1,107 @@
 import { Outlet } from 'react-router-dom';
-import { styled } from '@mui/material';
-import NIHLogo from '../assets/img/nihwhitelogo.svg';
+import { Alert, Typography, styled } from '@mui/material';
 
-const FOOTERLINKS = [
-    {
-        href: 'https://www.niaid.nih.gov/',
-        label: 'NIAID Public Website'
-    },
-    {
-        href: 'https://www.nih.gov/',
-        label: 'NIH Public Website'
-    },
-    {
-        href: 'https://www.hhs.gov/',
-        label: 'HHS Public Website'
-    },
-    {
-        href: 'https://www.usa.gov/',
-        label: 'USA.gov'
-    }
-]
+import LOGO_POWERED from '@/assets/img/logo.svg';
 
-const StyledHeader = styled('div')(() => ({
+const StyledWrapper = styled('div')(() => ({
     display: 'flex',
-    background: 'linear-gradient(90deg, rgba(32,85,138,1) 0%, rgba(32,85,138,1) 30%, rgba(101,10,103,1) 100%)',
-    backgroundPosition: 'top left',
-    padding: '0 2rem',
-    alignItems: 'center',
-    '& img': {
-        width: '4rem',
-        height: 'auto'
-    },
-}));
-
-const StyledH1 = styled('h1')(() => ({
-    marginLeft: '1rem',
-    color: 'white',
-    fontWeight: 'normal',
+    flexDirection: 'row',
+    height: '100%',
+    width: '100%',
+    overflow: 'auto',
 }));
 
 const StyledMain = styled('div')(() => ({
-    display: 'flex',
-    flexDirection: 'column',
-    flex: '1',
-    height: '100vh',
-}));
-
-const StyledFooter = styled('footer')(({ theme }) => ({
     position: 'relative',
-    zIndex: '4',
+    flex: 1,
+    overflow: 'auto',
+}));
+
+const StyledContent = styled('div')(({ theme }) => ({
+    position: 'relative',
+    display: 'flex',
+    justifyContent: 'center',
+    minHeight: `calc(100vh - ${theme.spacing(4)})`,
+    [theme.breakpoints.down('sm')]: {
+        minHeight: `auto`,
+    },
+}));
+
+const StyledDisclaimer = styled('div')(({ theme }) => ({
+    position: 'absolute',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    bottom: 0,
     width: '100%',
-    color: '#4f4f4f',
-    backgroundColor: '#FBFBFB',
-    padding: '.5rem 2rem',
-    fontSize: theme.typography.caption.fontSize,
+    textAlign: 'center',
+    padding: theme.spacing(0.5),
+    [theme.breakpoints.down('sm')]: {
+        position: 'relative',
+    },
+}));
+
+const StyledFooter = styled('div')(({ theme }) => ({
+    position: 'relative',
+    display: 'flex',
+    alignItems: 'center',
     justifyContent: 'space-between',
-    display: 'flex',
-    '& a': {
-        color: 'inherit'
-    }
+    gap: theme.spacing(1),
+    padding: theme.spacing(1),
+    height: theme.spacing(4),
+    width: '100%',
 }));
 
-const StyledFooterLeft = styled('div')(() => ({
+const StyledFooterLogo = styled('a')(({ theme }) => ({
+    display: 'inline-flex',
+    textDecoration: 'none',
+    alignItems: 'center',
+    gap: theme.spacing(0.5),
+    color: theme.palette.text.primary,
+    fontSize: theme.typography.caption.fontSize,
+    overflow: 'hidden',
+    '& > img': {
+        height: theme.spacing(3),
+    },
+    ':visited': {
+        color: 'inherit',
+    },
 }));
-
-const StyledFooterRight = styled('div')(() => ({
-    display: 'flex',
-    gap: '1rem',
-}));
-
-let myurl = "";
-if (process.env.DEVELOPMENTFLAG === "prod") {
-    myurl = "https://genai.niaid.nih.gov/"
-}
-else if (process.env.DEVELOPMENTFLAG === "dev") {
-    myurl = "https://genaidev.niaid.nih.gov/"
-}
 
 /**
  * Wrap the routes
  */
 export const MainLayout = () => {
     return (
-        <StyledMain id='outer'>
-            <StyledHeader><a href={myurl}><img src={NIHLogo} /></a><StyledH1>NIAID | GenAI</StyledH1></StyledHeader>
-            <Outlet />
-            <StyledFooter><StyledFooterLeft><a href="mailto:niaidithelp@niaid.nih.gov">Contact Us</a></StyledFooterLeft><StyledFooterRight>{FOOTERLINKS.map((link, index) => <a key={index} href={link.href}>{link.label}</a>)}</StyledFooterRight></StyledFooter>
-        </StyledMain>
+        <StyledWrapper>
+            <StyledMain id="main">
+                <StyledContent>
+                    <Outlet />
+                </StyledContent>
+                <StyledDisclaimer>
+                    <Alert severity={'info'}>
+                        <Typography
+                            variant={'caption'}
+                            sx={{ fontWeight: 600 }}
+                        >
+                            Please note: This is a demo environment to be used
+                            for testing purposes only.
+                        </Typography>
+                    </Alert>
+                </StyledDisclaimer>
+                <StyledFooter>
+                    &nbsp;
+                    <StyledFooterLogo
+                        title="CfG.AI"
+                        href="https://deloitte.com"
+                        target="_blank"
+                        rel="noreferrer"
+                    >
+                        <span>Powered By</span>
+                        <img src={LOGO_POWERED} />
+                    </StyledFooterLogo>
+                </StyledFooter>
+            </StyledMain>
+        </StyledWrapper>
     );
 };
