@@ -22,6 +22,12 @@ export interface CustomPaletteOptions extends PaletteOptions {
     darkBlue?: CustomPaletteColor;
     pink?: CustomPaletteColor;
     purple?: CustomPaletteColor;
+    teal?: CustomPaletteColor;
+    blueGreen?: CustomPaletteColor;
+    blue?: CustomPaletteColor;
+    navyBlue?: CustomPaletteColor;
+    red?: CustomPaletteColor;
+    gray?: CustomPaletteColor;
 }
 
 export interface CustomThemeOptions extends ThemeOptions {
@@ -151,6 +157,24 @@ export const lightTheme: CustomThemeOptions = {
             '800': '5D2BC7',
             '900': '481EB8',
         },
+        teal: {
+            '500': '319fbe',
+        },
+        blueGreen: {
+            '500': '0d95a1',
+        },
+        blue: {
+            '500': '2a72a5',
+        },
+        navyBlue: {
+            '500': '1c5e86',
+        },
+        red: {
+            '500': 'bb0e3d',
+        },
+        gray: {
+            '500': '706f6f',
+        },
     },
     shape: {
         borderRadiusNone: 0,
@@ -265,7 +289,7 @@ export const lightTheme: CustomThemeOptions = {
         },
         button: {
             textTransform: 'none',
-            background: "#2dc799"
+            background: '#2dc799',
         },
     },
     space: {
@@ -412,6 +436,24 @@ export const darkTheme: CustomThemeOptions = {
             '700': '6A32CE',
             '800': '5D2BC7',
             '900': '481EB8',
+        },
+        teal: {
+            '500': '319fbe',
+        },
+        blueGreen: {
+            '500': '0d95a1',
+        },
+        blue: {
+            '500': '2a72a5',
+        },
+        navyBlue: {
+            '500': '1c5e86',
+        },
+        red: {
+            '500': 'bb0e3d',
+        },
+        gray: {
+            '500': '706f6f',
         },
     },
     shape: {

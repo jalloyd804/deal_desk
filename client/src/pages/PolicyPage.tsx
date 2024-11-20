@@ -22,7 +22,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { useInsight } from '@semoss/sdk-react';
 import { Sidebar } from '../components/Sidebar';
 import { PromptModal } from '../components/PromptModal';
-import {PregeneratedContext } from '../components/PregeneratedContext';
+import { PregeneratedContext } from '../components/PregeneratedContext';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import SmartToyOutlinedIcon from '@mui/icons-material/SmartToyOutlined';
 import SendIcon from '@mui/icons-material/Send';
@@ -98,9 +98,9 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
 const StyledLayout = styled(Stack, {
     shouldForwardProp: (prop) => prop !== 'sideOpen',
 })<{ sideOpen: boolean }>(({ theme, sideOpen }) => ({
-    padding: `${theme.spacing(4)} ${sideOpen ? theme.spacing(4) : theme.spacing(6)} ${theme.spacing(4)} ${
-        sideOpen ? '180px' : theme.spacing(6)
-    }`,
+    padding: `${theme.spacing(4)} ${
+        sideOpen ? theme.spacing(4) : theme.spacing(6)
+    } ${theme.spacing(4)} ${sideOpen ? '180px' : theme.spacing(6)}`,
     width: `${sideOpen ? '60vw' : '75vw'}`,
     display: 'flex',
     flexDirection: 'column',
@@ -128,7 +128,7 @@ const StyledResponseDiv = styled('div')(() => ({
 
 const StyledQuestionDiv = styled('div')(({ theme }) => ({
     display: 'flex',
-    flexDirection:'column',
+    flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: theme.spacing(2),
@@ -182,9 +182,9 @@ interface Answer {
 }
 
 interface Prompt {
-    prompt_id: number, 
-    prompt: string,
-    context: string
+    prompt_id: number;
+    prompt: string;
+    context: string;
 }
 
 export const PolicyPage = () => {
@@ -207,11 +207,12 @@ export const PolicyPage = () => {
     const [prompt, setPrompt] = useState<string>(
         'Only return a helpful answer and nothing else.',
     );
-    const [additionalContext, setAdditionalContext] = useState<string>('')
+    const [additionalContext, setAdditionalContext] = useState<string>('');
     const [showPrompts, setShowPrompts] = useState<boolean>(false);
     const [questionContext, setQuestionContext] = useState<string>(
-    "Use the following pieces of information to answer the user's question. " + `${additionalContext} ` +
-    "If you do not know the answer, just say that you don't know, don't try to make up an answer."
+        "Use the following pieces of information to answer the user's question. " +
+            `${additionalContext} ` +
+            "If you do not know the answer, just say that you don't know, don't try to make up an answer.",
     );
 
     //Controlling the modal
@@ -235,7 +236,9 @@ export const PolicyPage = () => {
     //For the settings modal
     const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
     const [anchorEl, setAnchorEl] = useState(null);
-    const [context, setContext] = useState<'prompt' | 'refine' | 'download'>(null);
+    const [context, setContext] = useState<'prompt' | 'refine' | 'download'>(
+        null,
+    );
 
     // scrolling to the bottom of the container
     const div = useRef(null);
@@ -246,10 +249,10 @@ export const PolicyPage = () => {
     };
 
     const handlePromptChange = (prompt: Prompt) => {
-        setValue("QUESTION", prompt.context)
-        ask()
-        setShowPrompts(false)
-    }
+        setValue('QUESTION', prompt.context);
+        ask();
+        setShowPrompts(false);
+    };
 
     const handleMenuClose = (context: 'prompt' | 'refine' | 'download') => {
         setContext(context);
@@ -301,8 +304,8 @@ export const PolicyPage = () => {
             }
 
             const contextDocs = `A context delimited by triple backticks is provided below. This context may contain plain text extracted from paragraphs or images. Tables extracted are represented as a 2D list in the following format - '[[Column Headers], [Comma-separated values in row 1], [Comma-separated values in row 2] ..... [Comma-separated values in row n]]'\\n \`\`\` ${finalContent} \`\`\`\\n ${questionContext}}`;
-            for (let i=0; i< selectedModel.length; i++){
-                    pixel = `
+            for (let i = 0; i < selectedModel.length; i++) {
+                pixel = `
                 LLM(engine="${
                     (selectedModel[i] as Model).database_id
                 }" , command=["<encode>${prompt} Question: ${
@@ -335,7 +338,6 @@ export const PolicyPage = () => {
                     ),
                 });
             }
-            
 
             setIsAnswered(true);
         } catch (e) {
@@ -379,7 +381,7 @@ export const PolicyPage = () => {
             }
             if (Array.isArray(output)) {
                 setVectorOptions(output);
-                setSelectedVectorDB([output[0]])
+                setSelectedVectorDB([output[0]]);
             }
         });
 
@@ -460,13 +462,7 @@ export const PolicyPage = () => {
                             />
                         </StyledAvatar>
                         <div>
-                            <Typography variant="h6">Demo Vector Engine 2 </Typography>
-                            <Typography
-                                variant="body2"
-                                sx={{ color: 'rgba(0, 0, 0, 0.6)' }}
-                            >
-                                Policy Bot
-                            </Typography>
+                            <Typography variant="h6"> Policy Bot </Typography>
                         </div>
                     </StyledTitle>
                     <StyledDescription variant="body1">
@@ -601,12 +597,15 @@ export const PolicyPage = () => {
 
                     {/* this is a dummy div so that you can scroll to it */}
                     <div ref={div} />
-                    {showPrompts && <PregeneratedContext handlePromptChange={handlePromptChange}/>}
+                    {showPrompts && (
+                        <PregeneratedContext
+                            handlePromptChange={handlePromptChange}
+                        />
+                    )}
                 </Stack>
             </StyledContainer>
             <StyledQuestionDiv>
-            {
-                selectedVectorDB.length > 0 && (
+                {selectedVectorDB.length > 0 && (
                     <StyledPromptContainer>
                         <StyledLabel>
                             {showPrompts ? 'Hide ' : 'Show '} Prompts:
@@ -616,7 +615,7 @@ export const PolicyPage = () => {
                                 <IconButton
                                     size="small"
                                     color="inherit"
-                                    onClick={()=> setShowPrompts(!showPrompts)}
+                                    onClick={() => setShowPrompts(!showPrompts)}
                                 >
                                     <MenuOpenOutlinedIcon
                                         color="inherit"
@@ -626,8 +625,7 @@ export const PolicyPage = () => {
                             </ButtonGroup>
                         </StyledPromptIconContainer>
                     </StyledPromptContainer>
-                )
-            }
+                )}
 
                 <Controller
                     name={'QUESTION'}
@@ -716,9 +714,7 @@ export const PolicyPage = () => {
                             </ListItemIcon>
                             <ListItemText>Download Answers</ListItemText>
                         </MenuItem>
-                    )
-                    }
-
+                    )}
                 </Menu>
             </StyledQuestionDiv>
             {isLoading && <LinearProgress />}
