@@ -1,7 +1,36 @@
 import { Outlet } from 'react-router-dom';
 import { Alert, Typography, styled } from '@mui/material';
+import Logo from '@/assets/img/logo.svg';
+import Logo_Powered from '@/assets/img/logo_powered.svg';
 
-import LOGO_POWERED from '@/assets/img/logo.svg';
+const StyledBannerLogo = styled('a')(({ theme }) => ({
+    display: 'inline-flex',
+    textDecoration: 'none',
+    alignItems: 'center',
+    gap: theme.spacing(0.5),
+    color: 'white',
+    fontSize: theme.typography.h5.fontSize,
+    overflow: 'hidden',
+    paddingLeft: '10px',
+    '& > img': {
+        height: theme.spacing(7),
+    },
+    ':visited': {
+        color: 'inherit',
+    },
+}));
+
+const StyledBanner = styled('div')(({ theme }) => ({
+    background: theme.palette.background.paper,
+    top: '0px',
+    left: '0px',
+    right: '0px',
+    height: '75px',
+    display: 'flex',
+    alignItems: 'center',
+    overflow: 'hidden',
+    color: 'black',
+}));
 
 const StyledWrapper = styled('div')(() => ({
     display: 'flex',
@@ -9,6 +38,7 @@ const StyledWrapper = styled('div')(() => ({
     height: '100%',
     width: '100%',
     overflow: 'auto',
+    background: '#ebf5f9',
 }));
 
 const StyledMain = styled('div')(() => ({
@@ -23,7 +53,7 @@ const StyledContent = styled('div')(({ theme }) => ({
     justifyContent: 'center',
     minHeight: `calc(100vh - ${theme.spacing(4)})`,
     [theme.breakpoints.down('sm')]: {
-        minHeight: `auto`,
+        minHeight: 'auto',
     },
 }));
 
@@ -50,6 +80,7 @@ const StyledFooter = styled('div')(({ theme }) => ({
     padding: theme.spacing(1),
     height: theme.spacing(4),
     width: '100%',
+    background: '#00314b',
 }));
 
 const StyledFooterLogo = styled('a')(({ theme }) => ({
@@ -57,7 +88,7 @@ const StyledFooterLogo = styled('a')(({ theme }) => ({
     textDecoration: 'none',
     alignItems: 'center',
     gap: theme.spacing(0.5),
-    color: theme.palette.text.primary,
+    color: theme.palette.background.paper,
     fontSize: theme.typography.caption.fontSize,
     overflow: 'hidden',
     '& > img': {
@@ -73,35 +104,30 @@ const StyledFooterLogo = styled('a')(({ theme }) => ({
  */
 export const MainLayout = () => {
     return (
-        <StyledWrapper>
-            <StyledMain id="main">
-                <StyledContent>
-                    <Outlet />
-                </StyledContent>
-                <StyledDisclaimer>
-                    <Alert severity={'info'}>
-                        <Typography
-                            variant={'caption'}
-                            sx={{ fontWeight: 600 }}
-                        >
-                            Please note: This is a demo environment to be used
-                            for testing purposes only.
-                        </Typography>
-                    </Alert>
-                </StyledDisclaimer>
-                <StyledFooter>
-                    &nbsp;
-                    <StyledFooterLogo
-                        title="CfG.AI"
-                        href="https://deloitte.com"
-                        target="_blank"
-                        rel="noreferrer"
-                    >
-                        <span>Powered By</span>
-                        <img src={LOGO_POWERED} />
-                    </StyledFooterLogo>
-                </StyledFooter>
-            </StyledMain>
-        </StyledWrapper>
+        <>
+            <StyledBanner>
+                <StyledBannerLogo href="https://www.cancer.gov/">
+                    <img src={Logo} alt="Logo" />
+                </StyledBannerLogo>
+            </StyledBanner>
+            <StyledWrapper>
+                <StyledMain>
+                    <StyledContent>
+                        <Outlet />
+                    </StyledContent>
+                </StyledMain>
+            </StyledWrapper>
+            <StyledFooter>
+                <StyledFooterLogo
+                    title="CfG.AI"
+                    href="https://deloitte.com"
+                    target="_blank"
+                    rel="noreferrer"
+                >
+                    Powered By
+                    <img src={Logo_Powered} alt="Powered By Logo" />
+                </StyledFooterLogo>
+            </StyledFooter>
+        </>
     );
 };

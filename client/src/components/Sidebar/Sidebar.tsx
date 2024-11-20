@@ -39,7 +39,8 @@ const StyledSidebar = styled(Paper)(({ theme }) => ({
     height: '100%',
     zIndex: 2,
     float: 'left',
-    background: theme.palette.primary.main,
+    background:
+        'linear-gradient(0deg, rgba(49,159,190,1) 13%, rgba(42,114,165,1) 51%)',
     color: theme.palette.background.paper,
 }));
 
@@ -106,17 +107,6 @@ export const Sidebar = ({
     return (
         <StyledSidebar>
             <StyledList>
-                <StyledDiv>
-                    <StyledAvatar>
-                        <SmartToyOutlinedIcon
-                            sx={{ color: 'rgba(0, 0, 0, 0.87)' }}
-                        />
-                    </StyledAvatar>
-                    <Typography variant="h6" sx={{ margin: 'auto' }}>
-                        NCI Policy Vector Engine
-                    </Typography>
-                </StyledDiv>
-
                 <StyledButton onClick={() => setSideOpen(false)}>
                     <ArrowBackIosNewOutlinedIcon />
                 </StyledButton>
