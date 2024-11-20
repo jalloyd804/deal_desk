@@ -50,7 +50,7 @@ const StyledContainer = styled(Stack)(() => ({
 }));
 
 const StyledTitle = styled('div')(({ theme }) => ({
-    background: 'rgba(226, 242, 255, 1)',
+    background: '#319fbe',
     padding: theme.spacing(2),
     borderTopLeftRadius: theme.spacing(2),
     borderTopRightRadius: theme.spacing(2),
@@ -105,6 +105,7 @@ const StyledLayout = styled(Stack, {
     display: 'flex',
     flexDirection: 'column',
     overflow: 'hidden',
+    background: '#ebf5f9',
 }));
 
 const StyledLeftPanel = styled(Paper)(({ theme }) => ({

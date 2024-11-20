@@ -39,6 +39,8 @@ const StyledSidebar = styled(Paper)(({ theme }) => ({
     height: '100%',
     zIndex: 2,
     float: 'left',
+    background: theme.palette.primary.main,
+    color: theme.palette.background.paper,
 }));
 
 const StyledAccordionDetails = styled(AccordionDetails)(() => ({
@@ -73,6 +75,12 @@ const StyledStack = styled(Stack)(({ theme }) => ({
 const StyledAccordion = styled(Accordion)(({ theme }) => ({
     paddingTop: theme.spacing(2),
 }));
+
+const StyledAutocomplete = styled(Autocomplete)(({ theme }) => ({
+    background: theme.palette.background.paper,
+    borderRadius: theme.shape.borderRadius,
+}));
+
 const filter = createFilterOptions();
 
 export const Sidebar = ({
@@ -105,7 +113,7 @@ export const Sidebar = ({
                         />
                     </StyledAvatar>
                     <Typography variant="h6" sx={{ margin: 'auto' }}>
-                        Demo Policy Vector Engine
+                        NCI Policy Vector Engine
                     </Typography>
                 </StyledDiv>
 
@@ -116,23 +124,21 @@ export const Sidebar = ({
 
             <StyledStack spacing={2}>
                 <Typography> Select Model: </Typography>
-                <Autocomplete
+                <StyledAutocomplete
                     options={modelOptions}
                     value={selectedModel}
                     placeholder="Choose a Model"
                     getOptionLabel={(option: Model) =>
                         option.database_name || ''
                     }
-                    onChange={(event, newModel) =>
-                        setSelectedModel(newModel)
-                    }
+                    onChange={(event, newModel) => setSelectedModel(newModel)}
                     renderInput={(params) => (
                         <TextField {...params} variant="outlined" />
                     )}
                     multiple
                 />
                 <Typography> Select Knowledge Repository: </Typography>
-                <Autocomplete
+                <StyledAutocomplete
                     options={vectorOptions}
                     value={selectedVectorDB}
                     placeholder="Choose a Vector Catalog"

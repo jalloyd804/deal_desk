@@ -58,7 +58,7 @@ export const lightTheme: CustomThemeOptions = {
     palette: {
         mode: 'light',
         primary: {
-            main: '#0471F0',
+            main: '#1c5e86',
             light: '#22A4FF',
             dark: '#1260DD',
         },
@@ -78,7 +78,7 @@ export const lightTheme: CustomThemeOptions = {
             dark: '#EF8326',
         },
         info: {
-            main: '#0471F0',
+            main: '#1c5e86',
             light: '#22A4FF',
             dark: '#1260DD',
         },
@@ -265,6 +265,7 @@ export const lightTheme: CustomThemeOptions = {
         },
         button: {
             textTransform: 'none',
+            background: "#2dc799"
         },
     },
     space: {
@@ -319,7 +320,7 @@ export const darkTheme: CustomThemeOptions = {
     palette: {
         mode: 'dark',
         primary: {
-            main: '#0471F0',
+            main: '#1c5e86',
             light: '#8BCAFF',
             dark: '#1C3FBE',
         },
@@ -339,7 +340,7 @@ export const darkTheme: CustomThemeOptions = {
             dark: '#f57c00',
         },
         info: {
-            main: '#0471F0',
+            main: '#1c5e86',
             light: '#8BCAFF',
             dark: '#1C3FBE',
         },
@@ -349,7 +350,7 @@ export const darkTheme: CustomThemeOptions = {
             dark: '#005A00',
         },
         background: {
-            default: '#FAFAFA',
+            default: '#e9eff3',
             paper: '#FFF',
         },
         semossBlue: {
