@@ -52,21 +52,21 @@ const StyledContext = styled(Button)(({ theme }) => ({
     paddingBottom: theme.spacing(2),
     paddingRight: theme.spacing(3),
     paddingLeft: theme.spacing(3),
-    color: theme.palette.text.secondary,
+    color: theme.palette.background.paper,
     border: '1px solid gray',
     borderRadius: theme.shape.borderRadius,
     boxShadow: theme.shadows[1],
-    backgroundColor: theme.palette.background.paper,
+    backgroundColor:"#2dc799",
     '& svg': {
         visibility: 'hidden',
     },
     '&:hover': {
         // blue 600
-        color: '#1e88e5',
+        color:  "#6254A3",
         // Shows the icon and makes it blue on hover
         '& svg': {
             visibility: 'visible',
-            fill: '#1e88e5',
+            fill: "#6254A3",
         },
     },
 }));

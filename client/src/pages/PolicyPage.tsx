@@ -58,12 +58,14 @@ const StyledTitle = styled('div')(({ theme }) => ({
 }));
 
 const StyledAvatar = styled(Avatar)(({ theme }) => ({
-    background: 'white',
+    background: theme.palette.background.paper,
     marginRight: theme.spacing(2),
 }));
 
 const StyledAnswerAvatar = styled(Avatar)(({ theme }) => ({
     marginRight: theme.spacing(2),
+    color: '#0d95a1',
+    background: theme.palette.background.paper,
 }));
 
 const StyledQuestionStack = styled(Stack)(({ theme }) => ({
@@ -93,6 +95,11 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
     width: '100%',
     borderRadius: theme.spacing(2),
     marginBottom: theme.spacing(6),
+    background: 'rgba(255, 255, 255, 0.2)',
+    backdropFilter: 'blur(10px)',
+    WebkitBackdropFilter: 'blur(10px)',
+    boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1)',
+    border: '1px solid rgba(255, 255, 255, 0.3)',
 }));
 
 const StyledLayout = styled(Stack, {
@@ -453,7 +460,7 @@ export const PolicyPage = () => {
                     </StyledIconButton>
                 </StyledLeftPanel>
             )}
-            <StyledContainer>
+            <StyledContainer sx={{ padding: '0 24px 0 0' }}>
                 <StyledPaper variant={'elevation'} elevation={2} square>
                     <StyledTitle>
                         <StyledAvatar>

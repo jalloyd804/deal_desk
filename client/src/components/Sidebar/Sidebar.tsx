@@ -80,6 +80,8 @@ const StyledAccordion = styled(Accordion)(({ theme }) => ({
 const StyledAutocomplete = styled(Autocomplete)(({ theme }) => ({
     background: theme.palette.background.paper,
     borderRadius: theme.shape.borderRadius,
+    backgroundColor: '#ebf5f9',
+
 }));
 
 const filter = createFilterOptions();

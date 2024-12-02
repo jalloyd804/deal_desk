@@ -438,22 +438,22 @@ export const darkTheme: CustomThemeOptions = {
             '900': '481EB8',
         },
         teal: {
-            '500': '319fbe',
+            '500': '#319fbe',
         },
         blueGreen: {
-            '500': '0d95a1',
+            '500': '#0d95a1',
         },
         blue: {
-            '500': '2a72a5',
+            '500': '#2a72a5',
         },
         navyBlue: {
-            '500': '1c5e86',
+            '500': '#1c5e86',
         },
         red: {
-            '500': 'bb0e3d',
+            '500': '#bb0e3d',
         },
         gray: {
-            '500': '706f6f',
+            '500': '#706f6f',
         },
     },
     shape: {
