@@ -34,139 +34,26 @@ import EditIcon from '@mui/icons-material/Edit';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import DownloadIcon from '@mui/icons-material/Download';
 import { Markdown } from '@/components/common';
-
-const StyledContainer = styled(Stack)(() => ({
-    height: '70vh',
-    overflowY: 'scroll',
-    display: 'flex',
-    flexDirection: 'column',
-    scrollbarWidth: 'none', // Hide the scrollbar for firefox
-    '&::-webkit-scrollbar': {
-        display: 'none', // Hide the scrollbar for WebKit browsers (Chrome, Safari, Edge, etc.)
-    },
-    '&-ms-overflow-style:': {
-        display: 'none', // Hide the scrollbar for IE
-    },
-}));
-
-const StyledTitle = styled('div')(({ theme }) => ({
-    background: '#319fbe',
-    padding: theme.spacing(2),
-    borderTopLeftRadius: theme.spacing(2),
-    borderTopRightRadius: theme.spacing(2),
-    display: 'flex',
-}));
-
-const StyledAvatar = styled(Avatar)(({ theme }) => ({
-    background: theme.palette.background.paper,
-    marginRight: theme.spacing(2),
-}));
-
-const StyledAnswerAvatar = styled(Avatar)(({ theme }) => ({
-    marginRight: theme.spacing(2),
-    color: '#0d95a1',
-    background: theme.palette.background.paper,
-}));
-
-const StyledQuestionStack = styled(Stack)(({ theme }) => ({
-    paddingLeft: theme.spacing(2),
-    paddingBottom: theme.spacing(2),
-}));
-
-const StyledStack = styled(Stack)(({ theme }) => ({
-    padding: theme.spacing(2),
-}));
-
-const StyledDescription = styled(Typography)(({ theme }) => ({
-    padding: theme.spacing(3),
-}));
-
-const StyledName = styled(Typography)(({ theme }) => ({
-    paddingTop: theme.spacing(1),
-    paddingLeft: theme.spacing(1.4),
-    fontWeight: 'bold',
-}));
-
-const StyledAdditonalInfo = styled(Typography)(({ theme }) => ({
-    paddingLeft: theme.spacing(1.4),
-}));
-
-const StyledPaper = styled(Paper)(({ theme }) => ({
-    width: '100%',
-    borderRadius: theme.spacing(2),
-    marginBottom: theme.spacing(6),
-    background: 'rgba(255, 255, 255, 0.2)',
-    backdropFilter: 'blur(10px)',
-    WebkitBackdropFilter: 'blur(10px)',
-    boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1)',
-    border: '1px solid rgba(255, 255, 255, 0.3)',
-}));
-
-const StyledLayout = styled(Stack, {
-    shouldForwardProp: (prop) => prop !== 'sideOpen',
-})<{ sideOpen: boolean }>(({ theme, sideOpen }) => ({
-    padding: `${theme.spacing(4)} ${
-        sideOpen ? theme.spacing(4) : theme.spacing(6)
-    } ${theme.spacing(4)} ${sideOpen ? '180px' : theme.spacing(6)}`,
-    width: `${sideOpen ? '60vw' : '75vw'}`,
-    display: 'flex',
-    flexDirection: 'column',
-    overflow: 'hidden',
-    background: '#ebf5f9',
-}));
-
-const StyledLeftPanel = styled(Paper)(({ theme }) => ({
-    position: 'fixed',
-    left: '0%',
-    marginRight: 'auto',
-    width: theme.spacing(6),
-    height: '100%',
-}));
-
-const StyledIconButton = styled(IconButton)(({ theme }) => ({
-    paddingTop: theme.spacing(3),
-}));
-
-const StyledResponseDiv = styled('div')(() => ({
-    display: 'flex',
-    flexDirection: 'row',
-    width: '100%',
-}));
-
-const StyledQuestionDiv = styled('div')(({ theme }) => ({
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: theme.spacing(2),
-    textAlign: 'center',
-    padding: theme.spacing(0.5),
-    [theme.breakpoints.down('sm')]: {
-        position: 'relative',
-    },
-}));
-
-const StyledPromptContainer = styled('div')(({ theme }) => ({
-    position: 'relative',
-    display: 'flex',
-    justifyContent: 'center',
-    width: '100%',
-    paddingTop: theme.spacing(2),
-    paddingLeft: theme.spacing(2),
-    paddingBottom: theme.spacing(1),
-}));
-
-const StyledLabel = styled('div')(({ theme }) => ({
-    ...theme.typography.body2,
-    color: 'gray',
-    display: 'flex',
-    alignItems: 'center',
-}));
-
-const StyledPromptIconContainer = styled('div')(({ theme }) => ({
-    color: theme.palette.text.disabled,
-    width: theme.spacing(4),
-}));
+import {
+    StyledContainer,
+    StyledStack,
+    StyledDescription,
+    StyledName,
+    StyledAdditonalInfo,
+    StyledLayout,
+    StyledResponseDiv,
+    StyledLeftPanel,
+    StyledIconButton,
+    StyledQuestionDiv,
+    StyledPromptContainer,
+    StyledLabel,
+    StyledPromptIconContainer,
+    StyledPaper,
+    StyledTitle,
+    StyledQuestionStack,
+    StyledAvatar,
+    StyledAnswerAvatar,
+} from '../components/StyledComponents/StyledComponents';
 
 export interface Model {
     database_name?: string;
@@ -184,8 +71,7 @@ export interface VectorContext {
 interface Answer {
     question: string;
     conclusion: string;
-    LLM: string;
-    vectorCatalogs: string;
+    file: string;
 }
 
 interface Prompt {
@@ -207,24 +93,24 @@ export const PolicyPage = () => {
     const [modelOptions, setModelOptions] = useState([]);
     const [selectedModel, setSelectedModel] = useState<Model[]>([]);
 
-    // Vector DB catalog and first vector DB in dropdown
-    const [vectorOptions, setVectorOptions] = useState<Model[]>([]);
-    const [selectedVectorDB, setSelectedVectorDB] = useState<Model[]>([]);
+    //Embedding Catalog
+    const [embeddingOptions, setEmbeddingOptions] = useState([]);
+    const [selectedEmbedder, setSelectedEmbedder] = useState<Model>(null);
+
+    //the file of the temporal vectorDB
+    const [file, setFile] = useState<File | null>(null);
+    const [fileInfo, setFileInfo] = useState<Record<string, string>>({});
 
     const [prompt, setPrompt] = useState<string>(
         'Only return a helpful answer and nothing else.',
     );
-    const [additionalContext, setAdditionalContext] = useState<string>('');
     const [showPrompts, setShowPrompts] = useState<boolean>(false);
     const [questionContext, setQuestionContext] = useState<string>(
-        "Use the following pieces of information to answer the user's question. " +
-            `${additionalContext} ` +
-            "If you do not know the answer, just say that you don't know, don't try to make up an answer.",
+        "Use the following pieces of information to answer the user's question. If you do not know the answer, just say that you do not know, do not try to make up an answer.",
     );
 
     //Controlling the modal
     const [open, setOpen] = useState<boolean>(false);
-    const [refresh, setRefresh] = useState<boolean>(false);
 
     //Controlling the Sidebar
     const [sideOpen, setSideOpen] = useState<boolean>(true);
@@ -233,6 +119,10 @@ export const PolicyPage = () => {
             QUESTION: '',
         },
     });
+
+    //Question list from the python
+    const [questionList, setQuestionList] = useState<Record<string, any>>({});
+    const [responseQuestions, setResponseQuestions] = useState<string[]>([]);
 
     const [limit, setLimit] = useState<number>(3);
     const [temperature, setTemperature] = useState<number>(0.1);
@@ -255,17 +145,12 @@ export const PolicyPage = () => {
         setSettingsOpen(true);
     };
 
-    const handlePromptChange = (prompt: Prompt) => {
-        setValue('QUESTION', prompt.context);
-        ask();
-        setShowPrompts(false);
-    };
-
     const handleMenuClose = (context: 'prompt' | 'refine' | 'download') => {
         setContext(context);
         setSettingsOpen(false);
         setOpen(true);
     };
+
     /**
      * Allow the user to ask a question
      */
@@ -275,41 +160,49 @@ export const PolicyPage = () => {
         setIsLoading(true);
         setIsAnswered(false);
 
-        let finalContent = ``;
-
-        let pixel = '';
-
         try {
             if (!data.QUESTION) {
                 throw new Error('Question is required');
             }
 
-            for (let i = 0; i < selectedVectorDB.length; i++) {
-                const pixel = `
-                VectorDatabaseQuery(engine="${selectedVectorDB[i].database_id}" , command="${data.QUESTION}", limit=${limit})
-                `;
-
-                const response = await actions.run<Record<string, any>[]>(
-                    pixel,
-                );
-
-                const { output, operationType } = response.pixelReturn[0];
-
-                if (operationType.indexOf('ERROR') > -1)
-                    throw new Error(output.response);
-
-                //Looping through Vector Database Query and forming a content string with name, page, and content
-                for (let i = 0; i <= output.length - 1; i++) {
-                    const content = output[i].content || output[i].Content;
-                    finalContent += `\\n* `;
-                    Object.keys(output[i]).map(
-                        (source) =>
-                            (finalContent += `${source}: ${output[i][source]},`),
-                    );
-                    finalContent += ` ${content}`;
-                }
+            if (!file) {
+                throw new Error('File is required');
             }
+            const modelArray = selectedModel.map(
+                (model) =>
+                    `{'modelEngineId': "${model.database_id}", 'modelEngineName':"${model.database_name}"}`,
+            );
+            // const aiq_call = `aiq_bot.generate_response(model_engine_info=[${modelArray}],embedding_model_engine_id="${
+            //     selectedEmbedder.database_id
+            // }",pdf_files=["/${fileInfo.fileLocation.slice(
+            //     1,
+            // )}"],root_path=ROOT,question_uuid_list=[],user_input={"CONTEXT":"${questionContext}","QUESTION":"${
+            //     data.QUESTION
+            // }"})`;
+            await actions.run(
+                `CreateEmbeddingsFromDocuments(engine="617d2b2f-77d2-4ace-a2b5-9366a1fead51", filePaths="${fileInfo.fileLocation}") `,
+            );
+            let pixel = `
+            VectorDatabaseQuery(engine="617d2b2f-77d2-4ace-a2b5-9366a1fead51" , command="${data.QUESTION}", limit=${limit})
+            `;
 
+            const response = await actions.run<Record<string, any>[]>(pixel);
+
+            const { output, operationType } = response.pixelReturn[0];
+
+            if (operationType.indexOf('ERROR') > -1)
+                throw new Error(output.response);
+            let finalContent = '';
+            //Looping through Vector Database Query and forming a content string with name, page, and content
+            for (let i = 0; i <= output.length - 1; i++) {
+                const content = output[i].content || output[i].Content;
+                finalContent += `\\n* `;
+                Object.keys(output[i]).map(
+                    (source) =>
+                        (finalContent += `${source}: ${output[i][source]},`),
+                );
+                finalContent += ` ${content}`;
+            }
             const contextDocs = `A context delimited by triple backticks is provided below. This context may contain plain text extracted from paragraphs or images. Tables extracted are represented as a 2D list in the following format - '[[Column Headers], [Comma-separated values in row 1], [Comma-separated values in row 2] ..... [Comma-separated values in row n]]'\\n \`\`\` ${finalContent} \`\`\`\\n ${questionContext}}`;
             for (let i = 0; i < selectedModel.length; i++) {
                 pixel = `
@@ -338,15 +231,23 @@ export const PolicyPage = () => {
                 // set answer based on data
                 setAnswer({
                     question: data.QUESTION,
+                    file: fileInfo.fileName,
                     conclusion: conclusion,
-                    LLM: (selectedModel[i] as Model).database_name,
-                    vectorCatalogs: JSON.stringify(
-                        selectedVectorDB.map((vector) => vector.database_name),
-                    ),
                 });
+                // await actions.runPy(aiq_call).then((response) => {
+                //     const { output } = response;
+                //     const questionObject = JSON.parse(output[0].output);
+                //     const keyList = Object.keys(questionObject);
+                //     for (let i = 0; i < keyList.length; i++) {
+                //         setAnswer({
+                //             question: data.QUESTION,
+                //             answerArray: questionObject[keyList[i]],
+                //             file: fileInfo.fileName,
+                //         });
+                //     }
+                // });
+                setIsAnswered(true);
             }
-
-            setIsAnswered(true);
         } catch (e) {
             if (e) {
                 setError(e);
@@ -363,56 +264,73 @@ export const PolicyPage = () => {
 
     useEffect(() => {
         setIsLoading(true);
-        //Grabbing all the Models that are in CfGov
-        let pixel = ` MyEngines ( metaKeys = [] , metaFilters = [{ "tag" : "text-generation" }] , engineTypes = [ 'MODEL' ] )`;
 
-        actions.run(pixel).then((response) => {
-            const { output, operationType } = response.pixelReturn[0];
+        const context = `SetContext("${process.env.APP}", loadPath=true)`;
 
-            if (operationType.indexOf('ERROR') > -1) {
-                throw new Error(output as string);
-            }
-            if (Array.isArray(output)) {
-                setModelOptions(output);
-                setSelectedModel([output[0]]);
-            }
-        });
-        //Grabbing all the Vector Databases in CfG
-        pixel = `MyEngines ( engineTypes=["VECTOR"]);`;
+        const fetchAction = async () => {
+            await actions.run(context);
 
-        actions.run(pixel).then((response) => {
-            const { output, operationType } = response.pixelReturn[0];
+            //Grabbing all the Models that are in CfGov
+            let pixel = ` MyEngines ( metaKeys = [] , metaFilters = [{ "tag" : "text-generation" }] , engineTypes = [ 'MODEL' ] )`;
 
-            if (operationType.indexOf('ERROR') > -1) {
-                throw new Error(output as string);
-            }
-            if (Array.isArray(output)) {
-                setVectorOptions(output);
-                setSelectedVectorDB([output[0]]);
-            }
-        });
+            await actions.run(pixel).then((response) => {
+                const { output, operationType } = response.pixelReturn[0];
 
+                if (operationType.indexOf('ERROR') > -1) {
+                    throw new Error(output as string);
+                }
+                if (Array.isArray(output)) {
+                    setModelOptions(output);
+                    setSelectedModel([output[0]]);
+                }
+            });
+
+            //Grabbing all the embedders
+            pixel = ` MyEngines ( metaKeys = [] , metaFilters = [{ "tag" : "embeddings" }] , engineTypes = [ 'MODEL' ] )`;
+
+            await actions.run(pixel).then((response) => {
+                const { output, operationType } = response.pixelReturn[0];
+
+                if (operationType.indexOf('ERROR') > -1) {
+                    throw new Error(output as string);
+                }
+                if (Array.isArray(output)) {
+                    setEmbeddingOptions(output);
+                    setSelectedEmbedder(output[0]);
+                }
+            });
+
+            //     pixel = `from smssutil import load_module_from_file;aiq_bot = load_module_from_file(module_name='aiq_bot', file_path='py/aiq_bot.py');aiq_bot.set_insight_id('{$i}')
+            // `;
+
+            //     await actions.runPy(pixel);
+
+            //     pixel = `aiq_bot.get_question_list()`;
+
+            //     await actions.runPy(pixel).then((response) => {
+            //         const { output } = response;
+            //         const questionList = JSON.parse(output[0].output);
+            //         setQuestionList(questionList);
+            //     });
+        };
+
+        fetchAction();
         setIsLoading(false);
     }, []);
 
     useEffect(() => {
-        div.current?.scrollIntoView({ behavior: 'smooth' });
-    }, [answerLog]);
+        const uploadFile = async () => {
+            const fileUpload = await actions.upload(file, '');
+            const { fileLocation, fileName } = fileUpload[0];
+            setFileInfo({ fileLocation: fileLocation, fileName: fileName });
+        };
+
+        uploadFile();
+    }, [file]);
 
     useEffect(() => {
-        const pixel = `MyEngines ( engineTypes=["VECTOR"]);`;
-
-        actions.run(pixel).then((response) => {
-            const { output, operationType } = response.pixelReturn[0];
-            if (operationType.indexOf('ERROR') > -1) {
-                throw new Error(output as string);
-            }
-            if (Array.isArray(output)) {
-                setVectorOptions(output);
-                setRefresh(false);
-            }
-        });
-    }, [refresh]);
+        div.current?.scrollIntoView({ behavior: 'smooth' });
+    }, [answerLog]);
 
     useEffect(() => {
         if (answer) {
@@ -448,10 +366,12 @@ export const PolicyPage = () => {
                     modelOptions={modelOptions}
                     selectedModel={selectedModel}
                     setSelectedModel={setSelectedModel}
-                    vectorOptions={vectorOptions}
-                    selectedVectorDB={selectedVectorDB}
-                    setSelectedVectorDB={setSelectedVectorDB}
                     setSideOpen={setSideOpen}
+                    file={file}
+                    setFile={setFile}
+                    embeddingOptions={embeddingOptions}
+                    selectedEmbedder={selectedEmbedder}
+                    setSelectedEmbedder={setSelectedEmbedder}
                 />
             ) : (
                 <StyledLeftPanel>
@@ -460,7 +380,7 @@ export const PolicyPage = () => {
                     </StyledIconButton>
                 </StyledLeftPanel>
             )}
-            <StyledContainer sx={{ padding: '0 24px 0 0' }}>
+            <StyledContainer>
                 <StyledPaper variant={'elevation'} elevation={2} square>
                     <StyledTitle>
                         <StyledAvatar>
@@ -469,7 +389,7 @@ export const PolicyPage = () => {
                             />
                         </StyledAvatar>
                         <div>
-                            <Typography variant="h6"> Policy Bot </Typography>
+                            <Typography variant="h6">DocBot </Typography>
                         </div>
                     </StyledTitle>
                     <StyledDescription variant="body1">
@@ -479,45 +399,6 @@ export const PolicyPage = () => {
                         data from case databases as inputs, and uses LLM models
                         to provide answers.
                     </StyledDescription>
-
-                    {/* <Accordion defaultExpanded>
-                            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                                <Typography>
-                                    Configure
-                                </Typography>
-                            </AccordionSummary>
-                            <AccordionDetails>
-                                <StyledStack spacing={2}>
-                                    <Typography> Select Model: </Typography>
-                                    <Select
-                                        fullWidth
-                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSelectedModel(e.target.value)}
-                                        value={selectedModel}
-                                    >
-                                        {modelOptions.map((option, i) => {
-                                            return (
-                                                <MenuItem value={option} key={i}>
-                                                    {option.database_name}
-                                                </MenuItem>
-                                            );
-                                        })}
-                                    </Select>
-                                    {/* <Typography> Select Knowledge Repository: </Typography>
-                                    <Autocomplete
-                                        options={vectorOptions}
-                                        placeholder='Choose a Vector Catalog'
-                                        getOptionLabel={(option) => option.database_name || ""}
-                                        onChange={(event, newVectorDB) =>
-                                            setSelectedVectorDB(newVectorDB)
-                                        }
-                                        renderInput={(params) => (
-                                            <TextField {...params} variant="outlined" />
-                                        )}
-                                        multiple
-                                    /> */}
-                    {/* </StyledStack>
-                            </AccordionDetails>
-                        </Accordion> */}
                 </StyledPaper>
                 <Stack gap={1}>
                     {answerLog.map((answer) => (
@@ -566,7 +447,7 @@ export const PolicyPage = () => {
                                 <StyledPaper>
                                     <div>
                                         <StyledName variant="h6">
-                                            Policy Extraction Response
+                                            Proposal Assistant Response
                                         </StyledName>
                                         <StyledAdditonalInfo
                                             variant="body2"
@@ -574,15 +455,7 @@ export const PolicyPage = () => {
                                                 color: 'rgba(0, 0, 0, 0.6)',
                                             }}
                                         >
-                                            {answer.LLM}
-                                        </StyledAdditonalInfo>
-                                        <StyledAdditonalInfo
-                                            variant="body2"
-                                            sx={{
-                                                color: 'rgba(0, 0, 0, 0.6)',
-                                            }}
-                                        >
-                                            {answer.vectorCatalogs}
+                                            {answer.file}
                                         </StyledAdditonalInfo>
                                     </div>
                                     <StyledStack spacing={2}>
@@ -592,9 +465,16 @@ export const PolicyPage = () => {
                                                     {error}
                                                 </Alert>
                                             )}
-                                            <Markdown>
-                                                {answer.conclusion}
-                                            </Markdown>
+                                            <div
+                                                style={{
+                                                    marginBottom: '10px',
+                                                }}
+                                                key={Math.random()}
+                                            >
+                                                <Markdown>
+                                                    {answer.conclusion}
+                                                </Markdown>
+                                            </div>
                                         </Box>
                                     </StyledStack>
                                 </StyledPaper>
@@ -604,36 +484,9 @@ export const PolicyPage = () => {
 
                     {/* this is a dummy div so that you can scroll to it */}
                     <div ref={div} />
-                    {showPrompts && (
-                        <PregeneratedContext
-                            handlePromptChange={handlePromptChange}
-                        />
-                    )}
                 </Stack>
             </StyledContainer>
             <StyledQuestionDiv>
-                {selectedVectorDB.length > 0 && (
-                    <StyledPromptContainer>
-                        <StyledLabel>
-                            {showPrompts ? 'Hide ' : 'Show '} Prompts:
-                        </StyledLabel>
-                        <StyledPromptIconContainer>
-                            <ButtonGroup>
-                                <IconButton
-                                    size="small"
-                                    color="inherit"
-                                    onClick={() => setShowPrompts(!showPrompts)}
-                                >
-                                    <MenuOpenOutlinedIcon
-                                        color="inherit"
-                                        fontSize="inherit"
-                                    />
-                                </IconButton>
-                            </ButtonGroup>
-                        </StyledPromptIconContainer>
-                    </StyledPromptContainer>
-                )}
-
                 <Controller
                     name={'QUESTION'}
                     control={control}
