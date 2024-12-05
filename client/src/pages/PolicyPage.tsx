@@ -141,7 +141,7 @@ export const PolicyPage = () => {
 
     const loginProviders = Object.keys(system.config.logins)
     const user = system.config.logins[loginProviders[0]]
-    console.log(user)
+
     // scrolling to the bottom of the container
     const div = useRef(null);
 
@@ -371,7 +371,18 @@ export const PolicyPage = () => {
                 </StyledLeftPanel>
             )}
             <StyledContainer>
-                <StyledPaper variant={'elevation'} elevation={2} square>
+
+                {answerLog.length === 0 && 
+                <StyledTitle>
+                    <Typography variant='h4' fontWeight={700} sx={{marginBottom:'10px'}}>
+                        Hello {user}!
+                    </Typography>
+                    <Typography variant='h5' sx={{color:'#606060'}}>
+                        I'm here to assist you in answering any complex policy, operational
+                        procedure, or system questions. 
+                    </Typography>
+                </StyledTitle>}
+                {/* <StyledPaper variant={'elevation'} elevation={2} square>
                     <StyledTitle>
                         <StyledAvatar>
                             <SmartToyOutlinedIcon
@@ -395,22 +406,23 @@ export const PolicyPage = () => {
                         you have chosen to provide answers!
                     </StyledDescription>
  
-                </StyledPaper>
-                <Stack gap={1}>
+                </StyledPaper> */}
+
+                {answerLog.length > 0 && <Stack gap={1}>
                     {answerLog.map((answer) => (
                         <>
                             <StyledResponseDiv>
                                 <StyledAnswerAvatar>
                                     <PersonIcon />
                                 </StyledAnswerAvatar>
-                                <StyledPaper elevation={2} square>
-                                    <StyledName variant="h6">You</StyledName>
+                                <StyledPaper elevation={2} sx={{background: '#ebf5f9'}}>
                                     <StyledQuestionStack>
                                         <div
                                             style={{
                                                 display: 'flex',
                                                 flexDirection: 'row',
                                                 justifyContent: 'space-between',
+                                                alignItems: 'center'
                                             }}
                                         >
                                             <div>
@@ -480,7 +492,7 @@ export const PolicyPage = () => {
 
                     {/* this is a dummy div so that you can scroll to it */}
                     <div ref={div} />
-                </Stack>
+                </Stack>}
             </StyledContainer>
             <StyledQuestionDiv>
                 <Controller

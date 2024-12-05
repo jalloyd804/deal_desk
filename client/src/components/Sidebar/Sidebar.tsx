@@ -371,7 +371,11 @@ export const Sidebar = ({
                     disabled={!file?.name}
                     onClick={handleSubmit}
                 >
-                    Finish
+                    {newVector ?
+                        "Create and Embed"
+                        :
+                        "Embed Document"
+                    }
                 </Button>
                 }
             </>

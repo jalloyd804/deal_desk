@@ -38,7 +38,7 @@ const StyledWrapper = styled('div')(() => ({
     height: '100%',
     width: '100%',
     overflow: 'auto',
-    background: '#ebf5f9',
+    // background: 'white',
 }));
 
 const StyledMain = styled('div')(() => ({

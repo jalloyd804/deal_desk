@@ -30,15 +30,18 @@ export const StyledContainer = styled(Stack)(() => ({
   '&-ms-overflow-style:': {
     display: 'none',
   },
+  justifyContent: 'center'
 }));
 
 export const StyledTitle = styled('div')(({ theme }) => ({
-  background: '#6254a3',
-  color: theme.palette.background.paper,
+  color: '#6254a3',
   padding: theme.spacing(2),
   borderTopLeftRadius: theme.spacing(2),
   borderTopRightRadius: theme.spacing(2),
   display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  alignItems: 'center'
 }));
 
 export const StyledAvatar = styled(Avatar)(({ theme }) => ({
@@ -87,7 +90,7 @@ export const StyledLayout = styled(Stack, {
   display: 'flex',
   flexDirection: 'column',
   overflow: 'hidden',
-  background: '#ebf5f9',
+  // background: 'white',
 }));
 
 export const StyledLeftPanel = styled(Paper)(({ theme }) => ({
