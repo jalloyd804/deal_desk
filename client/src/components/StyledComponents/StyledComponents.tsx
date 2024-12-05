@@ -19,7 +19,7 @@ import {
 } from '@mui/material';
 
 export const StyledContainer = styled(Stack)(() => ({
-  height: '70vh',
+  height: '80vh',
   overflowY: 'scroll',
   display: 'flex',
   flexDirection: 'column',
@@ -60,7 +60,7 @@ export const StyledStack = styled(Stack)(({ theme }) => ({
 }));
 
 export const StyledDescription = styled(Typography)(({ theme }) => ({
-  padding: theme.spacing(3),
+  padding: theme.spacing(1),
 }));
 
 export const StyledName = styled(Typography)(({ theme }) => ({

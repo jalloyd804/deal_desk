@@ -21,8 +21,6 @@ import {
 import { useForm, Controller } from 'react-hook-form';
 import { useInsight } from '@semoss/sdk-react';
 import { Sidebar } from '../components/Sidebar';
-import { PromptModal } from '../components/PromptModal';
-import { PregeneratedContext } from '../components/PregeneratedContext';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import SmartToyOutlinedIcon from '@mui/icons-material/SmartToyOutlined';
 import SendIcon from '@mui/icons-material/Send';
@@ -81,10 +79,14 @@ interface Prompt {
 }
 
 export const PolicyPage = () => {
-    const { actions } = useInsight();
+    const { actions, system } = useInsight();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
     const [isAnswered, setIsAnswered] = useState(false);
+
+
+    const [refresh, setRefresh] = useState<boolean>(false);
+
     //From the LLM
     const [answer, setAnswer] = useState<Answer>(null);
     const [answerLog, setAnswerLog] = useState<Answer[]>([]);
@@ -93,9 +95,9 @@ export const PolicyPage = () => {
     const [modelOptions, setModelOptions] = useState([]);
     const [selectedModel, setSelectedModel] = useState<Model[]>([]);
 
-    //Embedding Catalog
-    const [embeddingOptions, setEmbeddingOptions] = useState([]);
-    const [selectedEmbedder, setSelectedEmbedder] = useState<Model>(null);
+    // Model Catalog and first model in dropdown
+    const [vectorOptions, setVectorOptions] = useState([]);
+    const [selectedVector, setSelectedVector] = useState<Model | null>(null);
 
     //the file of the temporal vectorDB
     const [file, setFile] = useState<File | null>(null);
@@ -137,6 +139,9 @@ export const PolicyPage = () => {
         null,
     );
 
+    const loginProviders = Object.keys(system.config.logins)
+    const user = system.config.logins[loginProviders[0]]
+    console.log(user)
     // scrolling to the bottom of the container
     const div = useRef(null);
 
@@ -165,25 +170,18 @@ export const PolicyPage = () => {
                 throw new Error('Question is required');
             }
 
-            if (!file) {
-                throw new Error('File is required');
-            }
+            // if (!file) {
+            //     throw new Error('File is required');
+            // }
             const modelArray = selectedModel.map(
                 (model) =>
                     `{'modelEngineId': "${model.database_id}", 'modelEngineName':"${model.database_name}"}`,
             );
-            // const aiq_call = `aiq_bot.generate_response(model_engine_info=[${modelArray}],embedding_model_engine_id="${
-            //     selectedEmbedder.database_id
-            // }",pdf_files=["/${fileInfo.fileLocation.slice(
-            //     1,
-            // )}"],root_path=ROOT,question_uuid_list=[],user_input={"CONTEXT":"${questionContext}","QUESTION":"${
-            //     data.QUESTION
-            // }"})`;
-            await actions.run(
-                `CreateEmbeddingsFromDocuments(engine="617d2b2f-77d2-4ace-a2b5-9366a1fead51", filePaths="${fileInfo.fileLocation}") `,
-            );
+            // await actions.run(
+            //     `CreateEmbeddingsFromDocuments(engine="617d2b2f-77d2-4ace-a2b5-9366a1fead51", filePaths="${fileInfo.fileLocation}") `,
+            // );
             let pixel = `
-            VectorDatabaseQuery(engine="617d2b2f-77d2-4ace-a2b5-9366a1fead51" , command="${data.QUESTION}", limit=${limit})
+            VectorDatabaseQuery(engine="${selectedVector.database_id}" , command="${data.QUESTION}", limit=${limit})
             `;
 
             const response = await actions.run<Record<string, any>[]>(pixel);
@@ -234,18 +232,6 @@ export const PolicyPage = () => {
                     file: fileInfo.fileName,
                     conclusion: conclusion,
                 });
-                // await actions.runPy(aiq_call).then((response) => {
-                //     const { output } = response;
-                //     const questionObject = JSON.parse(output[0].output);
-                //     const keyList = Object.keys(questionObject);
-                //     for (let i = 0; i < keyList.length; i++) {
-                //         setAnswer({
-                //             question: data.QUESTION,
-                //             answerArray: questionObject[keyList[i]],
-                //             file: fileInfo.fileName,
-                //         });
-                //     }
-                // });
                 setIsAnswered(true);
             }
         } catch (e) {
@@ -261,6 +247,21 @@ export const PolicyPage = () => {
             setValue('QUESTION', '');
         }
     });
+
+    useEffect(() => {
+        const pixel = `MyEngines ( engineTypes=["VECTOR"]);`;
+
+        actions.run(pixel).then((response) => {
+            const { output, operationType } = response.pixelReturn[0];
+            if (operationType.indexOf('ERROR') > -1) {
+                throw new Error(output as string);
+            }
+            if (Array.isArray(output)) {
+                setVectorOptions(output);
+                setRefresh(false);
+            }
+        });
+    }, [refresh]);
 
     useEffect(() => {
         setIsLoading(true);
@@ -285,8 +286,7 @@ export const PolicyPage = () => {
                 }
             });
 
-            //Grabbing all the embedders
-            pixel = ` MyEngines ( metaKeys = [] , metaFilters = [{ "tag" : "embeddings" }] , engineTypes = [ 'MODEL' ] )`;
+            pixel = ` MyEngines ( metaKeys = [], engineTypes = [ 'VECTOR' ] )`;
 
             await actions.run(pixel).then((response) => {
                 const { output, operationType } = response.pixelReturn[0];
@@ -295,23 +295,11 @@ export const PolicyPage = () => {
                     throw new Error(output as string);
                 }
                 if (Array.isArray(output)) {
-                    setEmbeddingOptions(output);
-                    setSelectedEmbedder(output[0]);
+                    setVectorOptions(output);
+                    setSelectedVector(output[0]);
                 }
             });
 
-            //     pixel = `from smssutil import load_module_from_file;aiq_bot = load_module_from_file(module_name='aiq_bot', file_path='py/aiq_bot.py');aiq_bot.set_insight_id('{$i}')
-            // `;
-
-            //     await actions.runPy(pixel);
-
-            //     pixel = `aiq_bot.get_question_list()`;
-
-            //     await actions.runPy(pixel).then((response) => {
-            //         const { output } = response;
-            //         const questionList = JSON.parse(output[0].output);
-            //         setQuestionList(questionList);
-            //     });
         };
 
         fetchAction();
@@ -369,9 +357,11 @@ export const PolicyPage = () => {
                     setSideOpen={setSideOpen}
                     file={file}
                     setFile={setFile}
-                    embeddingOptions={embeddingOptions}
-                    selectedEmbedder={selectedEmbedder}
-                    setSelectedEmbedder={setSelectedEmbedder}
+                    fileInfo={fileInfo}
+                    vectorOptions={vectorOptions}
+                    setSelectedVector={setSelectedVector}
+                    selectedVector={selectedVector}
+                    setRefresh={setRefresh}
                 />
             ) : (
                 <StyledLeftPanel>
@@ -393,12 +383,18 @@ export const PolicyPage = () => {
                         </div>
                     </StyledTitle>
                     <StyledDescription variant="body1">
-                        Assists users in answering complex policy, operational
-                        procedure, and system questions. This engine takes data
-                        such as policy manuals, system documents, process maps,
-                        data from case databases as inputs, and uses LLM models
-                        to provide answers.
+                        Hello {user}!
                     </StyledDescription>
+                    <StyledDescription variant="body1">
+                        I'm here to assist you in answering any complex policy, operational
+                        procedure, or system questions. 
+                    </StyledDescription>                    
+                    <StyledDescription variant="body1">                
+                        I love working with lot of different data types, such as policy manuals, system documents, 
+                        process maps, data from case databases as inputs, and will happily use the LLM models
+                        you have chosen to provide answers!
+                    </StyledDescription>
+ 
                 </StyledPaper>
                 <Stack gap={1}>
                     {answerLog.map((answer) => (
@@ -578,21 +574,6 @@ export const PolicyPage = () => {
                 </Menu>
             </StyledQuestionDiv>
             {isLoading && <LinearProgress />}
-            <Modal open={open} onClose={() => setOpen(false)}>
-                <PromptModal
-                    prompt={prompt}
-                    setOpen={setOpen}
-                    setPrompt={setPrompt}
-                    questionContext={questionContext}
-                    setQuestionContext={setQuestionContext}
-                    context={context}
-                    limit={limit}
-                    setLimit={setLimit}
-                    temperature={temperature}
-                    setTemperature={setTemperature}
-                    answerLog={answerLog}
-                />
-            </Modal>
         </StyledLayout>
     );
 };

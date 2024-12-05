@@ -48,10 +48,11 @@ const StyledMain = styled('div')(() => ({
 }));
 
 const StyledContent = styled('div')(({ theme }) => ({
-    position: 'relative',
+    // position: 'relative',
     display: 'flex',
     justifyContent: 'center',
-    minHeight: `calc(100vh - ${theme.spacing(4)})`,
+    height:'100%',
+    // minHeight: `calc(100vh - ${theme.spacing(4)})`,
     [theme.breakpoints.down('sm')]: {
         minHeight: 'auto',
     },
