@@ -29,6 +29,7 @@ const StyledModal = styled(Box)(({ theme }) => ({
     borderRadius: '30px',
     boxShadow: '24',
     p: '4',
+    zIndex:1000,
     padding: theme.spacing(4),
 }));
 
@@ -243,7 +244,7 @@ export const PromptModal = ({
                                     rows={5}
                                     multiline
                                     fullWidth
-                                    variant="standard"
+                                    variant="outlined"
                                     inputProps={{
                                         disableUnderline: true,
                                     }}
@@ -275,7 +276,7 @@ export const PromptModal = ({
                                     rows={5}
                                     multiline
                                     fullWidth
-                                    variant="standard"
+                                    variant="outlined"
                                     inputProps={{
                                         disableUnderline: true,
                                     }}

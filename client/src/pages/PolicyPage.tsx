@@ -17,6 +17,9 @@ import {
     Snackbar,
     Menu,
     MenuItem,
+    AccordionSummary,
+    Accordion,
+    AccordionDetails
 } from '@mui/material';
 import { useForm, Controller } from 'react-hook-form';
 import Button from '@mui/material/Button';
@@ -32,12 +35,14 @@ import TuneRoundedIcon from '@mui/icons-material/TuneRounded';
 import EditIcon from '@mui/icons-material/Edit';
 import DownloadIcon from '@mui/icons-material/Download';
 import { Markdown } from '@/components/common';
+import {PromptModal} from '../components/PromptModal';
 import {
     StyledContainer,
     StyledStack,
     StyledDescription,
     StyledName,
     StyledAdditonalInfo,
+    StyledAccordion,
     StyledLayout,
     StyledResponseDiv,
     StyledLeftPanel,
@@ -141,9 +146,9 @@ export const PolicyPage = () => {
         null,
     );
 
-    const loginProviders = Object.keys(system.config.logins);
-    const user = system.config.logins[loginProviders[0]];
-    console.log(user);
+    const loginProviders = Object.keys(system.config.logins)
+    const user = system.config.logins[loginProviders[0]]
+
     // scrolling to the bottom of the container
     const div = useRef(null);
 
@@ -372,7 +377,18 @@ export const PolicyPage = () => {
                 </StyledLeftPanel>
             )}
             <StyledContainer>
-                <StyledPaper variant={'elevation'} elevation={2} square>
+
+                {answerLog.length === 0 && 
+                <StyledTitle>
+                    <Typography variant='h4' fontWeight={700} sx={{marginBottom:'10px'}}>
+                        Hello {user}!
+                    </Typography>
+                    <Typography variant='h5' sx={{color:'#606060'}}>
+                        I'm here to assist you in answering any complex policy, operational
+                        procedure, or system questions. 
+                    </Typography>
+                </StyledTitle>}
+                {/* <StyledPaper variant={'elevation'} elevation={2} square>
                     <StyledTitle>
                         <div>
                             <Typography variant="h6">
@@ -391,8 +407,10 @@ export const PolicyPage = () => {
                         from case databases as inputs, and will happily use the
                         LLM models you have chosen to provide answers!
                     </StyledDescription>
-                </StyledPaper>
-                <Stack gap={1}>
+ 
+                </StyledPaper> */}
+
+                {answerLog.length > 0 && <Stack gap={1}>
                     {answerLog.map((answer) => (
                         <>
                             <StyledResponseDiv>
@@ -413,6 +431,7 @@ export const PolicyPage = () => {
                                                 display: 'flex',
                                                 flexDirection: 'row',
                                                 justifyContent: 'space-between',
+                                                alignItems: 'center'
                                             }}
                                         >
                                             <div>
@@ -485,6 +504,20 @@ export const PolicyPage = () => {
                                                     Copy
                                                 </StyledButton>
                                             </div>
+                                            <StyledAccordion>
+                                                <AccordionSummary>
+                                                    <Typography variant="caption">
+                                                        More Information
+                                                    </Typography>
+                                                </AccordionSummary>
+                                                <AccordionDetails>
+                                                <div>
+                                                <Typography fontStyle={'italic'}>
+                                                    {answer.file}
+                                                </Typography>
+                                                </div>
+                                                </AccordionDetails>
+                                            </StyledAccordion>
                                         </Box>
                                     </StyledQuestionStack>
                                 </StyledPaper>
@@ -494,7 +527,7 @@ export const PolicyPage = () => {
 
                     {/* this is a dummy div so that you can scroll to it */}
                     <div ref={div} />
-                </Stack>
+                </Stack>}
             </StyledContainer>
             <StyledQuestionDiv>
                 <Controller
@@ -588,6 +621,22 @@ export const PolicyPage = () => {
                 </Menu>
             </StyledQuestionDiv>
             {isLoading && <LinearProgress />}
+            {open &&
+                <PromptModal
+                    setOpen={setOpen}
+                    prompt={prompt}
+                    setPrompt={setPrompt}
+                    questionContext={questionContext}
+                    setQuestionContext={setQuestionContext}
+                    context={context}
+                    limit={limit}
+                    setLimit={setLimit}
+                    temperature={temperature}
+                    setTemperature={setTemperature}
+                    answerLog={answerLog}
+                 />
+
+            }
         </StyledLayout>
     );
 };

@@ -17,6 +17,7 @@ import {
     Snackbar,
     Menu,
     MenuItem,
+    Accordion,
 } from '@mui/material';
 
 export const StyledContainer = styled(Stack)(() => ({
@@ -34,12 +35,14 @@ export const StyledContainer = styled(Stack)(() => ({
 }));
 
 export const StyledTitle = styled('div')(({ theme }) => ({
-    background: '#6254a3',
-    color: theme.palette.background.paper,
-    padding: theme.spacing(2),
-    borderTopLeftRadius: theme.spacing(2),
-    borderTopRightRadius: theme.spacing(2),
-    display: 'flex',
+  color: '#6254a3',
+  padding: theme.spacing(2),
+  borderTopLeftRadius: theme.spacing(2),
+  borderTopRightRadius: theme.spacing(2),
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  alignItems: 'center'
 }));
 
 export const StyledAvatar = styled(Avatar)(({ theme }) => ({
@@ -72,6 +75,13 @@ export const StyledQuestionStack = styled(Stack)(({ theme }) => ({
     paddingLeft: theme.spacing(2),
     paddingBottom: theme.spacing(2),
 }));
+
+export const StyledAccordion = styled(Accordion)(()=> ({
+  background:'transparent',
+  '&:before': {
+                display: 'none',
+            }
+}))
 
 export const StyledStack = styled(Stack)(({ theme }) => ({
     padding: theme.spacing(2),
