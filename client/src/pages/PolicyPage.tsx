@@ -17,6 +17,9 @@ import {
     Snackbar,
     Menu,
     MenuItem,
+    AccordionSummary,
+    Accordion,
+    AccordionDetails
 } from '@mui/material';
 import { useForm, Controller } from 'react-hook-form';
 import { useInsight } from '@semoss/sdk-react';
@@ -32,12 +35,14 @@ import EditIcon from '@mui/icons-material/Edit';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import DownloadIcon from '@mui/icons-material/Download';
 import { Markdown } from '@/components/common';
+import {PromptModal} from '../components/PromptModal';
 import {
     StyledContainer,
     StyledStack,
     StyledDescription,
     StyledName,
     StyledAdditonalInfo,
+    StyledAccordion,
     StyledLayout,
     StyledResponseDiv,
     StyledLeftPanel,
@@ -415,7 +420,7 @@ export const PolicyPage = () => {
                                 <StyledAnswerAvatar>
                                     <PersonIcon />
                                 </StyledAnswerAvatar>
-                                <StyledPaper elevation={2} sx={{background: '#ebf5f9'}}>
+                                <StyledPaper elevation={0} sx={{background: '#ADD8E6'}}>
                                     <StyledQuestionStack>
                                         <div
                                             style={{
@@ -452,20 +457,7 @@ export const PolicyPage = () => {
                                         }}
                                     />
                                 </StyledAvatar>
-                                <StyledPaper>
-                                    <div>
-                                        <StyledName variant="h6">
-                                            Proposal Assistant Response
-                                        </StyledName>
-                                        <StyledAdditonalInfo
-                                            variant="body2"
-                                            sx={{
-                                                color: 'rgba(0, 0, 0, 0.6)',
-                                            }}
-                                        >
-                                            {answer.file}
-                                        </StyledAdditonalInfo>
-                                    </div>
+                                <StyledPaper sx={{background: '#afb9e6'}} elevation={0}>
                                     <StyledStack spacing={2}>
                                         <Box sx={{ mb: 2, overflow: 'auto' }}>
                                             {error && (
@@ -483,6 +475,20 @@ export const PolicyPage = () => {
                                                     {answer.conclusion}
                                                 </Markdown>
                                             </div>
+                                            <StyledAccordion>
+                                                <AccordionSummary>
+                                                    <Typography variant="caption">
+                                                        More Information
+                                                    </Typography>
+                                                </AccordionSummary>
+                                                <AccordionDetails>
+                                                <div>
+                                                <Typography fontStyle={'italic'}>
+                                                    {answer.file}
+                                                </Typography>
+                                                </div>
+                                                </AccordionDetails>
+                                            </StyledAccordion>
                                         </Box>
                                     </StyledStack>
                                 </StyledPaper>
@@ -586,6 +592,22 @@ export const PolicyPage = () => {
                 </Menu>
             </StyledQuestionDiv>
             {isLoading && <LinearProgress />}
+            {open &&
+                <PromptModal
+                    setOpen={setOpen}
+                    prompt={prompt}
+                    setPrompt={setPrompt}
+                    questionContext={questionContext}
+                    setQuestionContext={setQuestionContext}
+                    context={context}
+                    limit={limit}
+                    setLimit={setLimit}
+                    temperature={temperature}
+                    setTemperature={setTemperature}
+                    answerLog={answerLog}
+                 />
+
+            }
         </StyledLayout>
     );
 };
