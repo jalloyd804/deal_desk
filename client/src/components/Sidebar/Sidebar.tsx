@@ -12,7 +12,7 @@ import {
     Avatar,
     Box,
     Button,
-    CircularProgress
+    CircularProgress,
 } from '@mui/material';
 import { Model } from '@/pages/PolicyPage';
 import { useInsight } from '@semoss/sdk-react';
@@ -53,20 +53,21 @@ const StyledTitle = styled(Typography)(({ theme }) => ({
     marginTop: theme.spacing(2),
 }));
 
-
 const StyledLink = styled('button')(({ theme }) => ({
     display: 'inline-block',
-    color: theme.palette.primary.main,
+    color: theme.palette.background.paper,
     cursor: 'pointer',
-    backgroundColor: theme.palette.background.paper,
+    backgroundColor: 'transparent',
+    fontSize: '.75rem',
     border: '0px',
 }));
 
 const StyledSidebar = styled(Paper)(({ theme }) => ({
     display: 'flex',
     flexDirection: 'column',
-    width: '360px',
-    borderRadius: '0',
+    width: '20vw',
+    borderRadius: '.75rem',
+    margin: '0rem .75rem',
     padding: theme.spacing(2),
     background:
         'linear-gradient(0deg, rgba(49,159,190,1) 13%, rgba(42,114,165,1) 51%)',
@@ -75,9 +76,8 @@ const StyledSidebar = styled(Paper)(({ theme }) => ({
         position: 'absolute',
         zIndex: open ? theme.zIndex.drawer + 2 : -1,
         width: '100%',
-        maxWidth: '280px',
+        maxWidth: '20vw',
     },
-    height: '100%',
     position: 'absolute',
     left: '0%',
     zIndex: 2,
@@ -111,8 +111,7 @@ const StyledList = styled(List)(({ theme }) => ({
     justifyContent: 'space-between',
 }));
 
-const StyledStack = styled(Stack)(({ theme }) => ({
-}));
+const StyledStack = styled(Stack)(({ theme }) => ({}));
 
 const StyledButtonLink = styled('button')(({ theme }) => ({
     display: 'inline-block',
@@ -133,20 +132,19 @@ export const Sidebar = ({
     vectorOptions,
     setSelectedVector,
     selectedVector,
-    setRefresh
+    setRefresh,
 }) => {
     const [fileError, setFileError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [newVector, setNewVectorDB] = useState<string | null>(null);
     const { actions } = useInsight();
 
-
     const fileInput = useRef<HTMLInputElement>();
 
     const closingFunctions = () => {
         setLoading(false);
         setNewVectorDB(null);
-        setRefresh(true)
+        setRefresh(true);
         setFile(null);
     };
 
@@ -158,7 +156,7 @@ export const Sidebar = ({
                 const pixel = `CreateVectorDatabaseEngine ( database = [ "${newVector}" ] , conDetails = [ { "VECTOR_TYPE" : "FAISS" , "NAME" : "${newVector}","EMBEDDER_ENGINE_ID":"e4449559-bcff-4941-ae72-0e3f18e06660","INDEX_CLASSES":"default","CHUNKING_STRATEGY":"ALL","CONTENT_LENGTH":512,"CONTENT_OVERLAP":20,"DISTANCE_METHOD":"Squared Euclidean (L2) distance","RETAIN_EXTRACTED_TEXT":"false"} ] ) ;`;
                 const response = await actions.run(pixel);
                 const { output, operationType } = response.pixelReturn[0];
-                console.log(output)
+                console.log(output);
                 engine = output;
                 if (operationType.indexOf('ERROR') > -1) {
                     throw new Error(output as string);
@@ -181,9 +179,7 @@ export const Sidebar = ({
             try {
                 const embedEngine = engine || selectedVector;
                 const pixel = `
-                CreateEmbeddingsFromDocuments ( engine = "${
-                    embedEngine.database_id
-                }" , filePaths = ["${fileInfo.fileLocation}"] ) ;
+                CreateEmbeddingsFromDocuments ( engine = "${embedEngine.database_id}" , filePaths = ["${fileInfo.fileLocation}"] ) ;
                 `;
                 await actions.run(pixel).then((response) => {
                     const { output, operationType } = response.pixelReturn[0];
@@ -209,11 +205,10 @@ export const Sidebar = ({
     const firstStep = () => {
         return (
             <>
-                <StyledTitle>
-                    Select or Create a Vector Repository
-                </StyledTitle>
+                <StyledTitle>Select or Create a Vector Repository</StyledTitle>
                 <Typography variant="caption">
-                    If creating a new repository, make sure to select Add *vector repository name*
+                    If creating a new repository, make sure to select Add
+                    *vector repository name*
                 </Typography>
                 <Typography> Select Vector Catalog: </Typography>
 
@@ -264,9 +259,7 @@ export const Sidebar = ({
                     )}
                 />
 
-                <StyledTitle>
-                    Embed any new documents
-                </StyledTitle>
+                <StyledTitle>Embed any new documents</StyledTitle>
                 <Typography variant="caption">
                     Drag and Drop .csv or .pdf files to embed your vector db
                 </Typography>
@@ -290,6 +283,10 @@ export const Sidebar = ({
                                 borderColor: 'rgba(0,0,0,0.23)',
                                 marginTop: '16px',
                                 marginBottom: '16px',
+                                display: 'flex',
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                justifyContent: 'center',
                             }}
                         >
                             <div
@@ -344,17 +341,24 @@ export const Sidebar = ({
                                                 sx={{ color: '#40a0ff' }}
                                             />
                                         </Avatar>
-                                        <span>
+                                        <span style={{ fontSize: '.75rem' }}>
                                             {
                                                 <StyledLink>
                                                     Click to Upload
                                                 </StyledLink>
                                             }
-                                            &nbsp;or drag and drop
-                                            <Typography variant="subtitle2">
-                                                Maximum File size 100MB.
-                                            </Typography>
+                                            &nbsp;
                                         </span>
+                                    </Typography>
+                                    <Typography
+                                        sx={{
+                                            display: 'flex',
+                                            fontSize: '10px',
+                                            paddingTop: '10px',
+                                        }}
+                                        variant="caption"
+                                    >
+                                        Maximum File size 100MB.
                                     </Typography>
                                 </label>
                             </div>
@@ -365,19 +369,15 @@ export const Sidebar = ({
                     {file?.name}
                     {fileError}
                 </Typography>
-                {file && 
-                <Button
-                    variant="outlined"
-                    disabled={!file?.name}
-                    onClick={handleSubmit}
-                >
-                    {newVector ?
-                        "Create and Embed"
-                        :
-                        "Embed Document"
-                    }
-                </Button>
-                }
+                {file && (
+                    <Button
+                        variant="outlined"
+                        disabled={!file?.name}
+                        onClick={handleSubmit}
+                    >
+                        Finish
+                    </Button>
+                )}
             </>
         );
     };
@@ -403,17 +403,18 @@ export const Sidebar = ({
                         <TextField {...params} variant="outlined" />
                     )}
                     multiple
-                />               
-            {loading ? (
-                <StyledLoadingDiv>
-                    <CircularProgress />
-                    <StyledTypography>
-                        Embedding may take a while, thank you for your patience
-                    </StyledTypography>
-                </StyledLoadingDiv>
-            ) : (
-                firstStep()
-            )}
+                />
+                {loading ? (
+                    <StyledLoadingDiv>
+                        <CircularProgress />
+                        <StyledTypography>
+                            Embedding may take a while, thank you for your
+                            patience
+                        </StyledTypography>
+                    </StyledLoadingDiv>
+                ) : (
+                    firstStep()
+                )}
             </StyledStack>
         </StyledSidebar>
     );

@@ -2,8 +2,9 @@ import { Outlet } from 'react-router-dom';
 import { Alert, Typography, styled } from '@mui/material';
 import Logo from '@/assets/img/logo.svg';
 import Logo_Powered from '@/assets/img/logo_powered.svg';
+import { relative } from 'path';
 
-const StyledBannerLogo = styled('a')(({ theme }) => ({
+const StyledHeaderLogo = styled('a')(({ theme }) => ({
     display: 'inline-flex',
     textDecoration: 'none',
     alignItems: 'center',
@@ -20,7 +21,7 @@ const StyledBannerLogo = styled('a')(({ theme }) => ({
     },
 }));
 
-const StyledBanner = styled('div')(({ theme }) => ({
+const StyledHeader = styled('div')(({ theme }) => ({
     background: theme.palette.background.paper,
     top: '0px',
     left: '0px',
@@ -32,13 +33,13 @@ const StyledBanner = styled('div')(({ theme }) => ({
     color: 'black',
 }));
 
-const StyledWrapper = styled('div')(() => ({
+const StyledWrapper = styled('div')(({ theme }) => ({
     display: 'flex',
-    flexDirection: 'row',
-    height: '100%',
+    flexDirection: 'column',
+    height: '100vh', // Use viewport height
     width: '100%',
-    overflow: 'auto',
-    // background: 'white',
+    overflow: 'hidden', // Ensure no overflow
+    background: theme.palette.background.paper,
 }));
 
 const StyledMain = styled('div')(() => ({
@@ -48,11 +49,9 @@ const StyledMain = styled('div')(() => ({
 }));
 
 const StyledContent = styled('div')(({ theme }) => ({
-    // position: 'relative',
     display: 'flex',
     justifyContent: 'center',
-    height:'100%',
-    // minHeight: `calc(100vh - ${theme.spacing(4)})`,
+    // height: '100%',
     [theme.breakpoints.down('sm')]: {
         minHeight: 'auto',
     },
@@ -79,9 +78,10 @@ const StyledFooter = styled('div')(({ theme }) => ({
     justifyContent: 'space-between',
     gap: theme.spacing(1),
     padding: theme.spacing(1),
-    height: theme.spacing(4),
+    height: '40px', // Fixed height for footer
     width: '100%',
     background: '#00314b',
+    marginTop: '10px',
 }));
 
 const StyledFooterLogo = styled('a')(({ theme }) => ({
@@ -106,29 +106,29 @@ const StyledFooterLogo = styled('a')(({ theme }) => ({
 export const MainLayout = () => {
     return (
         <>
-            <StyledBanner>
-                <StyledBannerLogo href="https://www.cancer.gov/">
-                    <img src={Logo} alt="Logo" />
-                </StyledBannerLogo>
-            </StyledBanner>
             <StyledWrapper>
+                <StyledHeader>
+                    <StyledHeaderLogo href="https://www.cancer.gov/">
+                        <img src={Logo} alt="Logo" />
+                    </StyledHeaderLogo>
+                </StyledHeader>
                 <StyledMain>
                     <StyledContent>
                         <Outlet />
                     </StyledContent>
+                    <StyledFooter>
+                        <StyledFooterLogo
+                            title="CfG.AI"
+                            href="https://deloitte.com"
+                            target="_blank"
+                            rel="noreferrer"
+                        >
+                            Powered By
+                            <img src={Logo_Powered} alt="Powered By Logo" />
+                        </StyledFooterLogo>
+                    </StyledFooter>
                 </StyledMain>
             </StyledWrapper>
-            <StyledFooter>
-                <StyledFooterLogo
-                    title="CfG.AI"
-                    href="https://deloitte.com"
-                    target="_blank"
-                    rel="noreferrer"
-                >
-                    Powered By
-                    <img src={Logo_Powered} alt="Powered By Logo" />
-                </StyledFooterLogo>
-            </StyledFooter>
         </>
     );
 };

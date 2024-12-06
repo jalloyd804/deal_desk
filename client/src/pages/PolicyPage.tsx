@@ -22,6 +22,7 @@ import {
     AccordionDetails
 } from '@mui/material';
 import { useForm, Controller } from 'react-hook-form';
+import Button from '@mui/material/Button';
 import { useInsight } from '@semoss/sdk-react';
 import { Sidebar } from '../components/Sidebar';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
@@ -32,7 +33,6 @@ import MenuOpenOutlinedIcon from '@mui/icons-material/MenuOpenOutlined';
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
 import TuneRoundedIcon from '@mui/icons-material/TuneRounded';
 import EditIcon from '@mui/icons-material/Edit';
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import DownloadIcon from '@mui/icons-material/Download';
 import { Markdown } from '@/components/common';
 import {PromptModal} from '../components/PromptModal';
@@ -56,7 +56,10 @@ import {
     StyledQuestionStack,
     StyledAvatar,
     StyledAnswerAvatar,
+    StyledButton,
 } from '../components/StyledComponents/StyledComponents';
+import BOT_AVATAR from '../assets/img/AvatarCust-XLarge.png';
+import USER_AVATAR from '../assets/img/AvatarCust-Med.png';
 
 export interface Model {
     database_name?: string;
@@ -88,7 +91,6 @@ export const PolicyPage = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
     const [isAnswered, setIsAnswered] = useState(false);
-
 
     const [refresh, setRefresh] = useState<boolean>(false);
 
@@ -304,7 +306,6 @@ export const PolicyPage = () => {
                     setSelectedVector(output[0]);
                 }
             });
-
         };
 
         fetchAction();
@@ -389,26 +390,22 @@ export const PolicyPage = () => {
                 </StyledTitle>}
                 {/* <StyledPaper variant={'elevation'} elevation={2} square>
                     <StyledTitle>
-                        <StyledAvatar>
-                            <SmartToyOutlinedIcon
-                                sx={{ color: 'rgba(0, 0, 0, 0.87)' }}
-                            />
-                        </StyledAvatar>
                         <div>
-                            <Typography variant="h6">DocBot </Typography>
+                            <Typography variant="h6">
+                                {' '}
+                                Hello {user}!{' '}
+                            </Typography>
                         </div>
                     </StyledTitle>
                     <StyledDescription variant="body1">
-                        Hello {user}!
+                        I'm DocBot! Here to assist you in answering any complex
+                        policy, operational procedure, or system questions.
                     </StyledDescription>
                     <StyledDescription variant="body1">
-                        I'm here to assist you in answering any complex policy, operational
-                        procedure, or system questions. 
-                    </StyledDescription>                    
-                    <StyledDescription variant="body1">                
-                        I love working with lot of different data types, such as policy manuals, system documents, 
-                        process maps, data from case databases as inputs, and will happily use the LLM models
-                        you have chosen to provide answers!
+                        I love working with lot of different data types, such as
+                        policy manuals, system documents, process maps, data
+                        from case databases as inputs, and will happily use the
+                        LLM models you have chosen to provide answers!
                     </StyledDescription>
  
                 </StyledPaper> */}
@@ -417,10 +414,17 @@ export const PolicyPage = () => {
                     {answerLog.map((answer) => (
                         <>
                             <StyledResponseDiv>
-                                <StyledAnswerAvatar>
-                                    <PersonIcon />
-                                </StyledAnswerAvatar>
-                                <StyledPaper elevation={0} sx={{background: '#ADD8E6'}}>
+                                <StyledAnswerAvatar src={USER_AVATAR} />
+                                <StyledPaper
+                                    sx={{
+                                        background: '#ebf5f9',
+                                        borderRadius: '.75rem',
+                                        boxShadow: 'none',
+                                        padding: '1rem',
+                                        fontSize: '1rem',
+                                    }}
+                                    square
+                                >
                                     <StyledQuestionStack>
                                         <div
                                             style={{
@@ -436,29 +440,41 @@ export const PolicyPage = () => {
                                                 </Typography>
                                             </div>
 
-                                            <IconButton
+                                            <StyledButton
                                                 onClick={() =>
                                                     navigator.clipboard.writeText(
                                                         answer.question,
                                                     )
                                                 }
                                             >
-                                                <ContentCopyIcon />
-                                            </IconButton>
+                                                Copy
+                                            </StyledButton>
                                         </div>
                                     </StyledQuestionStack>
                                 </StyledPaper>
                             </StyledResponseDiv>
                             <StyledResponseDiv>
-                                <StyledAvatar>
-                                    <SmartToyOutlinedIcon
-                                        sx={{
-                                            color: 'rgba(0, 0, 0, 0.87)',
-                                        }}
-                                    />
-                                </StyledAvatar>
-                                <StyledPaper sx={{background: '#afb9e6'}} elevation={0}>
-                                    <StyledStack spacing={2}>
+                                <StyledAvatar src={BOT_AVATAR} />
+                                <StyledPaper
+                                    sx={{
+                                        background: '#FFEE8C',
+                                        borderRadius: '.75rem',
+                                        boxShadow: 'none',
+                                        padding: '1rem',
+                                        fontSize: '1rem',
+                                    }}
+                                >
+                                    <div>
+                                        {/* <StyledAdditonalInfo
+                                            variant="body2"
+                                            sx={{
+                                                color: 'rgba(0, 0, 0, 0.6)',
+                                            }}
+                                        >
+                                            {answer.file}
+                                        </StyledAdditonalInfo> */}
+                                    </div>
+                                    <StyledQuestionStack spacing={2}>
                                         <Box sx={{ mb: 2, overflow: 'auto' }}>
                                             {error && (
                                                 <Alert color="error">
@@ -468,12 +484,25 @@ export const PolicyPage = () => {
                                             <div
                                                 style={{
                                                     marginBottom: '10px',
+                                                    display: 'flex',
+                                                    flexDirection: 'row',
+                                                    justifyContent:
+                                                        'space-between',
                                                 }}
                                                 key={Math.random()}
                                             >
                                                 <Markdown>
                                                     {answer.conclusion}
                                                 </Markdown>
+                                                <StyledButton
+                                                    onClick={() =>
+                                                        navigator.clipboard.writeText(
+                                                            answer.conclusion,
+                                                        )
+                                                    }
+                                                >
+                                                    Copy
+                                                </StyledButton>
                                             </div>
                                             <StyledAccordion>
                                                 <AccordionSummary>
@@ -490,7 +519,7 @@ export const PolicyPage = () => {
                                                 </AccordionDetails>
                                             </StyledAccordion>
                                         </Box>
-                                    </StyledStack>
+                                    </StyledQuestionStack>
                                 </StyledPaper>
                             </StyledResponseDiv>
                         </>
