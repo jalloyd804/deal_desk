@@ -16,6 +16,7 @@ import {
     Snackbar,
     Menu,
     MenuItem,
+    Accordion,
 } from '@mui/material';
 
 export const StyledContainer = styled(Stack)(() => ({
@@ -57,6 +58,13 @@ export const StyledQuestionStack = styled(Stack)(({ theme }) => ({
   paddingLeft: theme.spacing(2),
   paddingBottom: theme.spacing(2),
 }));
+
+export const StyledAccordion = styled(Accordion)(()=> ({
+  background:'transparent',
+  '&:before': {
+                display: 'none',
+            }
+}))
 
 export const StyledStack = styled(Stack)(({ theme }) => ({
   padding: theme.spacing(2),
