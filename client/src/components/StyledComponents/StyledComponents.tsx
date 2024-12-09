@@ -35,14 +35,14 @@ export const StyledContainer = styled(Stack)(() => ({
 }));
 
 export const StyledTitle = styled('div')(({ theme }) => ({
-  color: '#6254a3',
-  padding: theme.spacing(2),
-  borderTopLeftRadius: theme.spacing(2),
-  borderTopRightRadius: theme.spacing(2),
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  alignItems: 'center'
+    color: '#6254a3',
+    padding: theme.spacing(2),
+    borderTopLeftRadius: theme.spacing(2),
+    borderTopRightRadius: theme.spacing(2),
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
 }));
 
 export const StyledAvatar = styled(Avatar)(({ theme }) => ({
@@ -76,12 +76,14 @@ export const StyledQuestionStack = styled(Stack)(({ theme }) => ({
     paddingBottom: theme.spacing(2),
 }));
 
-export const StyledAccordion = styled(Accordion)(()=> ({
-  background:'transparent',
-  '&:before': {
-                display: 'none',
-            }
-}))
+export const StyledAccordion = styled(Accordion)(() => ({
+    background: 'transparent',
+    '&:before': {
+        display: 'none',
+    },
+    boxShadow: 'none',
+    padding: 'none',
+}));
 
 export const StyledStack = styled(Stack)(({ theme }) => ({
     padding: theme.spacing(2),

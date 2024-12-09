@@ -19,8 +19,9 @@ import {
     MenuItem,
     AccordionSummary,
     Accordion,
-    AccordionDetails
+    AccordionDetails,
 } from '@mui/material';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { useForm, Controller } from 'react-hook-form';
 import Button from '@mui/material/Button';
 import { useInsight } from '@semoss/sdk-react';
@@ -35,7 +36,7 @@ import TuneRoundedIcon from '@mui/icons-material/TuneRounded';
 import EditIcon from '@mui/icons-material/Edit';
 import DownloadIcon from '@mui/icons-material/Download';
 import { Markdown } from '@/components/common';
-import {PromptModal} from '../components/PromptModal';
+import { PromptModal } from '../components/PromptModal';
 import {
     StyledContainer,
     StyledStack,
@@ -146,8 +147,8 @@ export const PolicyPage = () => {
         null,
     );
 
-    const loginProviders = Object.keys(system.config.logins)
-    const user = system.config.logins[loginProviders[0]]
+    const loginProviders = Object.keys(system.config.logins);
+    const user = system.config.logins[loginProviders[0]];
 
     // scrolling to the bottom of the container
     const div = useRef(null);
@@ -377,17 +378,21 @@ export const PolicyPage = () => {
                 </StyledLeftPanel>
             )}
             <StyledContainer>
-
-                {answerLog.length === 0 && 
-                <StyledTitle>
-                    <Typography variant='h4' fontWeight={700} sx={{marginBottom:'10px'}}>
-                        Hello {user}!
-                    </Typography>
-                    <Typography variant='h5' sx={{color:'#606060'}}>
-                        I'm here to assist you in answering any complex policy, operational
-                        procedure, or system questions. 
-                    </Typography>
-                </StyledTitle>}
+                {answerLog.length === 0 && (
+                    <StyledTitle>
+                        <Typography
+                            variant="h4"
+                            fontWeight={700}
+                            sx={{ marginBottom: '10px' }}
+                        >
+                            Hello {user}!
+                        </Typography>
+                        <Typography variant="h5" sx={{ color: '#606060' }}>
+                            I'm here to assist you in answering any complex
+                            policy, operational procedure, or system questions.
+                        </Typography>
+                    </StyledTitle>
+                )}
                 {/* <StyledPaper variant={'elevation'} elevation={2} square>
                     <StyledTitle>
                         <div>
@@ -410,62 +415,65 @@ export const PolicyPage = () => {
  
                 </StyledPaper> */}
 
-                {answerLog.length > 0 && <Stack gap={1}>
-                    {answerLog.map((answer) => (
-                        <>
-                            <StyledResponseDiv>
-                                <StyledAnswerAvatar src={USER_AVATAR} />
-                                <StyledPaper
-                                    sx={{
-                                        background: '#ebf5f9',
-                                        borderRadius: '.75rem',
-                                        boxShadow: 'none',
-                                        padding: '1rem',
-                                        fontSize: '1rem',
-                                    }}
-                                    square
-                                >
-                                    <StyledQuestionStack>
-                                        <div
-                                            style={{
-                                                display: 'flex',
-                                                flexDirection: 'row',
-                                                justifyContent: 'space-between',
-                                                alignItems: 'center'
-                                            }}
-                                        >
-                                            <div>
-                                                <Typography variant={'body1'}>
-                                                    {answer.question}
-                                                </Typography>
-                                            </div>
-
-                                            <StyledButton
-                                                onClick={() =>
-                                                    navigator.clipboard.writeText(
-                                                        answer.question,
-                                                    )
-                                                }
+                {answerLog.length > 0 && (
+                    <Stack gap={1}>
+                        {answerLog.map((answer) => (
+                            <>
+                                <StyledResponseDiv>
+                                    <StyledAnswerAvatar src={USER_AVATAR} />
+                                    <StyledPaper
+                                        sx={{
+                                            background: '#ebf5f9',
+                                            borderRadius: '.75rem',
+                                            boxShadow: 'none',
+                                            padding: '1rem',
+                                            fontSize: '1rem',
+                                        }}
+                                        square
+                                    >
+                                        <StyledQuestionStack>
+                                            <div
+                                                style={{
+                                                    display: 'flex',
+                                                    flexDirection: 'row',
+                                                    justifyContent:
+                                                        'space-between',
+                                                    alignItems: 'center',
+                                                }}
                                             >
-                                                Copy
-                                            </StyledButton>
-                                        </div>
-                                    </StyledQuestionStack>
-                                </StyledPaper>
-                            </StyledResponseDiv>
-                            <StyledResponseDiv>
-                                <StyledAvatar src={BOT_AVATAR} />
-                                <StyledPaper
-                                    sx={{
-                                        background: '#FFEE8C',
-                                        borderRadius: '.75rem',
-                                        boxShadow: 'none',
-                                        padding: '1rem',
-                                        fontSize: '1rem',
-                                    }}
-                                >
-                                    <div>
-                                        {/* <StyledAdditonalInfo
+                                                <div>
+                                                    <Typography
+                                                        variant={'body1'}
+                                                    >
+                                                        {answer.question}
+                                                    </Typography>
+                                                </div>
+                                                <IconButton
+                                                    onClick={() =>
+                                                        navigator.clipboard.writeText(
+                                                            answer.question,
+                                                        )
+                                                    }
+                                                >
+                                                    <ContentCopyIcon />
+                                                </IconButton>{' '}
+                                            </div>
+                                        </StyledQuestionStack>
+                                    </StyledPaper>
+                                </StyledResponseDiv>
+                                <StyledResponseDiv>
+                                    <StyledAvatar src={BOT_AVATAR} />
+                                    <StyledPaper
+                                        sx={{
+                                            background: '#FFEE8C',
+                                            borderRadius: '.75rem',
+                                            boxShadow: 'none',
+                                            padding: '1rem',
+                                            fontSize: '1rem',
+                                        }}
+                                    >
+                                        <div>
+                                            {/* <StyledAdditonalInfo
                                             variant="body2"
                                             sx={{
                                                 color: 'rgba(0, 0, 0, 0.6)',
@@ -473,61 +481,79 @@ export const PolicyPage = () => {
                                         >
                                             {answer.file}
                                         </StyledAdditonalInfo> */}
-                                    </div>
-                                    <StyledQuestionStack spacing={2}>
-                                        <Box sx={{ mb: 2, overflow: 'auto' }}>
-                                            {error && (
-                                                <Alert color="error">
-                                                    {error}
-                                                </Alert>
-                                            )}
-                                            <div
-                                                style={{
-                                                    marginBottom: '10px',
-                                                    display: 'flex',
-                                                    flexDirection: 'row',
-                                                    justifyContent:
-                                                        'space-between',
-                                                }}
-                                                key={Math.random()}
+                                        </div>
+                                        <StyledQuestionStack spacing={2}>
+                                            <Box
+                                                sx={{ mb: 2, overflow: 'auto' }}
                                             >
-                                                <Markdown>
-                                                    {answer.conclusion}
-                                                </Markdown>
-                                                <StyledButton
-                                                    onClick={() =>
-                                                        navigator.clipboard.writeText(
-                                                            answer.conclusion,
-                                                        )
-                                                    }
+                                                {error && (
+                                                    <Alert color="error">
+                                                        {error}
+                                                    </Alert>
+                                                )}
+                                                <div
+                                                    style={{
+                                                        marginBottom: '10px',
+                                                        display: 'flex',
+                                                        flexDirection: 'row',
+                                                        justifyContent:
+                                                            'space-between',
+                                                    }}
+                                                    key={Math.random()}
                                                 >
-                                                    Copy
-                                                </StyledButton>
-                                            </div>
-                                            <StyledAccordion>
-                                                <AccordionSummary>
-                                                    <Typography variant="caption">
-                                                        More Information
-                                                    </Typography>
-                                                </AccordionSummary>
-                                                <AccordionDetails>
-                                                <div>
-                                                <Typography fontStyle={'italic'}>
-                                                    {answer.file}
-                                                </Typography>
+                                                    <Markdown>
+                                                        {answer.conclusion}
+                                                    </Markdown>
                                                 </div>
-                                                </AccordionDetails>
-                                            </StyledAccordion>
-                                        </Box>
-                                    </StyledQuestionStack>
-                                </StyledPaper>
-                            </StyledResponseDiv>
-                        </>
-                    ))}
+                                                <StyledAccordion>
+                                                    <AccordionSummary
+                                                        sx={{
+                                                            display: 'flex',
+                                                            alignItems:
+                                                                'center',
+                                                            justifyContent:
+                                                                'space-between',
+                                                        }}
+                                                    >
+                                                        <Typography
+                                                            variant="caption"
+                                                            sx={{
+                                                                flexGrow: 1,
+                                                                textAlign:
+                                                                    'right',
+                                                            }}
+                                                        >
+                                                            More Information
+                                                        </Typography>
+                                                        <IconButton
+                                                            onClick={() =>
+                                                                navigator.clipboard.writeText(
+                                                                    answer.question,
+                                                                )
+                                                            }
+                                                        >
+                                                            <ContentCopyIcon />
+                                                        </IconButton>
+                                                    </AccordionSummary>
+                                                    <AccordionDetails>
+                                                        <div>
+                                                            <Typography fontStyle="italic">
+                                                                {answer.file}
+                                                            </Typography>
+                                                        </div>
+                                                    </AccordionDetails>
+                                                </StyledAccordion>
+                                            </Box>
+                                        </StyledQuestionStack>
+                                    </StyledPaper>
+                                </StyledResponseDiv>
+                            </>
+                        ))}
 
-                    {/* this is a dummy div so that you can scroll to it */}
-                    <div ref={div} />
-                </Stack>}
+                        {/* this is a dummy div so that you can scroll to it */}
+                        <div ref={div} />
+                    </Stack>
+                )}
             </StyledContainer>
             <StyledQuestionDiv>
                 <Controller
@@ -621,7 +647,7 @@ export const PolicyPage = () => {
                 </Menu>
             </StyledQuestionDiv>
             {isLoading && <LinearProgress />}
-            {open &&
+            {open && (
                 <PromptModal
                     setOpen={setOpen}
                     prompt={prompt}
@@ -634,9 +660,8 @@ export const PolicyPage = () => {
                     temperature={temperature}
                     setTemperature={setTemperature}
                     answerLog={answerLog}
-                 />
-
-            }
+                />
+            )}
         </StyledLayout>
     );
 };
