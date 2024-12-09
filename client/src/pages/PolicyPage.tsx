@@ -19,9 +19,8 @@ import {
     MenuItem,
     AccordionSummary,
     Accordion,
-    AccordionDetails,
+    AccordionDetails
 } from '@mui/material';
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { useForm, Controller } from 'react-hook-form';
 import Button from '@mui/material/Button';
 import { useInsight } from '@semoss/sdk-react';
@@ -36,7 +35,7 @@ import TuneRoundedIcon from '@mui/icons-material/TuneRounded';
 import EditIcon from '@mui/icons-material/Edit';
 import DownloadIcon from '@mui/icons-material/Download';
 import { Markdown } from '@/components/common';
-import { PromptModal } from '../components/PromptModal';
+import {PromptModal} from '../components/PromptModal';
 import {
     StyledContainer,
     StyledStack,
@@ -101,7 +100,7 @@ export const PolicyPage = () => {
 
     // Model Catalog and first model in dropdown
     const [modelOptions, setModelOptions] = useState([]);
-    const [selectedModel, setSelectedModel] = useState<Model[]>([]);
+    const [selectedModel, setSelectedModel] = useState<Model | null>(null);
 
     // Model Catalog and first model in dropdown
     const [vectorOptions, setVectorOptions] = useState([]);
@@ -147,8 +146,8 @@ export const PolicyPage = () => {
         null,
     );
 
-    const loginProviders = Object.keys(system.config.logins);
-    const user = system.config.logins[loginProviders[0]];
+    const loginProviders = Object.keys(system.config.logins)
+    const user = system.config.logins[loginProviders[0]]
 
     // scrolling to the bottom of the container
     const div = useRef(null);
@@ -178,13 +177,6 @@ export const PolicyPage = () => {
                 throw new Error('Question is required');
             }
 
-            // if (!file) {
-            //     throw new Error('File is required');
-            // }
-            const modelArray = selectedModel.map(
-                (model) =>
-                    `{'modelEngineId': "${model.database_id}", 'modelEngineName':"${model.database_name}"}`,
-            );
             // await actions.run(
             //     `CreateEmbeddingsFromDocuments(engine="617d2b2f-77d2-4ace-a2b5-9366a1fead51", filePaths="${fileInfo.fileLocation}") `,
             // );
@@ -210,38 +202,36 @@ export const PolicyPage = () => {
                 finalContent += ` ${content}`;
             }
             const contextDocs = `A context delimited by triple backticks is provided below. This context may contain plain text extracted from paragraphs or images. Tables extracted are represented as a 2D list in the following format - '[[Column Headers], [Comma-separated values in row 1], [Comma-separated values in row 2] ..... [Comma-separated values in row n]]'\\n \`\`\` ${finalContent} \`\`\`\\n ${questionContext}}`;
-            for (let i = 0; i < selectedModel.length; i++) {
-                pixel = `
-                LLM(engine="${
-                    (selectedModel[i] as Model).database_id
-                }" , command=["<encode>${prompt} Question: ${
-                    data.QUESTION
-                }. Context: ${contextDocs}</encode>"], paramValues=[{"temperature":${temperature}}])
-                `;
+            pixel = `
+            LLM(engine="${
+                selectedModel.database_id
+            }" , command=["<encode>${prompt} Question: ${
+                data.QUESTION
+            }. Context: ${contextDocs}</encode>"], paramValues=[{"temperature":${temperature}}])
+            `;
 
-                const LLMresponse = await actions.run<[{ response: string }]>(
-                    pixel,
-                );
+            const LLMresponse = await actions.run<[{ response: string }]>(
+                pixel,
+            );
 
-                const { output: LLMOutput, operationType: LLMOperationType } =
-                    LLMresponse.pixelReturn[0];
+            const { output: LLMOutput, operationType: LLMOperationType } =
+                LLMresponse.pixelReturn[0];
 
-                if (LLMOperationType.indexOf('ERROR') > -1) {
-                    throw new Error(LLMOutput.response);
-                }
-
-                let conclusion = '';
-                if (LLMOutput.response) {
-                    conclusion = LLMOutput.response;
-                }
-                // set answer based on data
-                setAnswer({
-                    question: data.QUESTION,
-                    file: fileInfo.fileName,
-                    conclusion: conclusion,
-                });
-                setIsAnswered(true);
+            if (LLMOperationType.indexOf('ERROR') > -1) {
+                throw new Error(LLMOutput.response);
             }
+
+            let conclusion = '';
+            if (LLMOutput.response) {
+                conclusion = LLMOutput.response;
+            }
+            // set answer based on data
+            setAnswer({
+                question: data.QUESTION,
+                file: fileInfo.fileName,
+                conclusion: conclusion,
+            });
+            setIsAnswered(true);
         } catch (e) {
             if (e) {
                 setError(e);
@@ -290,7 +280,7 @@ export const PolicyPage = () => {
                 }
                 if (Array.isArray(output)) {
                     setModelOptions(output);
-                    setSelectedModel([output[0]]);
+                    setSelectedModel(output[0]);
                 }
             });
 
@@ -377,46 +367,21 @@ export const PolicyPage = () => {
                     </StyledIconButton>
                 </StyledLeftPanel>
             )}
-            <StyledContainer>
-                {answerLog.length === 0 && (
+            <div style={{width:'100%'}}>
+                <StyledContainer>
+
+                    {answerLog.length === 0 && 
                     <StyledTitle>
-                        <Typography
-                            variant="h4"
-                            fontWeight={700}
-                            sx={{ marginBottom: '10px' }}
-                        >
+                        <Typography variant='h4' fontWeight={700} sx={{marginBottom:'10px'}}>
                             Hello {user}!
                         </Typography>
-                        <Typography variant="h5" sx={{ color: '#606060' }}>
-                            I'm here to assist you in answering any complex
-                            policy, operational procedure, or system questions.
+                        <Typography variant='h5' sx={{color:'#606060'}}>
+                            I'm here to assist you in answering any complex policy, operational
+                            procedure, or system questions. 
                         </Typography>
-                    </StyledTitle>
-                )}
-                {/* <StyledPaper variant={'elevation'} elevation={2} square>
-                    <StyledTitle>
-                        <div>
-                            <Typography variant="h6">
-                                {' '}
-                                Hello {user}!{' '}
-                            </Typography>
-                        </div>
-                    </StyledTitle>
-                    <StyledDescription variant="body1">
-                        I'm DocBot! Here to assist you in answering any complex
-                        policy, operational procedure, or system questions.
-                    </StyledDescription>
-                    <StyledDescription variant="body1">
-                        I love working with lot of different data types, such as
-                        policy manuals, system documents, process maps, data
-                        from case databases as inputs, and will happily use the
-                        LLM models you have chosen to provide answers!
-                    </StyledDescription>
- 
-                </StyledPaper> */}
+                    </StyledTitle>}
 
-                {answerLog.length > 0 && (
-                    <Stack gap={1}>
+                    {answerLog.length > 0 && <Stack gap={1}>
                         {answerLog.map((answer) => (
                             <>
                                 <StyledResponseDiv>
@@ -436,27 +401,25 @@ export const PolicyPage = () => {
                                                 style={{
                                                     display: 'flex',
                                                     flexDirection: 'row',
-                                                    justifyContent:
-                                                        'space-between',
-                                                    alignItems: 'center',
+                                                    justifyContent: 'space-between',
+                                                    alignItems: 'center'
                                                 }}
                                             >
                                                 <div>
-                                                    <Typography
-                                                        variant={'body1'}
-                                                    >
+                                                    <Typography variant={'body1'}>
                                                         {answer.question}
                                                     </Typography>
                                                 </div>
-                                                <IconButton
+
+                                                <StyledButton
                                                     onClick={() =>
                                                         navigator.clipboard.writeText(
                                                             answer.question,
                                                         )
                                                     }
                                                 >
-                                                    <ContentCopyIcon />
-                                                </IconButton>{' '}
+                                                    Copy
+                                                </StyledButton>
                                             </div>
                                         </StyledQuestionStack>
                                     </StyledPaper>
@@ -465,7 +428,7 @@ export const PolicyPage = () => {
                                     <StyledAvatar src={BOT_AVATAR} />
                                     <StyledPaper
                                         sx={{
-                                            background: '#FFEE8C',
+                                            background: '#FFF3E0',
                                             borderRadius: '.75rem',
                                             boxShadow: 'none',
                                             padding: '1rem',
@@ -473,19 +436,9 @@ export const PolicyPage = () => {
                                         }}
                                     >
                                         <div>
-                                            {/* <StyledAdditonalInfo
-                                            variant="body2"
-                                            sx={{
-                                                color: 'rgba(0, 0, 0, 0.6)',
-                                            }}
-                                        >
-                                            {answer.file}
-                                        </StyledAdditonalInfo> */}
                                         </div>
                                         <StyledQuestionStack spacing={2}>
-                                            <Box
-                                                sx={{ mb: 2, overflow: 'auto' }}
-                                            >
+                                            <Box sx={{ mb: 2, overflow: 'auto' }}>
                                                 {error && (
                                                     <Alert color="error">
                                                         {error}
@@ -504,43 +457,28 @@ export const PolicyPage = () => {
                                                     <Markdown>
                                                         {answer.conclusion}
                                                     </Markdown>
+                                                    <StyledButton
+                                                        onClick={() =>
+                                                            navigator.clipboard.writeText(
+                                                                answer.conclusion,
+                                                            )
+                                                        }
+                                                    >
+                                                        Copy
+                                                    </StyledButton>
                                                 </div>
                                                 <StyledAccordion>
-                                                    <AccordionSummary
-                                                        sx={{
-                                                            display: 'flex',
-                                                            alignItems:
-                                                                'center',
-                                                            justifyContent:
-                                                                'space-between',
-                                                        }}
-                                                    >
-                                                        <Typography
-                                                            variant="caption"
-                                                            sx={{
-                                                                flexGrow: 1,
-                                                                textAlign:
-                                                                    'right',
-                                                            }}
-                                                        >
+                                                    <AccordionSummary>
+                                                        <Typography variant="caption">
                                                             More Information
                                                         </Typography>
-                                                        <IconButton
-                                                            onClick={() =>
-                                                                navigator.clipboard.writeText(
-                                                                    answer.question,
-                                                                )
-                                                            }
-                                                        >
-                                                            <ContentCopyIcon />
-                                                        </IconButton>
                                                     </AccordionSummary>
                                                     <AccordionDetails>
-                                                        <div>
-                                                            <Typography fontStyle="italic">
-                                                                {answer.file}
-                                                            </Typography>
-                                                        </div>
+                                                    <div>
+                                                    <Typography fontStyle={'italic'}>
+                                                        {answer.file}
+                                                    </Typography>
+                                                    </div>
                                                     </AccordionDetails>
                                                 </StyledAccordion>
                                             </Box>
@@ -552,102 +490,98 @@ export const PolicyPage = () => {
 
                         {/* this is a dummy div so that you can scroll to it */}
                         <div ref={div} />
-                    </Stack>
-                )}
-            </StyledContainer>
-            <StyledQuestionDiv>
-                <Controller
-                    name={'QUESTION'}
-                    control={control}
-                    rules={{ required: true }}
-                    render={({ field }) => {
-                        return (
-                            <StyledPaper elevation={2} square>
-                                <TextField
-                                    autoComplete="off"
-                                    placeholder={
-                                        isAnswered
-                                            ? 'Ask a new question'
-                                            : 'Ask a question here'
-                                    }
-                                    variant="standard"
-                                    fullWidth
-                                    onKeyDown={(e) => {
-                                        if (e.key === 'Enter') {
-                                            ask();
+                    </Stack>}
+                </StyledContainer>
+                <StyledQuestionDiv>
+                    <Controller
+                        name={'QUESTION'}
+                        control={control}
+                        rules={{ required: true }}
+                        render={({ field }) => {
+                            return (
+                                <StyledPaper elevation={2} square sx={{width:'70%'}}>
+                                    <TextField
+                                        autoComplete="off"
+                                        placeholder={"Enter your question here"}
+                                        variant="standard"
+                                        fullWidth
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') {
+                                                ask();
+                                            }
+                                        }}
+                                        value={field.value ? field.value : ''}
+                                        onChange={(e) =>
+                                            // set the value
+                                            field.onChange(e.target.value)
                                         }
-                                    }}
-                                    value={field.value ? field.value : ''}
-                                    onChange={(e) =>
-                                        // set the value
-                                        field.onChange(e.target.value)
-                                    }
-                                    InputProps={{
-                                        disableUnderline: true,
-                                        endAdornment: (
-                                            <>
-                                                <IconButton
-                                                    disabled={isLoading}
-                                                    onClick={ask}
-                                                >
-                                                    <SendIcon
-                                                        sx={{
-                                                            color: 'rgba(0, 0, 0, 0.54)',
-                                                        }}
-                                                    />
-                                                </IconButton>
-                                                <IconButton
-                                                    disabled={isLoading}
-                                                    onClick={handleMenuClick}
-                                                >
-                                                    <MoreVertRoundedIcon
-                                                        sx={{
-                                                            color: 'rgba(0, 0, 0, 0.54)',
-                                                        }}
-                                                    />
-                                                </IconButton>
-                                            </>
-                                        ),
-                                    }}
-                                    sx={{ padding: '10px 10px' }}
-                                />
-                            </StyledPaper>
-                        );
-                    }}
-                />
-                <Menu
-                    open={settingsOpen}
-                    anchorEl={anchorEl}
-                    onClose={() => setSettingsOpen(false)}
-                    anchorOrigin={{
-                        vertical: 'bottom',
-                        horizontal: 'right',
-                    }}
-                >
-                    <MenuItem onClick={() => handleMenuClose('refine')}>
-                        <ListItemIcon>
-                            <TuneRoundedIcon fontSize="small" />
-                        </ListItemIcon>
-                        <ListItemText>Refine Results</ListItemText>
-                    </MenuItem>
-                    <MenuItem onClick={() => handleMenuClose('prompt')}>
-                        <ListItemIcon>
-                            <EditIcon fontSize="small" />
-                        </ListItemIcon>
-                        <ListItemText>Edit Prompt</ListItemText>
-                    </MenuItem>
-                    {answerLog.length > 0 && (
-                        <MenuItem onClick={() => handleMenuClose('download')}>
+                                        InputProps={{
+                                            disableUnderline: true,
+                                            endAdornment: (
+                                                <>
+                                                    <IconButton
+                                                        disabled={isLoading}
+                                                        onClick={ask}
+                                                    >
+                                                        <SendIcon
+                                                            sx={{
+                                                                color: 'rgba(0, 0, 0, 0.54)',
+                                                            }}
+                                                        />
+                                                    </IconButton>
+                                                    <IconButton
+                                                        disabled={isLoading}
+                                                        onClick={handleMenuClick}
+                                                    >
+                                                        <MoreVertRoundedIcon
+                                                            sx={{
+                                                                color: 'rgba(0, 0, 0, 0.54)',
+                                                            }}
+                                                        />
+                                                    </IconButton>
+                                                </>
+                                            ),
+                                        }}
+                                        sx={{ padding: '10px 10px' }}
+                                    />
+                                </StyledPaper>
+                            );
+                        }}
+                    />
+                    <Menu
+                        open={settingsOpen}
+                        anchorEl={anchorEl}
+                        onClose={() => setSettingsOpen(false)}
+                        anchorOrigin={{
+                            vertical: 'bottom',
+                            horizontal: 'right',
+                        }}
+                    >
+                        <MenuItem onClick={() => handleMenuClose('refine')}>
                             <ListItemIcon>
-                                <DownloadIcon fontSize="small" />
+                                <TuneRoundedIcon fontSize="small" />
                             </ListItemIcon>
-                            <ListItemText>Download Answers</ListItemText>
+                            <ListItemText>Refine Results</ListItemText>
                         </MenuItem>
-                    )}
-                </Menu>
-            </StyledQuestionDiv>
+                        <MenuItem onClick={() => handleMenuClose('prompt')}>
+                            <ListItemIcon>
+                                <EditIcon fontSize="small" />
+                            </ListItemIcon>
+                            <ListItemText>Edit Prompt</ListItemText>
+                        </MenuItem>
+                        {answerLog.length > 0 && (
+                            <MenuItem onClick={() => handleMenuClose('download')}>
+                                <ListItemIcon>
+                                    <DownloadIcon fontSize="small" />
+                                </ListItemIcon>
+                                <ListItemText>Download Answers</ListItemText>
+                            </MenuItem>
+                        )}
+                    </Menu>
+                </StyledQuestionDiv>
+            </div>
             {isLoading && <LinearProgress />}
-            {open && (
+            {open &&
                 <PromptModal
                     setOpen={setOpen}
                     prompt={prompt}
@@ -660,8 +594,9 @@ export const PolicyPage = () => {
                     temperature={temperature}
                     setTemperature={setTemperature}
                     answerLog={answerLog}
-                />
-            )}
+                 />
+
+            }
         </StyledLayout>
     );
 };

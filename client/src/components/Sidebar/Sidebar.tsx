@@ -10,13 +10,14 @@ import {
     Stack,
     List,
     Avatar,
+    Tooltip,
     Box,
     Button,
     CircularProgress,
 } from '@mui/material';
 import { Model } from '@/pages/PolicyPage';
 import { useInsight } from '@semoss/sdk-react';
-import { FileUploadOutlined, Close } from '@mui/icons-material';
+import { FileUploadOutlined, Close, QuestionMark } from '@mui/icons-material';
 import { createFilterOptions } from '@mui/material/Autocomplete';
 import SmartToyOutlinedIcon from '@mui/icons-material/SmartToyOutlined';
 import ArrowBackIosNewOutlinedIcon from '@mui/icons-material/ArrowBackIosNewOutlined';
@@ -43,11 +44,6 @@ const StyledTypography = styled(Typography)(({ theme }) => ({
     marginTop: theme.spacing(4),
 }));
 
-const StyledButtonGroup = styled('div')(() => ({
-    display: 'flex',
-    justifyContent: 'flex-end',
-}));
-
 const StyledTitle = styled(Typography)(({ theme }) => ({
     alignItems: 'center',
     marginTop: theme.spacing(2),
@@ -58,7 +54,7 @@ const StyledLink = styled('button')(({ theme }) => ({
     color: theme.palette.background.paper,
     cursor: 'pointer',
     backgroundColor: 'transparent',
-    fontSize: '.75rem',
+    fontSize: '1rem',
     border: '0px',
 }));
 
@@ -78,16 +74,19 @@ const StyledSidebar = styled(Paper)(({ theme }) => ({
         width: '100%',
         maxWidth: '20vw',
     },
-    position: 'absolute',
-    left: '0%',
+    // position: 'absolute',
+    // left: '0%',
     zIndex: 2,
     float: 'left',
+    marginBottom: theme.spacing(1),
+    height: '100%'
 }));
 
 const StyledAutocomplete = styled(Autocomplete)(({ theme }) => ({
     background: theme.palette.background.paper,
     borderRadius: theme.shape.borderRadius,
     backgroundColor: '#ebf5f9',
+    marginTop: '8px'
 }));
 
 const StyledAvatar = styled(Avatar)(({ theme }) => ({
@@ -105,10 +104,19 @@ const StyledDiv = styled('div')(() => ({
 
 const StyledList = styled(List)(({ theme }) => ({
     width: '100%',
-    padding: '8px, 16px, 8px, 16px',
+    padding: '8px',
     borderRadius: theme.shape.borderRadius,
     display: 'flex',
+    alignItems: 'center',
     justifyContent: 'space-between',
+}));
+
+const StyledEmbedList = styled(List)(({ theme }) => ({
+    width: '100%',
+    padding: '8px',
+    borderRadius: theme.shape.borderRadius,
+    display: 'flex',
+    alignItems: 'center',
 }));
 
 const StyledStack = styled(Stack)(({ theme }) => ({}));
@@ -156,8 +164,8 @@ export const Sidebar = ({
                 const pixel = `CreateVectorDatabaseEngine ( database = [ "${newVector}" ] , conDetails = [ { "VECTOR_TYPE" : "FAISS" , "NAME" : "${newVector}","EMBEDDER_ENGINE_ID":"e4449559-bcff-4941-ae72-0e3f18e06660","INDEX_CLASSES":"default","CHUNKING_STRATEGY":"ALL","CONTENT_LENGTH":512,"CONTENT_OVERLAP":20,"DISTANCE_METHOD":"Squared Euclidean (L2) distance","RETAIN_EXTRACTED_TEXT":"false"} ] ) ;`;
                 const response = await actions.run(pixel);
                 const { output, operationType } = response.pixelReturn[0];
-                console.log(output);
                 engine = output;
+                setSelectedVector(engine)
                 if (operationType.indexOf('ERROR') > -1) {
                     throw new Error(output as string);
                 }
@@ -205,13 +213,10 @@ export const Sidebar = ({
     const firstStep = () => {
         return (
             <>
-                <StyledTitle>Select or Create a Vector Repository</StyledTitle>
+                <StyledTitle>Select or Create a Document Repository</StyledTitle>
                 <Typography variant="caption">
-                    If creating a new repository, make sure to select Add
-                    *vector repository name*
+                    Make sure to select Add *name* when creating a new repo.
                 </Typography>
-                <Typography> Select Vector Catalog: </Typography>
-
                 <StyledAutocomplete
                     freeSolo
                     selectOnFocus
@@ -258,13 +263,17 @@ export const Sidebar = ({
                         />
                     )}
                 />
+                    <StyledEmbedList>
+                        <StyledTitle>Embed a document</StyledTitle>
+                        <Tooltip
+                            title="Drag and Drop .pdf, .doc, .docx or .txt files to embed your document repository"
+                        >
+                            <QuestionMark sx={{fontSize:'.75rem'}}/>
+                        </Tooltip>
 
-                <StyledTitle>Embed any new documents</StyledTitle>
-                <Typography variant="caption">
-                    Drag and Drop .csv or .pdf files to embed your vector db
-                </Typography>
+                    </StyledEmbedList>
                 <Dropzone
-                    accept={{ 'text/pdf': ['.pdf'], 'text/csv': ['.csv'] }}
+                    accept={{ 'text/pdf': ['.pdf'], 'text/doc': ['.doc', '.docx'] , 'text/txt':['.txt']}}
                     onDrop={(acceptedFiles, fileRejections) => {
                         if (fileRejections.length > 0) {
                             setFileError(fileRejections[0].errors[0].message);
@@ -297,7 +306,7 @@ export const Sidebar = ({
                                 {...getRootProps({ className: 'dropzone' })}
                             >
                                 <input
-                                    accept=".pdf, .csv"
+                                    accept=".pdf, .txt, .doc, .docx"
                                     {...(getInputProps() as GetInputPropsOptionsRef)}
                                     onClick={(e) => e.stopPropagation()}
                                 />
@@ -341,7 +350,7 @@ export const Sidebar = ({
                                                 sx={{ color: '#40a0ff' }}
                                             />
                                         </Avatar>
-                                        <span style={{ fontSize: '.75rem' }}>
+                                        <span style={{ fontSize: '1rem' }}>
                                             {
                                                 <StyledLink>
                                                     Click to Upload
@@ -353,7 +362,7 @@ export const Sidebar = ({
                                     <Typography
                                         sx={{
                                             display: 'flex',
-                                            fontSize: '10px',
+                                            fontSize: '13px',
                                             paddingTop: '10px',
                                         }}
                                         variant="caption"
@@ -383,14 +392,15 @@ export const Sidebar = ({
     };
     return (
         <StyledSidebar>
+
+            <StyledStack spacing={{xs:1, sm: 1, md:1, l: 3, xl: 3}}>
             <StyledList>
+                <Typography> Select Model: </Typography>
                 <StyledButton onClick={() => setSideOpen(false)}>
                     <ArrowBackIosNewOutlinedIcon />
                 </StyledButton>
             </StyledList>
-
-            <StyledStack spacing={2}>
-                <Typography> Select Model: </Typography>
+                
                 <StyledAutocomplete
                     options={modelOptions}
                     value={selectedModel}
@@ -402,7 +412,6 @@ export const Sidebar = ({
                     renderInput={(params) => (
                         <TextField {...params} variant="outlined" />
                     )}
-                    multiple
                 />
                 {loading ? (
                     <StyledLoadingDiv>
