@@ -32,6 +32,7 @@ export const StyledContainer = styled(Stack)(() => ({
     '&-ms-overflow-style:': {
         display: 'none',
     },
+    // justifyContent: 'center'
 }));
 
 export const StyledTitle = styled('div')(({ theme }) => ({
@@ -110,13 +111,13 @@ export const StyledPaper = styled(Paper)(({ theme }) => ({
 export const StyledLayout = styled(Stack, {
     shouldForwardProp: (prop) => prop !== 'sideOpen',
 })<{ sideOpen: boolean }>(({ theme, sideOpen }) => ({
-    padding: `${theme.spacing(4)} ${
-        sideOpen ? theme.spacing(4) : theme.spacing(6)
-    } ${theme.spacing(4)} ${sideOpen ? '180px' : theme.spacing(6)}`,
-    width: `${sideOpen ? '70vw' : '80vw'}`,
+    // padding: `${theme.spacing(4)} ${
+    //     sideOpen ? theme.spacing(4) : theme.spacing(6)
+    // } ${theme.spacing(4)} ${sideOpen ? '180px' : theme.spacing(6)}`,
+    width: '100%',
     display: 'flex',
-    flexDirection: 'column',
-    overflow: 'hidden',
+    flexDirection: 'row',
+    overflow: 'auto',
 }));
 
 export const StyledLeftPanel = styled(Paper)(({ theme }) => ({
@@ -145,6 +146,7 @@ export const StyledQuestionDiv = styled('div')(({ theme }) => ({
     justifyContent: 'center',
     marginTop: theme.spacing(2),
     textAlign: 'center',
+    width: '100%',
     padding: theme.spacing(0.5),
     [theme.breakpoints.down('sm')]: {
         position: 'relative',

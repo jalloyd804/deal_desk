@@ -26,11 +26,15 @@ const StyledHeader = styled('div')(({ theme }) => ({
     top: '0px',
     left: '0px',
     right: '0px',
-    height: '75px',
+    height: '10%',
+    marginTop: theme.spacing(1),
     display: 'flex',
     alignItems: 'center',
     overflow: 'hidden',
     color: 'black',
+    width: '100%',
+    borderTopLeftRadius: "12px",
+    borderTopRightRadius: '12px',
 }));
 
 const StyledWrapper = styled('div')(({ theme }) => ({
@@ -38,23 +42,29 @@ const StyledWrapper = styled('div')(({ theme }) => ({
     flexDirection: 'column',
     height: '100vh', // Use viewport height
     width: '100%',
+    alignItems: 'center',
     overflow: 'hidden', // Ensure no overflow
-    background: theme.palette.background.paper,
+    background: 'linear-gradient(0deg, rgba(98,84,163,1) 13%, rgba(130,54,140,1) 51%)',
 }));
 
-const StyledMain = styled('div')(() => ({
+const StyledMain = styled('div')(({theme}) => ({
     position: 'relative',
     flex: 1,
     overflow: 'auto',
+    scrollbarWidth:'none'
 }));
 
 const StyledContent = styled('div')(({ theme }) => ({
     display: 'flex',
     justifyContent: 'center',
+    width: '98vw',
+    background: theme.palette.background.paper,
     // height: '100%',
     [theme.breakpoints.down('sm')]: {
         minHeight: 'auto',
     },
+    borderBottomLeftRadius: '12px',
+    borderBottomRightRadius: '12px'
 }));
 
 const StyledDisclaimer = styled('div')(({ theme }) => ({
@@ -107,12 +117,12 @@ export const MainLayout = () => {
     return (
         <>
             <StyledWrapper>
+                <StyledMain>
                 <StyledHeader>
                     <StyledHeaderLogo href="https://www.cancer.gov/">
                         <img src={Logo} alt="Logo" />
                     </StyledHeaderLogo>
                 </StyledHeader>
-                <StyledMain>
                     <StyledContent>
                         <Outlet />
                     </StyledContent>
