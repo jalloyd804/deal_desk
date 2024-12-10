@@ -19,7 +19,7 @@ import {
     MenuItem,
     AccordionSummary,
     Accordion,
-    AccordionDetails
+    AccordionDetails,
 } from '@mui/material';
 import { useForm, Controller } from 'react-hook-form';
 import Button from '@mui/material/Button';
@@ -33,9 +33,10 @@ import MenuOpenOutlinedIcon from '@mui/icons-material/MenuOpenOutlined';
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
 import TuneRoundedIcon from '@mui/icons-material/TuneRounded';
 import EditIcon from '@mui/icons-material/Edit';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import DownloadIcon from '@mui/icons-material/Download';
 import { Markdown } from '@/components/common';
-import {PromptModal} from '../components/PromptModal';
+import { PromptModal } from '../components/PromptModal';
 import {
     StyledContainer,
     StyledStack,
@@ -146,8 +147,8 @@ export const PolicyPage = () => {
         null,
     );
 
-    const loginProviders = Object.keys(system.config.logins)
-    const user = system.config.logins[loginProviders[0]]
+    const loginProviders = Object.keys(system.config.logins);
+    const user = system.config.logins[loginProviders[0]];
 
     // scrolling to the bottom of the container
     const div = useRef(null);
@@ -203,11 +204,7 @@ export const PolicyPage = () => {
             }
             const contextDocs = `A context delimited by triple backticks is provided below. This context may contain plain text extracted from paragraphs or images. Tables extracted are represented as a 2D list in the following format - '[[Column Headers], [Comma-separated values in row 1], [Comma-separated values in row 2] ..... [Comma-separated values in row n]]'\\n \`\`\` ${finalContent} \`\`\`\\n ${questionContext}}`;
             pixel = `
-            LLM(engine="${
-                selectedModel.database_id
-            }" , command=["<encode>${prompt} Question: ${
-                data.QUESTION
-            }. Context: ${contextDocs}</encode>"], paramValues=[{"temperature":${temperature}}])
+            LLM(engine="${selectedModel.database_id}" , command=["<encode>${prompt} Question: ${data.QUESTION}. Context: ${contextDocs}</encode>"], paramValues=[{"temperature":${temperature}}])
             `;
 
             const LLMresponse = await actions.run<[{ response: string }]>(
@@ -367,130 +364,161 @@ export const PolicyPage = () => {
                     </StyledIconButton>
                 </StyledLeftPanel>
             )}
-            <div style={{width:'100%'}}>
+            <div style={{ width: '100%' }}>
                 <StyledContainer>
+                    {answerLog.length === 0 && (
+                        <StyledTitle>
+                            <Typography
+                                variant="h4"
+                                fontWeight={700}
+                            >
+                                Hello {user}!
+                            </Typography>
+                            <Typography variant="h5" sx={{ color: '#606060' }}>
+                                I'm here to assist you in answering any complex
+                                policy, operational procedure, or system
+                                questions.
+                            </Typography>
+                        </StyledTitle>
+                    )}
 
-                    {answerLog.length === 0 && 
-                    <StyledTitle>
-                        <Typography variant='h4' fontWeight={700} sx={{marginBottom:'10px'}}>
-                            Hello {user}!
-                        </Typography>
-                        <Typography variant='h5' sx={{color:'#606060'}}>
-                            I'm here to assist you in answering any complex policy, operational
-                            procedure, or system questions. 
-                        </Typography>
-                    </StyledTitle>}
-
-                    {answerLog.length > 0 && <Stack gap={1}>
-                        {answerLog.map((answer) => (
-                            <>
-                                <StyledResponseDiv>
-                                    <StyledAnswerAvatar src={USER_AVATAR} />
-                                    <StyledPaper
-                                        sx={{
-                                            background: '#ebf5f9',
-                                            borderRadius: '.75rem',
-                                            boxShadow: 'none',
-                                            padding: '1rem',
-                                            fontSize: '1rem',
-                                        }}
-                                        square
-                                    >
-                                        <StyledQuestionStack>
-                                            <div
-                                                style={{
-                                                    display: 'flex',
-                                                    flexDirection: 'row',
-                                                    justifyContent: 'space-between',
-                                                    alignItems: 'center'
-                                                }}
-                                            >
-                                                <div>
-                                                    <Typography variant={'body1'}>
-                                                        {answer.question}
-                                                    </Typography>
-                                                </div>
-
-                                                <StyledButton
-                                                    onClick={() =>
-                                                        navigator.clipboard.writeText(
-                                                            answer.question,
-                                                        )
-                                                    }
-                                                >
-                                                    Copy
-                                                </StyledButton>
-                                            </div>
-                                        </StyledQuestionStack>
-                                    </StyledPaper>
-                                </StyledResponseDiv>
-                                <StyledResponseDiv>
-                                    <StyledAvatar src={BOT_AVATAR} />
-                                    <StyledPaper
-                                        sx={{
-                                            background: '#FFF3E0',
-                                            borderRadius: '.75rem',
-                                            boxShadow: 'none',
-                                            padding: '1rem',
-                                            fontSize: '1rem',
-                                        }}
-                                    >
-                                        <div>
-                                        </div>
-                                        <StyledQuestionStack spacing={2}>
-                                            <Box sx={{ mb: 2, overflow: 'auto' }}>
-                                                {error && (
-                                                    <Alert color="error">
-                                                        {error}
-                                                    </Alert>
-                                                )}
+                    {answerLog.length > 0 && (
+                        <Stack gap={1} sx={{ padding: '1rem' }}>
+                            {answerLog.map((answer) => (
+                                <>
+                                    <StyledResponseDiv>
+                                        <StyledAnswerAvatar src={USER_AVATAR} />
+                                        <StyledPaper
+                                            sx={{
+                                                background: '#ebf5f9',
+                                                borderRadius: '.75rem',
+                                                boxShadow: 'none',
+                                                padding: '1rem',
+                                                fontSize: '1rem',
+                                            }}
+                                            square
+                                        >
+                                            <StyledQuestionStack>
                                                 <div
                                                     style={{
-                                                        marginBottom: '10px',
                                                         display: 'flex',
                                                         flexDirection: 'row',
                                                         justifyContent:
                                                             'space-between',
+                                                        alignItems: 'center',
                                                     }}
-                                                    key={Math.random()}
                                                 >
-                                                    <Markdown>
-                                                        {answer.conclusion}
-                                                    </Markdown>
-                                                    <StyledButton
+                                                    <div>
+                                                        <Typography
+                                                            variant={'body1'}
+                                                        >
+                                                            {answer.question}
+                                                        </Typography>
+                                                    </div>
+                                                    <IconButton
                                                         onClick={() =>
                                                             navigator.clipboard.writeText(
-                                                                answer.conclusion,
+                                                                answer.question,
                                                             )
                                                         }
                                                     >
-                                                        Copy
-                                                    </StyledButton>
+                                                        <ContentCopyIcon />
+                                                    </IconButton>{' '}
                                                 </div>
-                                                <StyledAccordion>
-                                                    <AccordionSummary>
-                                                        <Typography variant="caption">
-                                                            More Information
-                                                        </Typography>
-                                                    </AccordionSummary>
-                                                    <AccordionDetails>
-                                                    <div>
-                                                    <Typography fontStyle={'italic'}>
-                                                        {answer.file}
-                                                    </Typography>
+                                            </StyledQuestionStack>
+                                        </StyledPaper>
+                                    </StyledResponseDiv>
+                                    <StyledResponseDiv>
+                                        <StyledAvatar src={BOT_AVATAR} />
+                                        <StyledPaper
+                                            sx={{
+                                                background: '#FFF3E0',
+                                                borderRadius: '.75rem',
+                                                boxShadow: 'none',
+                                                padding: '1rem',
+                                                fontSize: '1rem',
+                                            }}
+                                        >
+                                            <div></div>
+                                            <StyledQuestionStack spacing={2}>
+                                                <Box
+                                                    sx={{
+                                                        mb: 2,
+                                                        overflow: 'auto',
+                                                    }}
+                                                >
+                                                    {error && (
+                                                        <Alert color="error">
+                                                            {error}
+                                                        </Alert>
+                                                    )}
+                                                    <div
+                                                        style={{
+                                                            display: 'flex',
+                                                            flexDirection:
+                                                                'row',
+                                                            justifyContent:
+                                                                'space-between',
+                                                        }}
+                                                        key={Math.random()}
+                                                    >
+                                                        <Markdown>
+                                                            {answer.conclusion}
+                                                        </Markdown>
                                                     </div>
-                                                    </AccordionDetails>
-                                                </StyledAccordion>
-                                            </Box>
-                                        </StyledQuestionStack>
-                                    </StyledPaper>
-                                </StyledResponseDiv>
-                            </>
-                        ))}
+                                                    <StyledAccordion>
+                                                        <AccordionSummary
+                                                            sx={{
+                                                                display: 'flex',
+                                                                alignItems:
+                                                                    'center',
+                                                                justifyContent:
+                                                                    'space-between',
+                                                            }}
+                                                        >
+                                                            <Typography
+                                                                variant="caption"
+                                                                sx={{
+                                                                    flexGrow: 1,
+                                                                    textAlign:
+                                                                        'right',
+                                                                    paddingRight:
+                                                                        '.5rem',
+                                                                }}
+                                                            >
+                                                                More Information
+                                                            </Typography>
+                                                            <IconButton
+                                                                onClick={() =>
+                                                                    navigator.clipboard.writeText(
+                                                                        answer.conclusion,
+                                                                    )
+                                                                }
+                                                            >
+                                                                <ContentCopyIcon />
+                                                            </IconButton>
+                                                        </AccordionSummary>
+                                                        <AccordionDetails>
+                                                            <div>
+                                                                <Typography fontStyle="italic">
+                                                                    {
+                                                                        answer.file
+                                                                    }
+                                                                </Typography>
+                                                            </div>
+                                                        </AccordionDetails>
+                                                    </StyledAccordion>
+                                                </Box>
+                                            </StyledQuestionStack>
+                                        </StyledPaper>
+                                    </StyledResponseDiv>
+                                </>
+                            ))}
 
-                        {/* this is a dummy div so that you can scroll to it */}
-                        <div ref={div} />
-                    </Stack>}
+                            {/* this is a dummy div so that you can scroll to it */}
+                            <div ref={div} />
+                        </Stack>
+                    )}
                 </StyledContainer>
                 <StyledQuestionDiv>
                     <Controller
@@ -499,10 +527,14 @@ export const PolicyPage = () => {
                         rules={{ required: true }}
                         render={({ field }) => {
                             return (
-                                <StyledPaper elevation={2} square sx={{width:'70%'}}>
+                                <StyledPaper
+                                    elevation={2}
+                                    square
+                                    sx={{ width: '70%' }}
+                                >
                                     <TextField
                                         autoComplete="off"
-                                        placeholder={"Enter your question here"}
+                                        placeholder={'Enter your question here'}
                                         variant="standard"
                                         fullWidth
                                         onKeyDown={(e) => {
@@ -531,7 +563,9 @@ export const PolicyPage = () => {
                                                     </IconButton>
                                                     <IconButton
                                                         disabled={isLoading}
-                                                        onClick={handleMenuClick}
+                                                        onClick={
+                                                            handleMenuClick
+                                                        }
                                                     >
                                                         <MoreVertRoundedIcon
                                                             sx={{
@@ -570,7 +604,9 @@ export const PolicyPage = () => {
                             <ListItemText>Edit Prompt</ListItemText>
                         </MenuItem>
                         {answerLog.length > 0 && (
-                            <MenuItem onClick={() => handleMenuClose('download')}>
+                            <MenuItem
+                                onClick={() => handleMenuClose('download')}
+                            >
                                 <ListItemIcon>
                                     <DownloadIcon fontSize="small" />
                                 </ListItemIcon>
@@ -581,7 +617,7 @@ export const PolicyPage = () => {
                 </StyledQuestionDiv>
             </div>
             {isLoading && <LinearProgress />}
-            {open &&
+            {open && (
                 <PromptModal
                     setOpen={setOpen}
                     prompt={prompt}
@@ -594,9 +630,8 @@ export const PolicyPage = () => {
                     temperature={temperature}
                     setTemperature={setTemperature}
                     answerLog={answerLog}
-                 />
-
-            }
+                />
+            )}
         </StyledLayout>
     );
 };
