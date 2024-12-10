@@ -79,7 +79,6 @@ const StyledSidebar = styled(Paper)(({ theme }) => ({
     zIndex: 2,
     float: 'left',
     marginBottom: theme.spacing(1),
-    height: '100%',
 }));
 
 const StyledAutocomplete = styled(Autocomplete)(({ theme }) => ({
