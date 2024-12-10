@@ -21,9 +21,10 @@ import {
 } from '@mui/material';
 
 export const StyledContainer = styled(Stack)(() => ({
-    height: '80vh',
-    overflowY: 'scroll',
+    height: '60vh',
+    overflowY: 'auto',
     display: 'flex',
+    justifyContent: 'flex-start',
     flexDirection: 'column',
     scrollbarWidth: 'none',
     '&::-webkit-scrollbar': {
@@ -36,14 +37,14 @@ export const StyledContainer = styled(Stack)(() => ({
 }));
 
 export const StyledTitle = styled('div')(({ theme }) => ({
-  color: '#6254a3',
-  padding: theme.spacing(2),
-  borderTopLeftRadius: theme.spacing(2),
-  borderTopRightRadius: theme.spacing(2),
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  alignItems: 'center'
+    color: '#6254a3',
+    padding: theme.spacing(2),
+    borderTopLeftRadius: theme.spacing(2),
+    borderTopRightRadius: theme.spacing(2),
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
 }));
 
 export const StyledAvatar = styled(Avatar)(({ theme }) => ({
@@ -74,15 +75,18 @@ export const StyledAnswerAvatar = styled(Avatar)(({ theme }) => ({
 
 export const StyledQuestionStack = styled(Stack)(({ theme }) => ({
     paddingLeft: theme.spacing(2),
-    paddingBottom: theme.spacing(2),
+    // paddingBottom: theme.spacing(2),
 }));
 
-export const StyledAccordion = styled(Accordion)(()=> ({
-  background:'transparent',
-  '&:before': {
-                display: 'none',
-            }
-}))
+export const StyledAccordion = styled(Accordion)(() => ({
+    background: 'transparent',
+    '&:before': {
+        display: 'none',
+    },
+    boxShadow: 'none',
+    padding: 'none',
+    alignItems: 'self-start'
+}));
 
 export const StyledStack = styled(Stack)(({ theme }) => ({
     padding: theme.spacing(2),
@@ -115,9 +119,10 @@ export const StyledLayout = styled(Stack, {
     //     sideOpen ? theme.spacing(4) : theme.spacing(6)
     // } ${theme.spacing(4)} ${sideOpen ? '180px' : theme.spacing(6)}`,
     width: '100%',
+    height: '100%',
     display: 'flex',
     flexDirection: 'row',
-    overflow: 'auto',
+    overflow: 'hidden',
 }));
 
 export const StyledLeftPanel = styled(Paper)(({ theme }) => ({
@@ -144,7 +149,7 @@ export const StyledQuestionDiv = styled('div')(({ theme }) => ({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: theme.spacing(2),
+    // marginTop: theme.spacing(2),
     textAlign: 'center',
     width: '100%',
     padding: theme.spacing(0.5),

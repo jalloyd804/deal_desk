@@ -2,7 +2,6 @@ import { Outlet } from 'react-router-dom';
 import { Alert, Typography, styled } from '@mui/material';
 import Logo from '@/assets/img/logo.svg';
 import Logo_Powered from '@/assets/img/logo_powered.svg';
-import { relative } from 'path';
 
 const StyledHeaderLogo = styled('a')(({ theme }) => ({
     display: 'inline-flex',
@@ -27,13 +26,14 @@ const StyledHeader = styled('div')(({ theme }) => ({
     left: '0px',
     right: '0px',
     height: '10%',
-    marginTop: theme.spacing(1),
+    // marginTop: theme.spacing(1),
     display: 'flex',
+    flexDirection: 'row',
     alignItems: 'center',
     overflow: 'hidden',
     color: 'black',
     width: '100%',
-    borderTopLeftRadius: "12px",
+    borderTopLeftRadius: '12px',
     borderTopRightRadius: '12px',
 }));
 
@@ -41,17 +41,20 @@ const StyledWrapper = styled('div')(({ theme }) => ({
     display: 'flex',
     flexDirection: 'column',
     height: '100vh', // Use viewport height
-    width: '100%',
+    width: '100vw',
     alignItems: 'center',
-    overflow: 'hidden', // Ensure no overflow
-    background: 'linear-gradient(0deg, rgba(98,84,163,1) 13%, rgba(130,54,140,1) 51%)',
+    overflow: 'auto', // Ensure no overflow
+    justifyContent: 'flex-start',
+    background:
+        'linear-gradient(0deg, rgba(98,84,163,1) 13%, rgba(130,54,140,1) 51%)',
+    padding: '2rem 1rem 0rem 1rem',
 }));
 
-const StyledMain = styled('div')(({theme}) => ({
+const StyledMain = styled('div')(({ theme }) => ({
     position: 'relative',
     flex: 1,
     overflow: 'auto',
-    scrollbarWidth:'none'
+    scrollbarWidth: 'none',
 }));
 
 const StyledContent = styled('div')(({ theme }) => ({
@@ -59,12 +62,13 @@ const StyledContent = styled('div')(({ theme }) => ({
     justifyContent: 'center',
     width: '98vw',
     background: theme.palette.background.paper,
-    // height: '100%',
+    height: 'calc(100% - 75px - 40px)', // Adjust height to fit within viewport
     [theme.breakpoints.down('sm')]: {
         minHeight: 'auto',
     },
     borderBottomLeftRadius: '12px',
-    borderBottomRightRadius: '12px'
+    borderBottomRightRadius: '12px',
+    padding: '10px',
 }));
 
 const StyledDisclaimer = styled('div')(({ theme }) => ({
@@ -81,35 +85,6 @@ const StyledDisclaimer = styled('div')(({ theme }) => ({
     },
 }));
 
-const StyledFooter = styled('div')(({ theme }) => ({
-    position: 'relative',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: theme.spacing(1),
-    padding: theme.spacing(1),
-    height: '40px', // Fixed height for footer
-    width: '100%',
-    background: '#00314b',
-    marginTop: '10px',
-}));
-
-const StyledFooterLogo = styled('a')(({ theme }) => ({
-    display: 'inline-flex',
-    textDecoration: 'none',
-    alignItems: 'center',
-    gap: theme.spacing(0.5),
-    color: theme.palette.background.paper,
-    fontSize: theme.typography.caption.fontSize,
-    overflow: 'hidden',
-    '& > img': {
-        height: theme.spacing(3),
-    },
-    ':visited': {
-        color: 'inherit',
-    },
-}));
-
 /**
  * Wrap the routes
  */
@@ -118,25 +93,14 @@ export const MainLayout = () => {
         <>
             <StyledWrapper>
                 <StyledMain>
-                <StyledHeader>
-                    <StyledHeaderLogo href="https://www.cancer.gov/">
-                        <img src={Logo} alt="Logo" />
-                    </StyledHeaderLogo>
-                </StyledHeader>
+                    <StyledHeader>
+                        <StyledHeaderLogo href="https://www.cancer.gov/">
+                            <img src={Logo} alt="Logo" />
+                        </StyledHeaderLogo>
+                    </StyledHeader>
                     <StyledContent>
                         <Outlet />
                     </StyledContent>
-                    <StyledFooter>
-                        <StyledFooterLogo
-                            title="CfG.AI"
-                            href="https://deloitte.com"
-                            target="_blank"
-                            rel="noreferrer"
-                        >
-                            Powered By
-                            <img src={Logo_Powered} alt="Powered By Logo" />
-                        </StyledFooterLogo>
-                    </StyledFooter>
                 </StyledMain>
             </StyledWrapper>
         </>
