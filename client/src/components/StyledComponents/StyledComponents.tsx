@@ -85,6 +85,7 @@ export const StyledAccordion = styled(Accordion)(() => ({
     },
     boxShadow: 'none',
     padding: 'none',
+    alignItems: 'self-start'
 }));
 
 export const StyledStack = styled(Stack)(({ theme }) => ({

@@ -302,8 +302,8 @@ export const Sidebar = ({
                         >
                             <div
                                 style={{
-                                    paddingTop: '36px',
-                                    paddingBottom: '36px',
+                                    paddingTop: '1rem',
+                                    paddingBottom: '1rem',
                                 }}
                                 {...getRootProps({ className: 'dropzone' })}
                             >
@@ -394,7 +394,7 @@ export const Sidebar = ({
     };
     return (
         <StyledSidebar>
-            <StyledStack spacing={{ xs: 1, sm: 1, md: 1, l: 3, xl: 3 }}>
+            <StyledStack spacing={{ xs: 1, sm: 1, md: 1, l: 2, smart: 2 }}>
                 <StyledList>
                     <Typography> Select Model: </Typography>
                     <StyledButton onClick={() => setSideOpen(false)}>

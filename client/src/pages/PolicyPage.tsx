@@ -59,8 +59,6 @@ import {
     StyledAnswerAvatar,
     StyledButton,
 } from '../components/StyledComponents/StyledComponents';
-import BOT_AVATAR from '../assets/img/AvatarCust-XLarge.png';
-import USER_AVATAR from '../assets/img/AvatarCust-Med.png';
 
 export interface Model {
     database_name?: string;
@@ -368,10 +366,7 @@ export const PolicyPage = () => {
                 <StyledContainer>
                     {answerLog.length === 0 && (
                         <StyledTitle>
-                            <Typography
-                                variant="h4"
-                                fontWeight={700}
-                            >
+                            <Typography variant="h4" fontWeight={700}>
                                 Hello {user}!
                             </Typography>
                             <Typography variant="h5" sx={{ color: '#606060' }}>
@@ -387,7 +382,9 @@ export const PolicyPage = () => {
                             {answerLog.map((answer) => (
                                 <>
                                     <StyledResponseDiv>
-                                        <StyledAnswerAvatar src={USER_AVATAR} />
+                                        <StyledAnswerAvatar>
+                                            <PersonIcon />
+                                        </StyledAnswerAvatar>
                                         <StyledPaper
                                             sx={{
                                                 background: '#ebf5f9',
@@ -429,7 +426,17 @@ export const PolicyPage = () => {
                                         </StyledPaper>
                                     </StyledResponseDiv>
                                     <StyledResponseDiv>
-                                        <StyledAvatar src={BOT_AVATAR} />
+                                        <StyledAvatar
+                                            sx={{
+                                                border: '2px solid rgba(42,114,165,1)',
+                                            }}
+                                        >
+                                            <SmartToyOutlinedIcon
+                                                sx={{
+                                                    color: 'rgba(42,114,165,1)',
+                                                }}
+                                            />
+                                        </StyledAvatar>
                                         <StyledPaper
                                             sx={{
                                                 background: '#FFF3E0',
@@ -489,6 +496,10 @@ export const PolicyPage = () => {
                                                                 More Information
                                                             </Typography>
                                                             <IconButton
+                                                                sx={{
+                                                                    padding:
+                                                                        '4px',
+                                                                }}
                                                                 onClick={() =>
                                                                     navigator.clipboard.writeText(
                                                                         answer.conclusion,
@@ -530,7 +541,7 @@ export const PolicyPage = () => {
                                 <StyledPaper
                                     elevation={2}
                                     square
-                                    sx={{ width: '70%' }}
+                                    sx={{ width: '70%', paddingBottom: '0px' }}
                                 >
                                     <TextField
                                         autoComplete="off"
@@ -615,23 +626,27 @@ export const PolicyPage = () => {
                         )}
                     </Menu>
                 </StyledQuestionDiv>
+                <Box sx={{padding: '0 2rem'}}>
+                    {isLoading && <LinearProgress />}
+                    {open && (
+                        <Modal open={open} onClose={() => setOpen(false)}>
+                            <PromptModal
+                                prompt={prompt}
+                                setOpen={setOpen}
+                                setPrompt={setPrompt}
+                                questionContext={questionContext}
+                                setQuestionContext={setQuestionContext}
+                                context={context}
+                                limit={limit}
+                                setLimit={setLimit}
+                                temperature={temperature}
+                                setTemperature={setTemperature}
+                                answerLog={answerLog}
+                            />
+                        </Modal>
+                    )}
+                </Box>
             </div>
-            {isLoading && <LinearProgress />}
-            {open && (
-                <PromptModal
-                    setOpen={setOpen}
-                    prompt={prompt}
-                    setPrompt={setPrompt}
-                    questionContext={questionContext}
-                    setQuestionContext={setQuestionContext}
-                    context={context}
-                    limit={limit}
-                    setLimit={setLimit}
-                    temperature={temperature}
-                    setTemperature={setTemperature}
-                    answerLog={answerLog}
-                />
-            )}
         </StyledLayout>
     );
 };

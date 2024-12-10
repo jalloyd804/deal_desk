@@ -47,7 +47,7 @@ const StyledWrapper = styled('div')(({ theme }) => ({
     justifyContent: 'flex-start',
     background:
         'linear-gradient(0deg, rgba(98,84,163,1) 13%, rgba(130,54,140,1) 51%)',
-    padding: '1rem',
+    padding: '2rem 1rem 0rem 1rem',
 }));
 
 const StyledMain = styled('div')(({ theme }) => ({
