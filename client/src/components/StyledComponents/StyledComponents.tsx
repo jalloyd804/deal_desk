@@ -21,7 +21,7 @@ import {
 } from '@mui/material';
 
 export const StyledContainer = styled(Stack)(() => ({
-    height: '65vh',
+    height: '60vh',
     overflowY: 'auto',
     display: 'flex',
     justifyContent: 'flex-start',

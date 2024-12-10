@@ -43,7 +43,7 @@ const StyledWrapper = styled('div')(({ theme }) => ({
     height: '100vh', // Use viewport height
     width: '100vw',
     alignItems: 'center',
-    overflow: 'hidden', // Ensure no overflow
+    overflow: 'auto', // Ensure no overflow
     justifyContent: 'flex-start',
     background:
         'linear-gradient(0deg, rgba(98,84,163,1) 13%, rgba(130,54,140,1) 51%)',
