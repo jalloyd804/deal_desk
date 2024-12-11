@@ -21,6 +21,7 @@ const StyledHeaderLogo = styled('a')(({ theme }) => ({
 }));
 
 const StyledHeader = styled('div')(({ theme }) => ({
+    boxSizing: 'border-box',
     background: theme.palette.background.paper,
     top: '0px',
     left: '0px',
@@ -38,13 +39,12 @@ const StyledHeader = styled('div')(({ theme }) => ({
 const StyledWrapper = styled('div')(({ theme }) => ({
     display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'center',
-    overflow: 'visible',
-    background:
-        'linear-gradient(0deg, rgba(98,84,163,1) 13%, rgba(130,54,140,1) 51%)',
+    justifyContent: 'flex-start',
+    background: 'linear-gradient(0deg, rgba(98,84,163,1) 13%, rgba(130,54,140,1) 51%)',
     padding: '1rem',
-    width: '100vw !important',
-    height: '100vh !important',  
+    height: '100vh', // Ensure the wrapper takes the full viewport height
+    overflow: 'hidden', // Prevent the wrapper from scrolling
+    boxSizing: 'border-box',
     '@media (min-width: 800px)': {
         height: 'auto',
     },
@@ -52,18 +52,18 @@ const StyledWrapper = styled('div')(({ theme }) => ({
 
 const StyledMain = styled('div')(({ theme }) => ({
     display: 'flex',
-    justifyContent: 'center',
     flexDirection: 'column',
     flex: 1,
-    overflow: 'visible', 
+    boxSizing: 'border-box',
+    overflow: 'visible', // Allow the main content to scroll if it overflows
     scrollbarWidth: 'none',
 }));
 
 const StyledContent = styled('div')(({ theme }) => ({
     display: 'flex',
     justifyContent: 'center',
-    overflow: 'visible',
     background: theme.palette.background.paper,
+    flex: 1, // Ensure the content takes the remaining space
     [theme.breakpoints.down('sm')]: {
         minHeight: 'auto',
     },
@@ -93,12 +93,12 @@ export const MainLayout = () => {
     return (
         <>
             <StyledWrapper>
+                <StyledHeader>
+                    <StyledHeaderLogo href="https://www.cancer.gov/">
+                        <img src={Logo} alt="Logo" />
+                    </StyledHeaderLogo>
+                </StyledHeader>
                 <StyledMain>
-                    <StyledHeader>
-                        <StyledHeaderLogo href="https://www.cancer.gov/">
-                            <img src={Logo} alt="Logo" />
-                        </StyledHeaderLogo>
-                    </StyledHeader>
                     <StyledContent>
                         <Outlet />
                     </StyledContent>

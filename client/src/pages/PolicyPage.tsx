@@ -128,6 +128,10 @@ export const PolicyPage = () => {
         },
     });
 
+    //Question list from the python
+    const [questionList, setQuestionList] = useState<Record<string, any>>({});
+    const [responseQuestions, setResponseQuestions] = useState<string[]>([]);
+
     const [limit, setLimit] = useState<number>(3);
     const [temperature, setTemperature] = useState<number>(0.1);
 
@@ -314,12 +318,6 @@ export const PolicyPage = () => {
         }
     }, [answer]);
 
-    useEffect(() => {
-        if(answerLog.length > 0){
-            setAnswerLog([])
-        }
-    },[selectedVector])
-
     const handleAlertClose = (event, reason) => {
         if (reason === 'clickaway') {
             return;
@@ -486,18 +484,16 @@ export const PolicyPage = () => {
                                                         </Markdown>
                                                     </div>
                                                     <StyledAccordion>
-                                                        <Box    sx={{
+                                                        <AccordionSummary
+                                                            sx={{
                                                                 display: 'flex',
                                                                 alignItems:
                                                                     'flex-end',
                                                                 justifyContent:
                                                                     'space-between',
                                                                 padding: '0',
-                                                            }}>
-
-                                                        </Box>
-                                                        <AccordionSummary>
-                                                   
+                                                            }}
+                                                        >
                                                             <Typography
                                                                 variant="caption"
                                                                 sx={{
@@ -560,11 +556,7 @@ export const PolicyPage = () => {
                                 <StyledPaper
                                     elevation={2}
                                     square
-                                    sx={{
-                                        width: '70%',
-                                        paddingBottom: '0px',
-                                        marginBottom: '1rem',
-                                    }}
+                                    sx={{ width: '70%', paddingBottom: '0px', marginBottom: '1rem' }}
                                 >
                                     <TextField
                                         autoComplete="off"
@@ -595,7 +587,7 @@ export const PolicyPage = () => {
                                                             }}
                                                         />
                                                     </IconButton>
-                                                    {/* <IconButton
+                                                    <IconButton
                                                         disabled={isLoading}
                                                         onClick={
                                                             handleMenuClick
@@ -606,7 +598,7 @@ export const PolicyPage = () => {
                                                                 color: 'rgba(0, 0, 0, 0.54)',
                                                             }}
                                                         />
-                                                    </IconButton> */}
+                                                    </IconButton>
                                                 </>
                                             ),
                                         }}
@@ -651,25 +643,27 @@ export const PolicyPage = () => {
                 </StyledQuestionDiv>
                 <Box sx={{ padding: '0 2rem' }}>
                     {isLoading && <LinearProgress />}
-                    {/* {open && (
-                        // <Modal open={open} onClose={() => setOpen(false)}>
-                        //     <PromptModal
-                        //         prompt={prompt}
-                        //         setOpen={setOpen}
-                        //         setPrompt={setPrompt}
-                        //         questionContext={questionContext}
-                        //         setQuestionContext={setQuestionContext}
-                        //         context={context}
-                        //         limit={limit}
-                        //         setLimit={setLimit}
-                        //         temperature={temperature}
-                        //         setTemperature={setTemperature}
-                        //         answerLog={answerLog}
-                        //     />
-                        // </Modal>
-                    )} */}
+                    {open && (
+                        <Modal open={open} onClose={() => setOpen(false)}>
+                            <PromptModal
+                                prompt={prompt}
+                                setOpen={setOpen}
+                                setPrompt={setPrompt}
+                                questionContext={questionContext}
+                                setQuestionContext={setQuestionContext}
+                                context={context}
+                                limit={limit}
+                                setLimit={setLimit}
+                                temperature={temperature}
+                                setTemperature={setTemperature}
+                                answerLog={answerLog}
+                            />
+                        </Modal>
+                    )}
                 </Box>
             </div>
         </StyledLayout>
     );
 };
+
+
