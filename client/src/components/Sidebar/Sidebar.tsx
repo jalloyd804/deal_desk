@@ -68,13 +68,10 @@ const StyledSidebar = styled(Paper)(({ theme }) => ({
     color: theme.palette.background.paper,
     [theme.breakpoints.down('md')]: {
         zIndex: open ? theme.zIndex.drawer + 2 : -1,
-        width: '100%',
         maxWidth: '20vw',
         flexDirection: 'flex-start',
         position: 'relative',
     },
-    // position: 'absolute',
-    // left: '0%',
     zIndex: 2,
     justifyContent: 'flex-start',
 }));
@@ -376,10 +373,10 @@ export const Sidebar = ({
                     sx={{
                         display: 'flex',
                         marginTop: '0',
-                        flexWrap: 'nowrap', // Ensure no wrapping
-                        overflow: 'hidden', // Hide overflow
-                        justifyContent: 'space-between', // Space between elements
-                        alignItems: 'center', // Center items vertically
+                        flexWrap: 'nowrap',
+                        overflow: 'hidden',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
                     }}
                 >
                     <Typography
@@ -388,7 +385,7 @@ export const Sidebar = ({
                             flex: '1 1 auto',
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
-                            marginRight: '8px', // Add some space between text and button
+                            marginRight: '8px',
                         }}
                     >
                         {file?.name}
