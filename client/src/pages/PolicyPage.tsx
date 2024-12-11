@@ -556,7 +556,11 @@ export const PolicyPage = () => {
                                 <StyledPaper
                                     elevation={2}
                                     square
-                                    sx={{ width: '70%', paddingBottom: '0px' }}
+                                    sx={{
+                                        width: '70%',
+                                        paddingBottom: '0px',
+                                        marginBottom: '1rem',
+                                    }}
                                 >
                                     <TextField
                                         autoComplete="off"
@@ -665,5 +669,3 @@ export const PolicyPage = () => {
         </StyledLayout>
     );
 };
-
-

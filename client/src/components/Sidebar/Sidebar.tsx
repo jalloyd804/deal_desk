@@ -68,7 +68,6 @@ const StyledSidebar = styled(Paper)(({ theme }) => ({
     color: theme.palette.background.paper,
     [theme.breakpoints.down('md')]: {
         zIndex: open ? theme.zIndex.drawer + 2 : -1,
-        maxWidth: '20vw',
         flexDirection: 'flex-start',
         position: 'relative',
     },
