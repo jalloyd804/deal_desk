@@ -40,10 +40,10 @@ const StyledHeader = styled('div')(({ theme }) => ({
 const StyledWrapper = styled('div')(({ theme }) => ({
     display: 'flex',
     flexDirection: 'column',
-    height: '100vh', // Use viewport height
+    height: '100vh', 
     width: '100vw',
     alignItems: 'center',
-    overflow: 'auto', // Ensure no overflow
+    overflow: 'visible', 
     justifyContent: 'flex-start',
     background:
         'linear-gradient(0deg, rgba(98,84,163,1) 13%, rgba(130,54,140,1) 51%)',

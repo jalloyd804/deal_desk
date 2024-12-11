@@ -41,12 +41,12 @@ const StyledLoadingDiv = styled('div')(() => ({
 }));
 
 const StyledTypography = styled(Typography)(({ theme }) => ({
-    marginTop: theme.spacing(4),
+    marginTop: 0,
 }));
 
 const StyledTitle = styled(Typography)(({ theme }) => ({
     alignItems: 'center',
-    marginTop: theme.spacing(2),
+    marginTop: '0',
 }));
 
 const StyledLink = styled('button')(({ theme }) => ({
@@ -61,7 +61,6 @@ const StyledLink = styled('button')(({ theme }) => ({
 const StyledSidebar = styled(Paper)(({ theme }) => ({
     display: 'flex',
     flexDirection: 'column',
-    width: '20vw',
     borderRadius: '.75rem',
     padding: theme.spacing(2),
     background:
@@ -72,20 +71,19 @@ const StyledSidebar = styled(Paper)(({ theme }) => ({
         width: '100%',
         maxWidth: '20vw',
         flexDirection: 'flex-start',
-        position: 'relative'
+        position: 'relative',
     },
     // position: 'absolute',
     // left: '0%',
     zIndex: 2,
-    float: 'left',
-    marginBottom: theme.spacing(1),
+    justifyContent: 'flex-start',
 }));
 
 const StyledAutocomplete = styled(Autocomplete)(({ theme }) => ({
     background: theme.palette.background.paper,
     borderRadius: theme.shape.borderRadius,
     backgroundColor: '#ebf5f9',
-    marginTop: '8px',
+    marginTop: '0',
 }));
 
 const StyledAvatar = styled(Avatar)(({ theme }) => ({
@@ -118,7 +116,9 @@ const StyledEmbedList = styled(List)(({ theme }) => ({
     alignItems: 'center',
 }));
 
-const StyledStack = styled(Stack)(({ theme }) => ({}));
+const StyledStack = styled(Stack)(({ theme }) => ({
+    display: 'inline-flex',
+}));
 
 const StyledButtonLink = styled('button')(({ theme }) => ({
     display: 'inline-block',
@@ -266,9 +266,6 @@ export const Sidebar = ({
                 />
                 <StyledEmbedList>
                     <StyledTitle>Embed a document</StyledTitle>
-                    <Tooltip title="Drag and Drop .pdf, .doc, .docx or .txt files to embed your document repository">
-                        <QuestionMark sx={{ fontSize: '.75rem' }} />
-                    </Tooltip>
                 </StyledEmbedList>
                 <Dropzone
                     accept={{
@@ -292,8 +289,7 @@ export const Sidebar = ({
                                 backgroundImage: `url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='16' ry='16' stroke='%23333' stroke-width='1' stroke-dasharray='6%2c 14' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e")`,
                                 borderRadius: '16px',
                                 borderColor: 'rgba(0,0,0,0.23)',
-                                marginTop: '16px',
-                                marginBottom: '16px',
+                                // marginBottom: '16px',
                                 display: 'flex',
                                 flexDirection: 'row',
                                 alignItems: 'center',
@@ -376,19 +372,36 @@ export const Sidebar = ({
                         </Container>
                     )}
                 </Dropzone>
-                <Typography variant="caption">
-                    {file?.name}
-                    {fileError}
-                </Typography>
-                {file && (
-                    <Button
-                        variant="outlined"
-                        disabled={!file?.name}
-                        onClick={handleSubmit}
+                <Box
+                    sx={{
+                        display: 'flex',
+                        marginTop: '0',
+                        flexWrap: 'wrap',
+                        overflow: 'hidden',
+                    }}
+                >
+                    <Typography
+                        variant="caption"
+                        sx={{
+                            flex: '1 1 auto',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                        }}
                     >
-                        Finish
-                    </Button>
-                )}
+                        {file?.name}
+                        {fileError}
+                    </Typography>
+                    {file && (
+                        <Button
+                            variant="outlined"
+                            disabled={!file?.name}
+                            onClick={handleSubmit}
+                            sx={{ flex: '0 0 auto', marginLeft: 'auto' }}
+                        >
+                            Finish
+                        </Button>
+                    )}
+                </Box>{' '}
             </>
         );
     };
