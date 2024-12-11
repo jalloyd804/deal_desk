@@ -486,16 +486,18 @@ export const PolicyPage = () => {
                                                         </Markdown>
                                                     </div>
                                                     <StyledAccordion>
-                                                        <AccordionSummary
-                                                            sx={{
+                                                        <Box    sx={{
                                                                 display: 'flex',
                                                                 alignItems:
                                                                     'flex-end',
                                                                 justifyContent:
                                                                     'space-between',
                                                                 padding: '0',
-                                                            }}
-                                                        >
+                                                            }}>
+
+                                                        </Box>
+                                                        <AccordionSummary>
+                                                   
                                                             <Typography
                                                                 variant="caption"
                                                                 sx={{

@@ -26,11 +26,9 @@ const StyledHeader = styled('div')(({ theme }) => ({
     left: '0px',
     right: '0px',
     height: '10%',
-    // marginTop: theme.spacing(1),
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    overflow: 'hidden',
     color: 'black',
     width: '100%',
     borderTopLeftRadius: '12px',
@@ -40,31 +38,32 @@ const StyledHeader = styled('div')(({ theme }) => ({
 const StyledWrapper = styled('div')(({ theme }) => ({
     display: 'flex',
     flexDirection: 'column',
-    height: '100vh',
-    width: '100vw',
-    alignItems: 'center',
+    justifyContent: 'center',
     overflow: 'visible',
-    justifyContent: 'flex-start',
     background:
         'linear-gradient(0deg, rgba(98,84,163,1) 13%, rgba(130,54,140,1) 51%)',
-    padding: '1rem 1rem 0rem 1rem',
-    '@media (max-width: 800px)': {
+    padding: '1rem',
+    width: '100vw !important',
+    height: '100vh !important',  
+    '@media (min-width: 800px)': {
         height: 'auto',
     },
 }));
 
 const StyledMain = styled('div')(({ theme }) => ({
-    position: 'relative',
+    display: 'flex',
+    justifyContent: 'center',
+    flexDirection: 'column',
     flex: 1,
-    overflow: 'auto',
+    overflow: 'visible', 
     scrollbarWidth: 'none',
 }));
 
 const StyledContent = styled('div')(({ theme }) => ({
-    display: 'inline-flex',
+    display: 'flex',
     justifyContent: 'center',
+    overflow: 'visible',
     background: theme.palette.background.paper,
-    height: '100%', // Adjust height to fit within viewport
     [theme.breakpoints.down('sm')]: {
         minHeight: 'auto',
     },

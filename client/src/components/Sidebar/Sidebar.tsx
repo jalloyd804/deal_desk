@@ -60,9 +60,11 @@ const StyledLink = styled('button')(({ theme }) => ({
 
 const StyledSidebar = styled(Paper)(({ theme }) => ({
     display: 'flex',
+    justifyContent: 'flex-start',
     flexDirection: 'column',
     borderRadius: '.75rem',
     width: '350px',
+    height: '80vh',
     padding: theme.spacing(2),
     background:
         'linear-gradient(0deg, rgba(49,159,190,1) 13%, rgba(42,114,165,1) 51%)',
@@ -70,10 +72,9 @@ const StyledSidebar = styled(Paper)(({ theme }) => ({
     [theme.breakpoints.down('md')]: {
         zIndex: open ? theme.zIndex.drawer + 2 : -1,
         flexDirection: 'flex-start',
-        position: 'relative',
+        height: 'auto',
     },
     zIndex: 2,
-    justifyContent: 'flex-start',
 }));
 
 const StyledAutocomplete = styled(Autocomplete)(({ theme }) => ({
@@ -161,7 +162,7 @@ export const Sidebar = ({
                 const response = await actions.run(pixel);
                 const { output, operationType } = response.pixelReturn[0];
                 engine = output;
-                setSelectedVector(engine)
+                setSelectedVector(engine);
                 if (operationType.indexOf('ERROR') > -1) {
                     throw new Error(output as string);
                 }
@@ -209,7 +210,9 @@ export const Sidebar = ({
     const firstStep = () => {
         return (
             <>
-                <StyledTitle>Select or Create a Document Repository</StyledTitle>
+                <StyledTitle>
+                    Select or Create a Document Repository
+                </StyledTitle>
                 <Typography variant="caption">
                     Make sure to select Add *name* when creating a new repo.
                 </Typography>
@@ -259,11 +262,16 @@ export const Sidebar = ({
                         />
                     )}
                 />
-                    <StyledTitle>Embed a document</StyledTitle>
-                    <Typography variant='caption'>
-                        Drag and Drop .pdf, .doc, .docx or .txt files</Typography>
+                <StyledTitle>Embed a document</StyledTitle>
+                <Typography variant="caption">
+                    Drag and Drop .pdf, .doc, .docx or .txt files
+                </Typography>
                 <Dropzone
-                    accept={{ 'text/pdf': ['.pdf'], 'text/doc': ['.doc', '.docx'] , 'text/txt':['.txt']}}
+                    accept={{
+                        'text/pdf': ['.pdf'],
+                        'text/doc': ['.doc', '.docx'],
+                        'text/txt': ['.txt'],
+                    }}
                     onDrop={(acceptedFiles, fileRejections) => {
                         if (fileRejections.length > 0) {
                             setFileError(fileRejections[0].errors[0].message);
@@ -367,7 +375,6 @@ export const Sidebar = ({
                     sx={{
                         display: 'flex',
                         marginTop: '0',
-                        flexWrap: 'nowrap',
                         overflow: 'hidden',
                         justifyContent: 'space-between',
                         alignItems: 'center',
@@ -392,7 +399,7 @@ export const Sidebar = ({
                             onClick={handleSubmit}
                             sx={{ flex: '0 0 auto' }}
                         >
-                            Finish
+                            Upload
                         </Button>
                     )}
                 </Box>{' '}
@@ -401,15 +408,14 @@ export const Sidebar = ({
     };
     return (
         <StyledSidebar>
+            <StyledStack spacing={{ xs: 1, sm: 1, md: 1, l: 3, xl: 3 }}>
+                <StyledList>
+                    <Typography> Select Model: </Typography>
+                    <StyledButton onClick={() => setSideOpen(false)}>
+                        <ArrowBackIosNewOutlinedIcon />
+                    </StyledButton>
+                </StyledList>
 
-            <StyledStack spacing={{xs:1, sm: 1, md:1, l: 3, xl: 3}}>
-            <StyledList>
-                <Typography> Select Model: </Typography>
-                <StyledButton onClick={() => setSideOpen(false)}>
-                    <ArrowBackIosNewOutlinedIcon />
-                </StyledButton>
-            </StyledList>
-                
                 <StyledAutocomplete
                     options={modelOptions}
                     value={selectedModel}
