@@ -40,14 +40,17 @@ const StyledHeader = styled('div')(({ theme }) => ({
 const StyledWrapper = styled('div')(({ theme }) => ({
     display: 'flex',
     flexDirection: 'column',
-    height: '100vh', // Use viewport height
+    height: '100vh',
     width: '100vw',
     alignItems: 'center',
-    overflow: 'auto', // Ensure no overflow
+    overflow: 'visible',
     justifyContent: 'flex-start',
     background:
         'linear-gradient(0deg, rgba(98,84,163,1) 13%, rgba(130,54,140,1) 51%)',
-    padding: '2rem 1rem 0rem 1rem',
+    padding: '1rem 1rem 0rem 1rem',
+    '@media (max-width: 800px)': {
+        height: 'auto',
+    },
 }));
 
 const StyledMain = styled('div')(({ theme }) => ({
@@ -58,9 +61,8 @@ const StyledMain = styled('div')(({ theme }) => ({
 }));
 
 const StyledContent = styled('div')(({ theme }) => ({
-    display: 'flex',
+    display: 'inline-flex',
     justifyContent: 'center',
-    width: '95vw',
     background: theme.palette.background.paper,
     height: '100%', // Adjust height to fit within viewport
     [theme.breakpoints.down('sm')]: {

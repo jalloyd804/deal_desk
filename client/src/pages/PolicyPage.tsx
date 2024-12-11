@@ -384,8 +384,18 @@ export const PolicyPage = () => {
                             {answerLog.map((answer) => (
                                 <>
                                     <StyledResponseDiv>
-                                        <StyledAnswerAvatar>
-                                            <PersonIcon />
+                                        <StyledAnswerAvatar
+                                            sx={{
+                                                border: '2px solid rgba(42,114,165,1)',
+                                                backgroundColor: 'white',
+                                            }}
+                                        >
+                                            <PersonIcon
+                                                sx={{
+                                                    backgroundColor: 'white',
+                                                    color: 'rgba(42,114,165,1)',
+                                                }}
+                                            />
                                         </StyledAnswerAvatar>
                                         <StyledPaper
                                             sx={{
@@ -480,9 +490,10 @@ export const PolicyPage = () => {
                                                             sx={{
                                                                 display: 'flex',
                                                                 alignItems:
-                                                                    'center',
+                                                                    'flex-end',
                                                                 justifyContent:
                                                                     'space-between',
+                                                                padding: '0',
                                                             }}
                                                         >
                                                             <Typography
@@ -493,6 +504,10 @@ export const PolicyPage = () => {
                                                                         'right',
                                                                     paddingRight:
                                                                         '.5rem',
+                                                                    justifyContent:
+                                                                        'flex-end',
+                                                                    alignItems:
+                                                                        'flex-end',
                                                                 }}
                                                             >
                                                                 More Information
@@ -543,7 +558,11 @@ export const PolicyPage = () => {
                                 <StyledPaper
                                     elevation={2}
                                     square
-                                    sx={{ width: '70%', paddingBottom: '0px' }}
+                                    sx={{
+                                        width: '70%',
+                                        paddingBottom: '0px',
+                                        marginBottom: '1rem',
+                                    }}
                                 >
                                     <TextField
                                         autoComplete="off"
@@ -628,7 +647,7 @@ export const PolicyPage = () => {
                         )}
                     </Menu>
                 </StyledQuestionDiv>
-                <Box sx={{padding: '0 2rem'}}>
+                <Box sx={{ padding: '0 2rem' }}>
                     {isLoading && <LinearProgress />}
                     {/* {open && (
                         // <Modal open={open} onClose={() => setOpen(false)}>

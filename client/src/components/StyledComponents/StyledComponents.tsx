@@ -122,7 +122,6 @@ export const StyledLayout = styled(Stack, {
     height: '100%',
     display: 'flex',
     flexDirection: 'row',
-    overflow: 'hidden',
 }));
 
 export const StyledLeftPanel = styled(Paper)(({ theme }) => ({
