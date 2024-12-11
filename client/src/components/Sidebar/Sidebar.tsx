@@ -68,7 +68,6 @@ const StyledSidebar = styled(Paper)(({ theme }) => ({
         'linear-gradient(0deg, rgba(49,159,190,1) 13%, rgba(42,114,165,1) 51%)',
     color: theme.palette.background.paper,
     [theme.breakpoints.down('md')]: {
-        position: 'absolute',
         zIndex: open ? theme.zIndex.drawer + 2 : -1,
         flexDirection: 'flex-start',
         position: 'relative',
