@@ -376,8 +376,10 @@ export const Sidebar = ({
                     sx={{
                         display: 'flex',
                         marginTop: '0',
-                        flexWrap: 'wrap',
-                        overflow: 'hidden',
+                        flexWrap: 'nowrap', // Ensure no wrapping
+                        overflow: 'hidden', // Hide overflow
+                        justifyContent: 'space-between', // Space between elements
+                        alignItems: 'center', // Center items vertically
                     }}
                 >
                     <Typography
@@ -386,6 +388,7 @@ export const Sidebar = ({
                             flex: '1 1 auto',
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
+                            marginRight: '8px', // Add some space between text and button
                         }}
                     >
                         {file?.name}
@@ -396,7 +399,7 @@ export const Sidebar = ({
                             variant="outlined"
                             disabled={!file?.name}
                             onClick={handleSubmit}
-                            sx={{ flex: '0 0 auto', marginLeft: 'auto' }}
+                            sx={{ flex: '0 0 auto' }}
                         >
                             Finish
                         </Button>
