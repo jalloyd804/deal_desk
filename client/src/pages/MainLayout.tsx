@@ -60,9 +60,9 @@ const StyledMain = styled('div')(({ theme }) => ({
 const StyledContent = styled('div')(({ theme }) => ({
     display: 'flex',
     justifyContent: 'center',
-    width: '98vw',
+    width: '95vw',
     background: theme.palette.background.paper,
-    height: 'calc(100% - 75px - 40px)', // Adjust height to fit within viewport
+    height: '100%', // Adjust height to fit within viewport
     [theme.breakpoints.down('sm')]: {
         minHeight: 'auto',
     },

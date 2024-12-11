@@ -63,29 +63,30 @@ const StyledSidebar = styled(Paper)(({ theme }) => ({
     flexDirection: 'column',
     width: '20vw',
     borderRadius: '.75rem',
+    margin: '0rem .75rem',
     padding: theme.spacing(2),
     background:
         'linear-gradient(0deg, rgba(49,159,190,1) 13%, rgba(42,114,165,1) 51%)',
     color: theme.palette.background.paper,
     [theme.breakpoints.down('md')]: {
+        position: 'absolute',
         zIndex: open ? theme.zIndex.drawer + 2 : -1,
         width: '100%',
         maxWidth: '20vw',
-        flexDirection: 'flex-start',
-        position: 'relative'
     },
     // position: 'absolute',
     // left: '0%',
     zIndex: 2,
     float: 'left',
     marginBottom: theme.spacing(1),
+    height: '100%'
 }));
 
 const StyledAutocomplete = styled(Autocomplete)(({ theme }) => ({
     background: theme.palette.background.paper,
     borderRadius: theme.shape.borderRadius,
     backgroundColor: '#ebf5f9',
-    marginTop: '8px',
+    marginTop: '8px'
 }));
 
 const StyledAvatar = styled(Avatar)(({ theme }) => ({
@@ -160,11 +161,11 @@ export const Sidebar = ({
         let engine;
         if (newVector) {
             try {
-                const pixel = `CreateVectorDatabaseEngine ( database = [ "${newVector}" ] , conDetails = [ { "VECTOR_TYPE" : "FAISS" , "NAME" : "${newVector}","EMBEDDER_ENGINE_ID":"e4449559-bcff-4941-ae72-0e3f18e06660","INDEX_CLASSES":"default","CHUNKING_STRATEGY":"ALL","CONTENT_LENGTH":512,"CONTENT_OVERLAP":20,"DISTANCE_METHOD":"Squared Euclidean (L2) distance","RETAIN_EXTRACTED_TEXT":"false"} ] ) ;`;
+                const pixel = `CreateVectorDatabaseEngine ( database = [ "${newVector}" ] , conDetails = [ { "VECTOR_TYPE" : "FAISS" , "NAME" : "${newVector}","EMBEDDER_ENGINE_ID":"${process.env.EMBEDDER}","INDEX_CLASSES":"default","CHUNKING_STRATEGY":"ALL","CONTENT_LENGTH":512,"CONTENT_OVERLAP":20,"DISTANCE_METHOD":"Squared Euclidean (L2) distance","RETAIN_EXTRACTED_TEXT":"false"} ] ) ;`;
                 const response = await actions.run(pixel);
                 const { output, operationType } = response.pixelReturn[0];
                 engine = output;
-                setSelectedVector(engine);
+                setSelectedVector(engine)
                 if (operationType.indexOf('ERROR') > -1) {
                     throw new Error(output as string);
                 }
@@ -212,9 +213,7 @@ export const Sidebar = ({
     const firstStep = () => {
         return (
             <>
-                <StyledTitle>
-                    Select or Create a Document Repository
-                </StyledTitle>
+                <StyledTitle>Select or Create a Document Repository</StyledTitle>
                 <Typography variant="caption">
                     Make sure to select Add *name* when creating a new repo.
                 </Typography>
@@ -264,18 +263,11 @@ export const Sidebar = ({
                         />
                     )}
                 />
-                <StyledEmbedList>
                     <StyledTitle>Embed a document</StyledTitle>
-                    <Tooltip title="Drag and Drop .pdf, .doc, .docx or .txt files to embed your document repository">
-                        <QuestionMark sx={{ fontSize: '.75rem' }} />
-                    </Tooltip>
-                </StyledEmbedList>
+                    <Typography variant='caption'>
+                        Drag and Drop .pdf, .doc, .docx or .txt files</Typography>
                 <Dropzone
-                    accept={{
-                        'text/pdf': ['.pdf'],
-                        'text/doc': ['.doc', '.docx'],
-                        'text/txt': ['.txt'],
-                    }}
+                    accept={{ 'text/pdf': ['.pdf'], 'text/doc': ['.doc', '.docx'] , 'text/txt':['.txt']}}
                     onDrop={(acceptedFiles, fileRejections) => {
                         if (fileRejections.length > 0) {
                             setFileError(fileRejections[0].errors[0].message);
@@ -302,8 +294,8 @@ export const Sidebar = ({
                         >
                             <div
                                 style={{
-                                    paddingTop: '1rem',
-                                    paddingBottom: '1rem',
+                                    paddingTop: '36px',
+                                    paddingBottom: '36px',
                                 }}
                                 {...getRootProps({ className: 'dropzone' })}
                             >
@@ -394,14 +386,15 @@ export const Sidebar = ({
     };
     return (
         <StyledSidebar>
-            <StyledStack spacing={{ xs: 1, sm: 1, md: 1, l: 2, smart: 2 }}>
-                <StyledList>
-                    <Typography> Select Model: </Typography>
-                    <StyledButton onClick={() => setSideOpen(false)}>
-                        <ArrowBackIosNewOutlinedIcon />
-                    </StyledButton>
-                </StyledList>
 
+            <StyledStack spacing={{xs:1, sm: 1, md:1, l: 3, xl: 3}}>
+            <StyledList>
+                <Typography> Select Model: </Typography>
+                <StyledButton onClick={() => setSideOpen(false)}>
+                    <ArrowBackIosNewOutlinedIcon />
+                </StyledButton>
+            </StyledList>
+                
                 <StyledAutocomplete
                     options={modelOptions}
                     value={selectedModel}
