@@ -45,7 +45,7 @@ const StyledWrapper = styled('div')(({ theme }) => ({
         'linear-gradient(0deg, rgba(98,84,163,1) 13%, rgba(130,54,140,1) 51%)',
     padding: '1rem',
     height: '100vh', // Ensure the wrapper takes the full viewport height
-    overflow: 'hidden', // Prevent the wrapper from scrolling
+    overflow: 'visible', // Prevent the wrapper from scrolling
     position: 'relative',
     boxSizing: 'border-box',
     '@media (min-width: 800px)': {
