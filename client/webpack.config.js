@@ -42,7 +42,7 @@ const config = {
     plugins: [
         new HtmlWebpackPlugin({
             title: 'NIH/NCI DocBot',
-            favicon: './src/assets/img/image.png',
+            favicon: './src/assets/img/nci_logo.png',
             scriptLoading: 'module',
             template: './src/template.html',
         }),
