@@ -309,8 +309,8 @@ export const Sidebar = ({
                         >
                             <div
                                 style={{
-                                    paddingTop: '36px',
-                                    paddingBottom: '36px',
+                                    paddingTop: '.75rem',
+                                    paddingBottom: '.75rem',
                                 }}
                                 {...getRootProps({ className: 'dropzone' })}
                             >
