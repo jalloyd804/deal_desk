@@ -270,21 +270,6 @@ export const LoginPage = () => {
                                         <Divider />
                                     </>
                                 )}
-                            {providers.indexOf('ms') > -1 && (
-                                <StyledAction
-                                    variant="outlined"
-                                    title="Microsoft"
-                                    onClick={() => {
-                                        oauth('ms');
-                                    }}
-                                    fullWidth
-                                >
-                                    <StyledActionImage src={MS} />
-                                    <StyledActionText>
-                                        Microsoft
-                                    </StyledActionText>
-                                </StyledAction>
-                            )}
                         </Stack>
                     </StyledPaper>
                     {isLoading && <LinearProgress />}
