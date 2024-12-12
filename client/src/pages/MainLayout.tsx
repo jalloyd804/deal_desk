@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom';
 import { Alert, Typography, styled } from '@mui/material';
 import Logo from '@/assets/img/logo.svg';
 import Logo_Powered from '@/assets/img/logo_powered.svg';
+import { relative } from 'path';
 
 const StyledHeaderLogo = styled('a')(({ theme }) => ({
     display: 'inline-flex',
@@ -40,10 +41,12 @@ const StyledWrapper = styled('div')(({ theme }) => ({
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'flex-start',
-    background: 'linear-gradient(0deg, rgba(98,84,163,1) 13%, rgba(130,54,140,1) 51%)',
+    background:
+        'linear-gradient(0deg, rgba(98,84,163,1) 13%, rgba(130,54,140,1) 51%)',
     padding: '1rem',
     height: '100vh', // Ensure the wrapper takes the full viewport height
     overflow: 'hidden', // Prevent the wrapper from scrolling
+    position: 'relative',
     boxSizing: 'border-box',
     '@media (min-width: 800px)': {
         height: 'auto',
@@ -51,6 +54,7 @@ const StyledWrapper = styled('div')(({ theme }) => ({
 }));
 
 const StyledMain = styled('div')(({ theme }) => ({
+    posiiton: 'absolute',
     display: 'flex',
     flexDirection: 'column',
     flex: 1,
@@ -93,12 +97,12 @@ export const MainLayout = () => {
     return (
         <>
             <StyledWrapper>
-                <StyledHeader>
-                    <StyledHeaderLogo href="https://www.cancer.gov/">
-                        <img src={Logo} alt="Logo" />
-                    </StyledHeaderLogo>
-                </StyledHeader>
                 <StyledMain>
+                    <StyledHeader>
+                        <StyledHeaderLogo href="https://www.cancer.gov/">
+                            <img src={Logo} alt="Logo" />
+                        </StyledHeaderLogo>
+                    </StyledHeader>
                     <StyledContent>
                         <Outlet />
                     </StyledContent>
