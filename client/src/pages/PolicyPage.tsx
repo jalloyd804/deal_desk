@@ -76,7 +76,7 @@ export interface VectorContext {
 interface Answer {
     question: string;
     conclusion: string;
-    file: string;
+    file: string[];
 }
 
 interface Prompt {
@@ -190,9 +190,12 @@ export const PolicyPage = () => {
             if (operationType.indexOf('ERROR') > -1)
                 throw new Error(output.response);
             let finalContent = '';
+            const fileSources = []
             //Looping through Vector Database Query and forming a content string with name, page, and content
             for (let i = 0; i <= output.length - 1; i++) {
                 const content = output[i].content || output[i].Content;
+                const sourcePage = `${output[i].Source},  Page(s): ${output[i].Divider}`
+                output[i].Source && !fileSources.includes(sourcePage) && fileSources.push(sourcePage)
                 finalContent += `\\n* `;
                 Object.keys(output[i]).map(
                     (source) =>
@@ -223,7 +226,7 @@ export const PolicyPage = () => {
             // set answer based on data
             setAnswer({
                 question: data.QUESTION,
-                file: fileInfo.fileName,
+                file: [...fileSources],
                 conclusion: conclusion,
             });
             setIsAnswered(true);
@@ -492,6 +495,7 @@ export const PolicyPage = () => {
                                                                 justifyContent:
                                                                     'space-between',
                                                                 padding: '0',
+                                                                textAlign:'center'
                                                             }}
                                                         >
                                                             <Typography
@@ -500,6 +504,7 @@ export const PolicyPage = () => {
                                                                     flexGrow: 1,
                                                                     textAlign:
                                                                         'right',
+                                                                    alignSelf: 'center',
                                                                     paddingRight:
                                                                         '.5rem',
                                                                     justifyContent:
@@ -508,12 +513,13 @@ export const PolicyPage = () => {
                                                                         'flex-end',
                                                                 }}
                                                             >
-                                                                More Information
+                                                                Show Sources
                                                             </Typography>
                                                             <IconButton
                                                                 sx={{
                                                                     padding:
                                                                         '4px',
+                                                                    alignItems:'center'
                                                                 }}
                                                                 onClick={() =>
                                                                     navigator.clipboard.writeText(
@@ -526,11 +532,13 @@ export const PolicyPage = () => {
                                                         </AccordionSummary>
                                                         <AccordionDetails>
                                                             <div>
-                                                                <Typography fontStyle="italic">
-                                                                    {
-                                                                        answer.file
-                                                                    }
-                                                                </Typography>
+                                                                
+                                                                {answer.file.map((file:string) =>(
+                                                                    <Typography fontStyle='italic'>
+                                                                        {file}
+                                                                    </Typography>
+                                                                )
+                                                                )}
                                                             </div>
                                                         </AccordionDetails>
                                                     </StyledAccordion>
