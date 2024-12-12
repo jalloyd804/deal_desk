@@ -61,14 +61,23 @@ const StyledLink = styled('button')(({ theme }) => ({
 const StyledSidebar = styled(Paper)(({ theme }) => ({
     display: 'flex',
     justifyContent: 'flex-start',
+    boxSizing: 'border-box',
     flexDirection: 'column',
     borderRadius: '.75rem',
     width: '350px',
-    height: 'auto',
+    // height: 'auto',
     padding: theme.spacing(2),
     background:
         'linear-gradient(0deg, rgba(49,159,190,1) 13%, rgba(42,114,165,1) 51%)',
     color: theme.palette.background.paper,
+    overflowY: 'scroll', // Enable vertical scrolling
+    // Hide scroll bar for Webkit browsers (Chrome, Safari)
+    '::-webkit-scrollbar': {
+        display: 'none',
+    },
+    // Hide scroll bar for other browsers
+    msOverflowStyle: 'none', // IE and Edge
+    scrollbarWidth: 'none', // Firefox
     [theme.breakpoints.down('md')]: {
         zIndex: open ? theme.zIndex.drawer + 2 : -1,
         flexDirection: 'flex-start',
@@ -104,6 +113,7 @@ const StyledList = styled(List)(({ theme }) => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
+    overflow: 'hidden',
 }));
 
 const StyledEmbedList = styled(List)(({ theme }) => ({
@@ -112,10 +122,12 @@ const StyledEmbedList = styled(List)(({ theme }) => ({
     borderRadius: theme.shape.borderRadius,
     display: 'flex',
     alignItems: 'center',
+    overflow: 'hidden',
 }));
 
 const StyledStack = styled(Stack)(({ theme }) => ({
     display: 'inline-flex',
+    overflow: 'hidden',
 }));
 
 const StyledButtonLink = styled('button')(({ theme }) => ({

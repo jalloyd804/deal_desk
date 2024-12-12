@@ -44,8 +44,16 @@ const StyledWrapper = styled('div')(({ theme }) => ({
     background:
         'linear-gradient(0deg, rgba(98,84,163,1) 13%, rgba(130,54,140,1) 51%)',
     padding: '1rem',
-    height: '100vh', // Ensure the wrapper takes the full viewport height
+    height: '100vh !important', // Ensure the wrapper takes the full viewport height
     overflow: 'visible', // Prevent the wrapper from scrolling
+    overflowY: 'scroll', // Enable vertical scrolling
+    // Hide scroll bar for Webkit browsers (Chrome, Safari)
+    '::-webkit-scrollbar': {
+        display: 'none',
+    },
+    // Hide scroll bar for other browsers
+    msOverflowStyle: 'none', // IE and Edge
+    scrollbarWidth: 'none', // Firefox
     position: 'relative',
     boxSizing: 'border-box',
     '@media (min-width: 800px)': {
@@ -54,7 +62,7 @@ const StyledWrapper = styled('div')(({ theme }) => ({
 }));
 
 const StyledMain = styled('div')(({ theme }) => ({
-    posiiton: 'absolute',
+    posiiton: 'relative',
     display: 'flex',
     flexDirection: 'column',
     flex: 1,
@@ -64,8 +72,10 @@ const StyledMain = styled('div')(({ theme }) => ({
 }));
 
 const StyledContent = styled('div')(({ theme }) => ({
+    boxSizing: 'border-box',
     display: 'flex',
     justifyContent: 'center',
+    width: '100%',
     background: theme.palette.background.paper,
     flex: 1, // Ensure the content takes the remaining space
     [theme.breakpoints.down('sm')]: {
