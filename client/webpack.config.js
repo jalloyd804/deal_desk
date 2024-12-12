@@ -41,8 +41,8 @@ const config = {
     },
     plugins: [
         new HtmlWebpackPlugin({
-            title: 'GPS AIQ',
-            favicon: './src/assets/img/logo.svg',
+            title: 'NIH/NCI DocBot',
+            favicon: './src/assets/img/image.png',
             scriptLoading: 'module',
             template: './src/template.html',
         }),

@@ -1,6 +1,6 @@
 import { Outlet } from 'react-router-dom';
 import { Alert, Typography, styled } from '@mui/material';
-import Logo from '@/assets/img/logo.svg';
+import Logo from '@/assets/img/image.png';
 import Logo_Powered from '@/assets/img/logo_powered.svg';
 import { relative } from 'path';
 
