@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom';
 import { Alert, Typography, styled } from '@mui/material';
 import Logo from '@/assets/img/logo.svg';
 import Logo_Powered from '@/assets/img/logo_powered.svg';
+import { relative } from 'path';
 
 const StyledHeaderLogo = styled('a')(({ theme }) => ({
     display: 'inline-flex',
@@ -21,16 +22,15 @@ const StyledHeaderLogo = styled('a')(({ theme }) => ({
 }));
 
 const StyledHeader = styled('div')(({ theme }) => ({
+    boxSizing: 'border-box',
     background: theme.palette.background.paper,
     top: '0px',
     left: '0px',
     right: '0px',
     height: '10%',
-    // marginTop: theme.spacing(1),
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    overflow: 'hidden',
     color: 'black',
     width: '100%',
     borderTopLeftRadius: '12px',
@@ -40,31 +40,44 @@ const StyledHeader = styled('div')(({ theme }) => ({
 const StyledWrapper = styled('div')(({ theme }) => ({
     display: 'flex',
     flexDirection: 'column',
-    height: '100vh',
-    width: '100vw',
-    alignItems: 'center',
-    overflow: 'visible',
     justifyContent: 'flex-start',
     background:
         'linear-gradient(0deg, rgba(98,84,163,1) 13%, rgba(130,54,140,1) 51%)',
-    padding: '1rem 1rem 0rem 1rem',
-    '@media (max-width: 800px)': {
+    padding: '1rem',
+    height: '100vh !important', // Ensure the wrapper takes the full viewport height
+    overflow: 'visible', // Prevent the wrapper from scrolling
+    overflowY: 'scroll', // Enable vertical scrolling
+    // Hide scroll bar for Webkit browsers (Chrome, Safari)
+    '::-webkit-scrollbar': {
+        display: 'none',
+    },
+    // Hide scroll bar for other browsers
+    msOverflowStyle: 'none', // IE and Edge
+    scrollbarWidth: 'none', // Firefox
+    position: 'relative',
+    boxSizing: 'border-box',
+    '@media (min-width: 800px)': {
         height: 'auto',
     },
 }));
 
 const StyledMain = styled('div')(({ theme }) => ({
-    position: 'relative',
+    posiiton: 'relative',
+    display: 'flex',
+    flexDirection: 'column',
     flex: 1,
-    overflow: 'auto',
+    boxSizing: 'border-box',
+    overflow: 'visible', // Allow the main content to scroll if it overflows
     scrollbarWidth: 'none',
 }));
 
 const StyledContent = styled('div')(({ theme }) => ({
-    display: 'inline-flex',
+    boxSizing: 'border-box',
+    display: 'flex',
     justifyContent: 'center',
+    width: '100%',
     background: theme.palette.background.paper,
-    height: '100%', // Adjust height to fit within viewport
+    flex: 1, // Ensure the content takes the remaining space
     [theme.breakpoints.down('sm')]: {
         minHeight: 'auto',
     },
