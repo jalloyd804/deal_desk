@@ -1,6 +1,6 @@
 import { Outlet } from 'react-router-dom';
 import { Alert, Typography, styled } from '@mui/material';
-import Logo from '@/assets/img/image.png';
+import Logo from '@/assets/img/nih_logo.svg';
 import Logo_Powered from '@/assets/img/logo_powered.svg';
 import { relative } from 'path';
 
@@ -33,17 +33,17 @@ const StyledHeader = styled('div')(({ theme }) => ({
     alignItems: 'center',
     color: 'black',
     width: '100%',
-    borderTopLeftRadius: '12px',
-    borderTopRightRadius: '12px',
+    // borderTopLeftRadius: '12px',
+    // borderTopRightRadius: '12px',
 }));
 
 const StyledWrapper = styled('div')(({ theme }) => ({
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'flex-start',
-    background:
-        'linear-gradient(0deg, rgba(98,84,163,1) 13%, rgba(130,54,140,1) 51%)',
-    padding: '1rem',
+    // background:
+    //     'linear-gradient(0deg, rgba(98,84,163,1) 13%, rgba(130,54,140,1) 51%)',
+    backgroundColor: '#121212',
     height: '100vh !important', // Ensure the wrapper takes the full viewport height
     overflow: 'visible', // Prevent the wrapper from scrolling
     overflowY: 'scroll', // Enable vertical scrolling
@@ -81,8 +81,8 @@ const StyledContent = styled('div')(({ theme }) => ({
     [theme.breakpoints.down('sm')]: {
         minHeight: 'auto',
     },
-    borderBottomLeftRadius: '12px',
-    borderBottomRightRadius: '12px',
+    // borderBottomLeftRadius: '12px',
+    // borderBottomRightRadius: '12px',
     padding: '10px',
 }));
 
