@@ -109,7 +109,7 @@ export const MainLayout = () => {
             <StyledWrapper>
                 <StyledMain>
                     <StyledHeader>
-                        <StyledHeaderLogo href="https://www.cancer.gov/">
+                        <StyledHeaderLogo href="http://internal-ai-core-alb-1936799559.us-east-1.elb.amazonaws.com/landing/">
                             <img src={Logo} alt="Logo" />
                         </StyledHeaderLogo>
                     </StyledHeader>
