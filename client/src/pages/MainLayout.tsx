@@ -33,9 +33,6 @@ const StyledHeader = styled('div')(({ theme }) => ({
     alignItems: 'center',
     color: 'black',
     width: '100%',
-    padding: '1rem'
-    // borderTopLeftRadius: '12px',
-    // borderTopRightRadius: '12px',
 }));
 
 const StyledWrapper = styled('div')(({ theme }) => ({
@@ -44,7 +41,8 @@ const StyledWrapper = styled('div')(({ theme }) => ({
     justifyContent: 'flex-start',
     // background:
     //     'linear-gradient(0deg, rgba(98,84,163,1) 13%, rgba(130,54,140,1) 51%)',
-    backgroundColor: '#121212',
+    backgroundColor: '#fff',
+    padding: '1rem',
     height: '100vh !important', // Ensure the wrapper takes the full viewport height
     overflow: 'visible', // Prevent the wrapper from scrolling
     overflowY: 'scroll', // Enable vertical scrolling
@@ -77,6 +75,7 @@ const StyledContent = styled('div')(({ theme }) => ({
     display: 'flex',
     justifyContent: 'center',
     width: '100%',
+    paddingTop: '.5rem',
     background: theme.palette.background.paper,
     flex: 1, // Ensure the content takes the remaining space
     [theme.breakpoints.down('sm')]: {
@@ -84,7 +83,6 @@ const StyledContent = styled('div')(({ theme }) => ({
     },
     // borderBottomLeftRadius: '12px',
     // borderBottomRightRadius: '12px',
-    padding: '.25rem 1rem',
 }));
 
 const StyledDisclaimer = styled('div')(({ theme }) => ({
@@ -110,7 +108,7 @@ export const MainLayout = () => {
             <StyledWrapper>
                 <StyledMain>
                     <StyledHeader>
-                        <StyledHeaderLogo href="asknci-dev.cancer.gov.com/landing/">
+                        <StyledHeaderLogo href="https://asknci-dev.cancer.gov.com/landing/">
                             <img src={Logo} alt="Logo" />
                         </StyledHeaderLogo>
                     </StyledHeader>

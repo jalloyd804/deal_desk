@@ -88,7 +88,7 @@ const StyledSidebar = styled(Paper)(({ theme }) => ({
 
 const StyledAutocomplete = styled(Autocomplete)(({ theme }) => ({
     background: theme.palette.background.paper,
-    borderRadius: theme.shape.borderRadius,
+    borderRadius: '.5rem',
     backgroundColor: '#ebf5f9',
     marginTop: '0',
 }));
@@ -109,7 +109,7 @@ const StyledDiv = styled('div')(() => ({
 const StyledList = styled(List)(({ theme }) => ({
     width: '100%',
     padding: '8px',
-    borderRadius: theme.shape.borderRadius,
+    borderRadius: '.5rem',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -119,7 +119,7 @@ const StyledList = styled(List)(({ theme }) => ({
 const StyledEmbedList = styled(List)(({ theme }) => ({
     width: '100%',
     padding: '8px',
-    borderRadius: theme.shape.borderRadius,
+    borderRadius: '.5rem',
     display: 'flex',
     alignItems: 'center',
     overflow: 'hidden',

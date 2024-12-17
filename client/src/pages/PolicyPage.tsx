@@ -190,12 +190,14 @@ export const PolicyPage = () => {
             if (operationType.indexOf('ERROR') > -1)
                 throw new Error(output.response);
             let finalContent = '';
-            const fileSources = []
+            const fileSources = [];
             //Looping through Vector Database Query and forming a content string with name, page, and content
             for (let i = 0; i <= output.length - 1; i++) {
                 const content = output[i].content || output[i].Content;
-                const sourcePage = `${output[i].Source},  Page(s): ${output[i].Divider}`
-                output[i].Source && !fileSources.includes(sourcePage) && fileSources.push(sourcePage)
+                const sourcePage = `${output[i].Source},  Page(s): ${output[i].Divider}`;
+                output[i].Source &&
+                    !fileSources.includes(sourcePage) &&
+                    fileSources.push(sourcePage);
                 finalContent += `\\n* `;
                 Object.keys(output[i]).map(
                     (source) =>
@@ -495,7 +497,8 @@ export const PolicyPage = () => {
                                                                 justifyContent:
                                                                     'space-between',
                                                                 padding: '0',
-                                                                textAlign:'center'
+                                                                textAlign:
+                                                                    'center',
                                                             }}
                                                         >
                                                             <Typography
@@ -504,7 +507,8 @@ export const PolicyPage = () => {
                                                                     flexGrow: 1,
                                                                     textAlign:
                                                                         'right',
-                                                                    alignSelf: 'center',
+                                                                    alignSelf:
+                                                                        'center',
                                                                     paddingRight:
                                                                         '.5rem',
                                                                     justifyContent:
@@ -519,7 +523,8 @@ export const PolicyPage = () => {
                                                                 sx={{
                                                                     padding:
                                                                         '4px',
-                                                                    alignItems:'center'
+                                                                    alignItems:
+                                                                        'center',
                                                                 }}
                                                                 onClick={() =>
                                                                     navigator.clipboard.writeText(
@@ -532,12 +537,16 @@ export const PolicyPage = () => {
                                                         </AccordionSummary>
                                                         <AccordionDetails>
                                                             <div>
-                                                                
-                                                                {answer.file.map((file:string) =>(
-                                                                    <Typography fontStyle='italic'>
-                                                                        {file}
-                                                                    </Typography>
-                                                                )
+                                                                {answer.file.map(
+                                                                    (
+                                                                        file: string,
+                                                                    ) => (
+                                                                        <Typography fontStyle="italic">
+                                                                            {
+                                                                                file
+                                                                            }
+                                                                        </Typography>
+                                                                    ),
                                                                 )}
                                                             </div>
                                                         </AccordionDetails>
@@ -564,7 +573,12 @@ export const PolicyPage = () => {
                                 <StyledPaper
                                     elevation={2}
                                     square
-                                    sx={{ width: '70%', paddingBottom: '0px', marginBottom: '1rem' }}
+                                    sx={{
+                                        width: '70%',
+                                        paddingBottom: '0px',
+                                        marginBottom: '1rem',
+                                        borderRadius: '.5rem',
+                                    }}
                                 >
                                     <TextField
                                         autoComplete="off"
@@ -673,5 +687,3 @@ export const PolicyPage = () => {
         </StyledLayout>
     );
 };
-
-
