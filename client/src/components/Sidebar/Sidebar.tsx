@@ -63,7 +63,7 @@ const StyledSidebar = styled(Paper)(({ theme }) => ({
     justifyContent: 'flex-start',
     boxSizing: 'border-box',
     flexDirection: 'column',
-    borderRadius: '.75rem',
+    borderRadius: '.5rem',
     width: '350px',
     // height: 'auto',
     padding: theme.spacing(2),

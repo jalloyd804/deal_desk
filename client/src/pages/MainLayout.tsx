@@ -33,6 +33,7 @@ const StyledHeader = styled('div')(({ theme }) => ({
     alignItems: 'center',
     color: 'black',
     width: '100%',
+    padding: '1rem'
     // borderTopLeftRadius: '12px',
     // borderTopRightRadius: '12px',
 }));
@@ -83,7 +84,7 @@ const StyledContent = styled('div')(({ theme }) => ({
     },
     // borderBottomLeftRadius: '12px',
     // borderBottomRightRadius: '12px',
-    padding: '10px',
+    padding: '.25rem 1rem',
 }));
 
 const StyledDisclaimer = styled('div')(({ theme }) => ({
@@ -109,7 +110,7 @@ export const MainLayout = () => {
             <StyledWrapper>
                 <StyledMain>
                     <StyledHeader>
-                        <StyledHeaderLogo href="http://internal-ai-core-alb-1936799559.us-east-1.elb.amazonaws.com/landing/">
+                        <StyledHeaderLogo href="asknci-dev.cancer.gov.com/landing/">
                             <img src={Logo} alt="Logo" />
                         </StyledHeaderLogo>
                     </StyledHeader>
