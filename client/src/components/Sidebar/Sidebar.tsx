@@ -161,7 +161,6 @@ export const Sidebar = ({
 
     const closingFunctions = () => {
         setLoading(false);
-        setIsLoading(false)
         setNewVectorDB(null);
         setRefresh(true);
         setFile(null);
@@ -220,6 +219,7 @@ export const Sidebar = ({
                 closingFunctions();
             }
         }
+        setIsLoading(false)
     };
 
     const firstStep = () => {
