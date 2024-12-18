@@ -310,7 +310,7 @@ export const PolicyPage = () => {
             setFileInfo({ fileLocation: fileLocation, fileName: fileName });
         };
 
-        if(file){
+        if (file) {
             uploadFile();
         }
     }, [file]);
@@ -386,7 +386,10 @@ export const PolicyPage = () => {
                     )}
 
                     {answerLog.length > 0 && (
-                        <Stack gap={1} sx={{ padding: '1rem' }}>
+                        <Stack
+                            gap={1}
+                            sx={{ paddingLeft: '1rem', paddingTop: '.25rem' }}
+                        >
                             {answerLog.map((answer) => (
                                 <>
                                     <StyledResponseDiv>
