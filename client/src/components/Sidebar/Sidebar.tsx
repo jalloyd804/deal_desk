@@ -150,6 +150,7 @@ export const Sidebar = ({
     setSelectedVector,
     selectedVector,
     setRefresh,
+    setIsLoading
 }) => {
     const [fileError, setFileError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
@@ -160,6 +161,7 @@ export const Sidebar = ({
 
     const closingFunctions = () => {
         setLoading(false);
+        setIsLoading(false)
         setNewVectorDB(null);
         setRefresh(true);
         setFile(null);
@@ -167,6 +169,7 @@ export const Sidebar = ({
 
     const handleSubmit = async () => {
         setLoading(true);
+        setIsLoading(true)
         let engine;
         if (newVector) {
             try {

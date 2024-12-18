@@ -310,7 +310,9 @@ export const PolicyPage = () => {
             setFileInfo({ fileLocation: fileLocation, fileName: fileName });
         };
 
-        uploadFile();
+        if(file){
+            uploadFile();
+        }
     }, [file]);
 
     useEffect(() => {
@@ -359,6 +361,7 @@ export const PolicyPage = () => {
                     setSelectedVector={setSelectedVector}
                     selectedVector={selectedVector}
                     setRefresh={setRefresh}
+                    setIsLoading={setIsLoading}
                 />
             ) : (
                 <StyledLeftPanel>
@@ -585,6 +588,7 @@ export const PolicyPage = () => {
                                         placeholder={'Enter your question here'}
                                         variant="standard"
                                         fullWidth
+                                        disabled={isLoading}
                                         onKeyDown={(e) => {
                                             if (e.key === 'Enter') {
                                                 ask();
