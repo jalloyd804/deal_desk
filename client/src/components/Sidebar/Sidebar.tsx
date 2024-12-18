@@ -160,7 +160,6 @@ export const Sidebar = ({
     const fileInput = useRef<HTMLInputElement>();
 
     const closingFunctions = () => {
-        setLoading(false);
         setNewVectorDB(null);
         setRefresh(true);
         setFile(null);
@@ -219,6 +218,7 @@ export const Sidebar = ({
                 closingFunctions();
             }
         }
+        setLoading(false);
         setIsLoading(false)
     };
 
