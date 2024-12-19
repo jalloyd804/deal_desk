@@ -321,6 +321,10 @@ export const PolicyPage = () => {
         }
     }, [answer]);
 
+    useEffect(() => {
+        setAnswerLog([])
+    }, [selectedVector])
+
     const handleAlertClose = (event, reason) => {
         if (reason === 'clickaway') {
             return;
