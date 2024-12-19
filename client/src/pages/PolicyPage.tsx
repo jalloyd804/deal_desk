@@ -269,7 +269,7 @@ export const PolicyPage = () => {
         const fetchAction = async () => {
             await actions.run(context);
 
-            //Grabbing all the Models that are in CfGov
+            //Grabbing all the Models that are in platform
             let pixel = ` MyEngines ( metaKeys = [] , metaFilters = [{ "tag" : "text-generation" }] , engineTypes = [ 'MODEL' ] )`;
 
             await actions.run(pixel).then((response) => {

@@ -42,7 +42,7 @@ const StyledWrapper = styled('div')(({ theme }) => ({
     // background:
     //     'linear-gradient(0deg, rgba(98,84,163,1) 13%, rgba(130,54,140,1) 51%)',
     backgroundColor: '#fff',
-    padding: '.5rem',
+    padding: '0.15rem 0.5rem 0.5rem 0.5rem',
     height: '100vh !important', // Ensure the wrapper takes the full viewport height
     overflow: 'visible', // Prevent the wrapper from scrolling
     overflowY: 'scroll', // Enable vertical scrolling
