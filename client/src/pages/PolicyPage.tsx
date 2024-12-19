@@ -110,11 +110,23 @@ export const PolicyPage = () => {
     const [fileInfo, setFileInfo] = useState<Record<string, string>>({});
 
     const [prompt, setPrompt] = useState<string>(
-        'Only return a helpful answer and nothing else.',
+    `You are an advanced AI designed to provide detailed and accurate analyses of various documents. Your goal is to answer questions based on the information contained within these documents, ensuring thoroughness, clarity, and relevance. If the answer cannot be found in the documents, inform the user explicitly. Under no circumstances should you create information not explicitly stated in the documents. Limit inferences to those supported by and related to the provided data.
+
+    Guidelines:
+    1. Analyze Thoroughly: Carefully read and analyze the content of the documents provided.
+    2. Provide Relevant Information: Ensure all answers are based solely on the information within the documents.
+    3. Be Clear and Concise: Offer clear and concise responses, avoiding ambiguity and unnecessary details.
+    4. Acknowledge Limitations: If the answer is not present in the documents, state that the information is not available.
+    5. Maintain Integrity: Always provide truthful and accurate information.
+    6. Structured Response: Answers should be presented in a logical and organized manner, ensuring readability.
+    
+    Additional Protocol for Scope and Information Integrity:
+    - Strict Adherence to Scope: You must not extrapolate or infer information beyond what is explicitly stated in the documents. Avoid making up information or hypothesizing when the text is not sufficient to address the query.
+    - Explicit Disclosure: If the information needed to answer a query is not contained within the documents, clearly state that the answer is beyond the scope of the provided materials and cannot be addressed.`
     );
     const [showPrompts, setShowPrompts] = useState<boolean>(false);
     const [questionContext, setQuestionContext] = useState<string>(
-        "Use the following pieces of information to answer the user's question. If you do not know the answer, just say that you do not know, do not try to make up an answer.",
+        "Use only the  pieces of information from above to answer the user's question. If you do not know the answer, just say that you do not know, do not try to make up an answer.",
     );
 
     //Controlling the modal
@@ -192,23 +204,52 @@ export const PolicyPage = () => {
             let finalContent = '';
             const fileSources = [];
             //Looping through Vector Database Query and forming a content string with name, page, and content
-            for (let i = 0; i <= output.length - 1; i++) {
+            // for (let i = 0; i <= output.length - 1; i++) {
+            //     const content = output[i].content || output[i].Content;
+            //     const sourcePage = `${output[i].Source},  Page(s): ${output[i].Divider}`;
+            //     output[i].Source &&
+            //         !fileSources.includes(sourcePage) &&
+            //         fileSources.push(sourcePage);
+            //     finalContent += `\\n* `;
+            //     Object.keys(output[i]).map(
+            //         (source) =>
+            //             (finalContent += `${source}: ${output[i][source]},`),
+            //     );
+            //     finalContent += ` ${content}`;
+            // }
+
+            // Looping through Vector Database Query and forming a content string with name, page, and content
+            for (let i = 0; i < output.length; i++) {
                 const content = output[i].content || output[i].Content;
-                const sourcePage = `${output[i].Source},  Page(s): ${output[i].Divider}`;
-                output[i].Source &&
-                    !fileSources.includes(sourcePage) &&
+                const sourcePage = `${output[i].Source}, Page(s): ${output[i].Divider}`;
+
+                if (output[i].Source && !fileSources.includes(sourcePage)) {
                     fileSources.push(sourcePage);
-                finalContent += `\\n* `;
-                Object.keys(output[i]).map(
-                    (source) =>
-                        (finalContent += `${source}: ${output[i][source]},`),
-                );
-                finalContent += ` ${content}`;
+                }
+
+                // Start a new line for each source
+                finalContent += `\n* `;
+
+                // Add each key-value pair from the current output item
+                Object.keys(output[i]).forEach((key) => {
+                    finalContent += `${key}: ${output[i][key]}, `;
+                });
+
+                // Add the content and ensure a newline at the end
+                finalContent += `Content: ${content}\n`;
             }
-            const contextDocs = `A context delimited by triple backticks is provided below. This context may contain plain text extracted from paragraphs or images. Tables extracted are represented as a 2D list in the following format - '[[Column Headers], [Comma-separated values in row 1], [Comma-separated values in row 2] ..... [Comma-separated values in row n]]'\\n \`\`\` ${finalContent} \`\`\`\\n ${questionContext}}`;
-            pixel = `
-            LLM(engine="${selectedModel.database_id}" , command=["<encode>${prompt} Question: ${data.QUESTION}. Context: ${contextDocs}</encode>"], paramValues=[{"temperature":${temperature}}])
-            `;
+
+            const contextDocs = `A context delimited by triple backticks is provided below. This context may contain plain text extracted from paragraphs or images. Tables extracted are represented as a 2D list in the following format - '[[Column Headers], [Comma-separated values in row 1], [Comma-separated values in row 2] ..... [Comma-separated values in row n]]'\\n
+            
+            \`\`\` ${finalContent} \`\`\`\\n
+            
+            ${questionContext}}`;
+
+            pixel = `LLM(engine="${selectedModel.database_id}" , command=["<encode>${prompt} 
+            
+            User Question: ${data.QUESTION}
+            
+            Context: ${contextDocs}</encode>"], paramValues=[{"temperature":${temperature}}])`;
 
             const LLMresponse = await actions.run<[{ response: string }]>(
                 pixel,
@@ -263,9 +304,10 @@ export const PolicyPage = () => {
 
     useEffect(() => {
         setIsLoading(true);
-
+        
         const fetchAction = async () => {
             //Grabbing all the Models that are in CfGov
+
             let pixel = ` MyEngines ( metaKeys = [] , metaFilters = [{ "tag" : "text-generation" }] , engineTypes = [ 'MODEL' ] )`;
 
             await actions.run(pixel).then((response) => {
