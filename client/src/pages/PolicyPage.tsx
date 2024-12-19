@@ -264,11 +264,7 @@ export const PolicyPage = () => {
     useEffect(() => {
         setIsLoading(true);
 
-        const context = `SetContext("${process.env.APP}", loadPath=true)`;
-
         const fetchAction = async () => {
-            await actions.run(context);
-
             //Grabbing all the Models that are in CfGov
             let pixel = ` MyEngines ( metaKeys = [] , metaFilters = [{ "tag" : "text-generation" }] , engineTypes = [ 'MODEL' ] )`;
 
