@@ -189,16 +189,15 @@ export const Sidebar = ({
                 } finally {
                     closingFunctions();
                 }
+            } else {
+                // If the engine name already exists, use the existing engine
+                engine = vectorOptions.find(
+                    (option) => option.database_name === newVector,
+                );
+                setSelectedVector(engine);
             }
-            // else {
-            //     // If the engine name already exists, use the existing engine
-            //     engine = vectorOptions.find(
-            //         (option) => option.database_name === newVector,
-            //     );
-            //     setSelectedVector(engine);
-            // }
         }
- 
+
         if (file) {
             try {
                 const embedEngine = engine || selectedVector;
