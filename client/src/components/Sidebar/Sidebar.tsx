@@ -150,7 +150,7 @@ export const Sidebar = ({
     setSelectedVector,
     selectedVector,
     setRefresh,
-    setIsLoading
+    setIsLoading,
 }) => {
     const [fileError, setFileError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
@@ -167,29 +167,34 @@ export const Sidebar = ({
 
     const handleSubmit = async () => {
         setLoading(true);
-        setIsLoading(true)
+        setIsLoading(true);
         let engine;
+
         if (newVector) {
-            try {
-                const pixel = `CreateVectorDatabaseEngine ( database = [ "${newVector}" ] , conDetails = [ { "VECTOR_TYPE" : "FAISS" , "NAME" : "${newVector}","EMBEDDER_ENGINE_ID":"${process.env.EMBEDDER}","INDEX_CLASSES":"default","CHUNKING_STRATEGY":"ALL","CONTENT_LENGTH":512,"CONTENT_OVERLAP":20,"DISTANCE_METHOD":"Squared Euclidean (L2) distance","RETAIN_EXTRACTED_TEXT":"false"} ] ) ;`;
-                const response = await actions.run(pixel);
-                const { output, operationType } = response.pixelReturn[0];
-                engine = output;
+            const engineNames = vectorOptions.map(
+                (option) => option.database_name,
+            );
+
+            if (!engineNames.includes(newVector)) {
+                try {
+                    const pixel = `CreateVectorDatabaseEngine ( database = [ "${newVector}" ] , conDetails = [ { "VECTOR_TYPE" : "FAISS" , "NAME" : "${newVector}","EMBEDDER_ENGINE_ID":"${process.env.EMBEDDER}","INDEX_CLASSES":"default","CHUNKING_STRATEGY":"ALL","CONTENT_LENGTH":512,"CONTENT_OVERLAP":20,"DISTANCE_METHOD":"Squared Euclidean (L2) distance","RETAIN_EXTRACTED_TEXT":"false"} ] ) ;`;
+                    const response = await actions.run(pixel);
+                    const { output, operationType } = response.pixelReturn[0];
+                    engine = output;
+                    setSelectedVector(engine);
+                } catch (e) {
+                    if (e.message) {
+                        setFileError(e.message);
+                    }
+                } finally {
+                    closingFunctions();
+                }
+            } else {
+                // If the engine name already exists, use the existing engine
+                engine = vectorOptions.find(
+                    (option) => option.database_name === newVector,
+                );
                 setSelectedVector(engine);
-                if (operationType.indexOf('ERROR') > -1) {
-                    throw new Error(output as string);
-                }
-            } catch (e) {
-                if (e.message) {
-                    setFileError(e.message);
-                } else {
-                    console.log(e);
-                    setFileError(
-                        'There was an error creating your vector DB, please check pixel calls',
-                    );
-                }
-            } finally {
-                closingFunctions();
             }
         }
 
@@ -219,9 +224,46 @@ export const Sidebar = ({
             }
         }
         setLoading(false);
-        setIsLoading(false)
+        setIsLoading(false);
     };
 
+    const handleKeyDown = async (event) => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            if (event.target.value) {
+                const newVectorValue = event.target.value;
+
+                // Check if the newVectorValue already exists in vectorOptions
+                const engineNames = vectorOptions.map(
+                    (option) => option.database_name,
+                );
+
+                if (!engineNames.includes(newVectorValue)) {
+                    try {
+                        const pixel = `CreateVectorDatabaseEngine ( database = [ "${newVectorValue}" ] , conDetails = [ { "VECTOR_TYPE" : "FAISS" , "NAME" : "${newVectorValue}","EMBEDDER_ENGINE_ID":"${process.env.EMBEDDER}","INDEX_CLASSES":"default","CHUNKING_STRATEGY":"ALL","CONTENT_LENGTH":512,"CONTENT_OVERLAP":20,"DISTANCE_METHOD":"Squared Euclidean (L2) distance","RETAIN_EXTRACTED_TEXT":"false"} ] ) ;`;
+                        const response = await actions.run(pixel);
+                        const { output, operationType } =
+                            response.pixelReturn[0];
+                        const engine = output;
+                        setNewVectorDB(newVectorValue);
+                        setSelectedVector(engine);
+
+                        if (operationType.indexOf('ERROR') > -1) {
+                            throw new Error(output as string);
+                        }
+                    } catch (e) {
+                        console.error('Name already exists', e);
+                    }
+                } else {
+                    // If the engine name already exists, set it as the selected vector
+                    const existingEngine = vectorOptions.find(
+                        (option) => option.database_name === newVectorValue,
+                    );
+                    setSelectedVector(existingEngine);
+                }
+            }
+        }
+    };
     const firstStep = () => {
         return (
             <>
@@ -269,11 +311,13 @@ export const Sidebar = ({
                         }
                         setSelectedVector(newVectorDB);
                     }}
+                    onKeyDown={handleKeyDown}
                     renderInput={(params) => (
                         <TextField
                             {...params}
                             variant="outlined"
                             value={selectedVector}
+                            onKeyDown={handleKeyDown}
                         />
                     )}
                 />
