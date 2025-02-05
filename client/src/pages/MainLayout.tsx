@@ -107,11 +107,6 @@ export const MainLayout = () => {
         <>
             <StyledWrapper>
                 <StyledMain>
-                    <StyledHeader>
-                        <StyledHeaderLogo href="https://asknci-dev.cancer.gov/landing/">
-                            <img src={Logo} alt="Logo" />
-                        </StyledHeaderLogo>
-                    </StyledHeader>
                     <StyledContent>
                         <Outlet />
                     </StyledContent>

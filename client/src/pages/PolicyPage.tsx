@@ -420,9 +420,7 @@ export const PolicyPage = () => {
                                 Hello {user}!
                             </Typography>
                             <Typography variant="h5" sx={{ color: '#606060' }}>
-                                I'm here to assist you in answering any complex
-                                policy, operational procedure, or system
-                                questions.
+                                I'm here to assist you in answering S&A Deal Desk questions
                             </Typography>
                         </StyledTitle>
                     )}

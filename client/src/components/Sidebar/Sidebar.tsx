@@ -67,8 +67,7 @@ const StyledSidebar = styled(Paper)(({ theme }) => ({
     width: '350px',
     // height: 'auto',
     padding: theme.spacing(2),
-    background:
-        'linear-gradient(0deg, rgba(49,159,190,1) 13%, rgba(42,114,165,1) 51%)',
+    background: 'black',
     color: theme.palette.background.paper,
     overflowY: 'scroll', // Enable vertical scrolling
     // Hide scroll bar for Webkit browsers (Chrome, Safari)

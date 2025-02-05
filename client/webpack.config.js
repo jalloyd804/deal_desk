@@ -41,8 +41,8 @@ const config = {
     },
     plugins: [
         new HtmlWebpackPlugin({
-            title: 'NIH/NCI DocBot',
-            favicon: './src/assets/img/nci_logo.png',
+            title: 'Deal Desk',
+            favicon: './src/assets/favicon.ico',
             scriptLoading: 'module',
             template: './src/template.html',
         }),
