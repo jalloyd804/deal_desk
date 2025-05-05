@@ -1,6 +1,7 @@
 {
     "private": true,
     "scripts": {
+        "start": "npm run dev",
         "build": "webpack --mode=production --node-env=production",
         "dev": "webpack serve",
         "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
